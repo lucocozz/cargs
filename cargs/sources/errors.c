@@ -69,7 +69,7 @@ void    cargs_clear_errors(cargs_t *cargs)
     cargs->error_stack.count = 0;
 }
 
-void	cargs_push_error(cargs_t *cargs, cargs_error_type_t error, const char *message, cargs_error_context_t context)
+void	cargs_push_error(cargs_t *cargs, cargs_error_t error)
 {
 	if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK)
 	{
@@ -80,5 +80,5 @@ void	cargs_push_error(cargs_t *cargs, cargs_error_type_t error, const char *mess
 	}
 
 	cargs_error_t *last = &cargs->error_stack.errors[cargs->error_stack.count++];
-	*last = CARGS_ERROR(error, message, context);
+    *last = error;
 }

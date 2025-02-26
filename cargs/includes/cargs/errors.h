@@ -43,24 +43,20 @@ typedef struct cargs_error_stack_s {
 } cargs_error_stack_t;
 
 
-#define CARGS_PUSH_ERROR(cargs, error, message, context) \
-    cargs_push_error(cargs, error, message, (cargs_error_context_t)context)
-
-#define CARGS_PUSH_ERROR_INFO(cargs, error_info) \
-    cargs_push_error(cargs, error_info.code, error_info.message, error_info.context)
-
-
 #define CARGS_ERROR(_code, _message, _context) \
     (cargs_error_t) { .code = _code, .message = _message, .context = _context }
 
-#define CARGS_ERROR_CONTEXT(cargs, option) \
-    (cargs_error_context_t) { .option_name = option->name, .group_name = cargs->active_group, .subcommand_name = cargs->active_subcommand }
+#define CARGS_ERROR_CONTEXT(cargs, option) (cargs_error_context_t) { \
+    .option_name = option->name, \
+    .group_name = cargs->active_group, \
+    .subcommand_name = cargs->active_subcommand ? cargs->active_subcommand->name : NULL \
+}
 
 typedef struct cargs_s cargs_t;
 
 void        cargs_print_error_stack(const cargs_t *cargs);
 const char  *cargs_strerror(cargs_error_type_t error);
-void        cargs_push_error(cargs_t *cargs, cargs_error_type_t error, const char *message, cargs_error_context_t context);
+void        cargs_push_error(cargs_t *cargs, cargs_error_t error);
 void        cargs_clear_errors(cargs_t *cargs);
 
 

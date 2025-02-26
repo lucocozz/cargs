@@ -17,16 +17,16 @@ static cargs_error_t __ensure_option_validity(cargs_t *cargs, cargs_option_t *op
 	if (option->sname == 0 && option->lname == NULL) {
 		status.code = CARGS_ERROR_MALFORMED_OPTION;
 		status.message = "Option must have a short name or a long name";
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 	if (option->flags & ~OPTION_FLAG_MASK) {
 		status.code = CARGS_ERROR_INVALID_FLAG;
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 	if (option->handler == NULL) {
 		status.code = CARGS_ERROR_INVALID_HANDLER;
 		status.message = "Option must have a handler";
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	// Check for default value validity with choices
@@ -40,7 +40,7 @@ static cargs_error_t __ensure_option_validity(cargs_t *cargs, cargs_option_t *op
 		if (!valid_default) {
 			status.code = CARGS_ERROR_INVALID_DEFAULT;
 			status.message = "Default value must be one of the available choices";
-			CARGS_PUSH_ERROR_INFO(cargs, status);
+			cargs_push_error(cargs, status);
 		}
 	}
 
@@ -54,7 +54,7 @@ static cargs_error_t __ensure_option_validity(cargs_t *cargs, cargs_option_t *op
 				if (strcmp(option->requires[i], option->conflicts[j]) == 0) {
 					status.code = CARGS_ERROR_INVALID_DEPENDENCY;
 					status.message = "Option cannot require and conflict with the same option";
-					CARGS_PUSH_ERROR_INFO(cargs, status);
+					cargs_push_error(cargs, status);
 	}	}	}	}
 
 	return (status);
@@ -70,7 +70,7 @@ static cargs_error_t __ensure_group_validity(cargs_t *cargs, cargs_option_t *opt
 	cargs->active_group = option->name;
 	if (option->flags & ~GROUP_FLAG_MASK) {
 		status.code = CARGS_ERROR_INVALID_FLAG;
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	return (status);
@@ -86,12 +86,12 @@ static cargs_error_t __ensure_positional_validity(cargs_t *cargs, cargs_option_t
 	if (option->name == NULL) {
 		status.code = CARGS_ERROR_MALFORMED_OPTION;
 		status.message = "Positional option must have a name";
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	if (option->flags & ~POSITIONAL_FLAG_MASK) {
 		status.code = CARGS_ERROR_INVALID_FLAG;
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	if (option->choices_count > 0 && option->value.raw != 0)
@@ -104,7 +104,7 @@ static cargs_error_t __ensure_positional_validity(cargs_t *cargs, cargs_option_t
 		if (!valid_default) {
 			status.code = CARGS_ERROR_INVALID_DEFAULT;
 			status.message = "Default value must be one of the available choices";
-			CARGS_PUSH_ERROR_INFO(cargs, status);
+			cargs_push_error(cargs, status);
 		}
 	}
 
@@ -121,18 +121,18 @@ static cargs_error_t __ensure_subcommand_validity(cargs_t *cargs, cargs_option_t
 	if (option->name == NULL) {
 		status.code = CARGS_ERROR_MALFORMED_OPTION;
 		status.message = "Subcommand must have a name";
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	if (option->subcommand.options == NULL) {
 		status.code = CARGS_ERROR_MALFORMED_OPTION;
 		status.message = "Subcommand must have options";
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	if (option->flags & ~SUBCOMMAND_FLAG_MASK) {
 		status.code = CARGS_ERROR_INVALID_FLAG;
-		CARGS_PUSH_ERROR_INFO(cargs, status);
+		cargs_push_error(cargs, status);
 	}
 
 	return (status);
@@ -201,14 +201,14 @@ static int __validate_structure(cargs_t *cargs, cargs_option_t *options)
 				continue;
 			status = __is_unique(cargs, option, other_option);
 			if (status.code != CARGS_SUCCESS)
-				CARGS_PUSH_ERROR_INFO(cargs, status);
+				cargs_push_error(cargs, status);
 		}
 
 		// Validate subcommand options recursively
 		if (option->type == TYPE_SUBCOMMAND && option->subcommand.options != NULL)
 		{
-			const char *prev_subcommand = cargs->active_subcommand;
-			cargs->active_subcommand = option->name;
+			const cargs_option_t *prev_subcommand = cargs->active_subcommand;
+			cargs->active_subcommand = option;
 			__validate_structure(cargs, option->subcommand.options);
 			cargs->active_subcommand = prev_subcommand;
 		}
@@ -228,6 +228,7 @@ cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char
 
 	__validate_structure(&cargs, options);
 	if (cargs.error_stack.count > 0) {
+		fprintf(stderr, "Error while initializing cargs:\n\n");
 		cargs_print_error_stack(&cargs);
 		exit(EXIT_FAILURE);
 	}

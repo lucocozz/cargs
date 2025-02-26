@@ -105,11 +105,11 @@ typedef struct cargs_option_s {
     size_t          choices_count;
 
     // Callbacks metadata
-    cargs_handler_t     handler;
-    cargs_free_handler_t free_handler;
-    cargs_validator_t   validator;
-    validator_data_t    validator_data;
-    size_t              validator_data_size;
+    cargs_handler_t         handler;
+    cargs_free_handler_t    free_handler;
+    cargs_validator_t       validator;
+    validator_data_t        validator_data;
+    size_t                  validator_data_size;
 
     // Dependencies metadata
     const char      **requires;
@@ -122,7 +122,6 @@ typedef struct cargs_option_s {
     // Subcommand metadata
     struct {
         struct cargs_option_s   *options;
-        // int                     options_count;
         const char              *description;
     } subcommand;
 
@@ -130,16 +129,15 @@ typedef struct cargs_option_s {
 } cargs_option_t;
 
 typedef struct cargs_s {
-	const char		    *program_name;
-	const char		    *version;
-    const char          *description;
-	cargs_option_t	    *options;
-	// size_t              options_count;
-    cargs_error_stack_t error_stack;
+	const char		        *program_name;
+	const char		        *version;
+    const char              *description;
+	cargs_option_t	        *options;
+    cargs_error_stack_t     error_stack;
 
     // fields for active option
-    const char         *active_group; //? replace by cargs_option_t *active_group; ?
-    const char         *active_subcommand;
+    const char              *active_group;
+    const cargs_option_t    *active_subcommand;
 } cargs_t;
 
 
