@@ -3,8 +3,7 @@
 
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/parsing.h"
-
+#include "cargs/utils.h"
 
 int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char **argv, int argc, int *current_index)
 {
@@ -17,7 +16,7 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
         char option_char = arg[i];        
         cargs_option_t *option = find_option_by_sname(options, option_char);
         if (option == NULL) {
-            fprintf(stderr, "%s unknown: -%c\n", cargs->program_name, option_char);
+            fprintf(stderr, "%s: Unknown: '-%c'\n", cargs->program_name, option_char);
             return (CARGS_ERROR_INVALID_ARGUMENT);
         }
 

@@ -36,9 +36,10 @@
 // 	cargs_help_handler(cargs, NULL, NULL);
 // }
 
-void	help_handler(cargs_option_t *options, char *arg)
+int	help_handler(cargs_option_t *options, char *arg)
 {
 	(void)options;
 	UNUSED(arg);
 	printf("help handler\n");
+	return (CARGS_SUCCESS);
 }

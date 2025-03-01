@@ -63,5 +63,11 @@ const cargs_option_t	*subcommand_current(cargs_t *cargs);
 void			subcommand_push(cargs_t *cargs, const cargs_option_t *cmd);
 const cargs_option_t	*subcommand_pop(cargs_t *cargs);
 
+cargs_option_t *find_option_by_lname(cargs_option_t *options, const char *lname);
+cargs_option_t *find_option_by_name(cargs_option_t *options, const char *name);
+cargs_option_t *find_option_by_sname(cargs_option_t *options, char sname);
+cargs_option_t *find_positional(cargs_option_t *options, int position);
+cargs_option_t *find_subcommand(cargs_option_t *options, const char *name);
+
 
 #endif // CARGS_UTILS_H
