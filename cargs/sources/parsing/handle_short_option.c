@@ -20,7 +20,7 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
             fprintf(stderr, "%s unknown: -%c\n", cargs->program_name, option_char);
             return (CARGS_ERROR_INVALID_ARGUMENT);
         }
-        
+
         char *value = NULL;
         if (option->value_type != VALUE_TYPE_BOOL)
         {

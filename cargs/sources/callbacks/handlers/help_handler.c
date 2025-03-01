@@ -1,6 +1,8 @@
 #include "cargs/utils.h"
 #include "cargs/types.h"
 
+#include <stdio.h>
+
 
 // static void	__print_param(char *sparam, char *lparam, char *help, cargs_type_t type)
 // {
@@ -38,4 +40,5 @@ void	help_handler(cargs_option_t *options, char *arg)
 {
 	(void)options;
 	UNUSED(arg);
+	printf("help handler\n");
 }

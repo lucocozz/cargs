@@ -2,6 +2,9 @@
 #include "cargs/types.h"
 #include <string.h>
 
+#include <stdio.h>
+
+
 // void	*cargs_version_handler(cargs_t *cargs, char *arg, void *result)
 // {
 // 	(void)arg;
@@ -20,4 +23,5 @@ void version_handler(cargs_option_t *options, char *arg)
 {
 	(void)options;
 	UNUSED(arg);
+	printf("version handler\n");
 }
