@@ -7,6 +7,8 @@
 
 #include "cargs/errors.h"
 
+#define MAX_SUBCOMMAND_DEPTH 8
+
 typedef struct cargs_option_s cargs_option_t;
 typedef union value_u value_t;
 typedef union validator_data_u validator_data_t;
@@ -137,7 +139,8 @@ typedef struct cargs_s {
 
     // fields for active option
     const char              *active_group;
-    const cargs_option_t    *active_subcommand;
+    const cargs_option_t    *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
+    size_t                  subcommand_depth;
 } cargs_t;
 
 

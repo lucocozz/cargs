@@ -58,5 +58,10 @@ char    *start_with(const char *prefix, const char *str);
 int     cmp_value(value_type_t type, const value_t a, const value_t b);
 value_t choices_to_value(value_type_t type, value_t choices, size_t choices_count, int index);
 
+void                    subcommand_stack_init(cargs_t *cargs);
+const cargs_option_t	*subcommand_current(cargs_t *cargs);
+void			subcommand_push(cargs_t *cargs, const cargs_option_t *cmd);
+const cargs_option_t	*subcommand_pop(cargs_t *cargs);
+
 
 #endif // CARGS_UTILS_H

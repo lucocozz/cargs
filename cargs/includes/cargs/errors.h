@@ -57,13 +57,13 @@ typedef struct cargs_error_stack_s {
 #define CARGS_ERROR_CONTEXT(cargs, option) (cargs_error_context_t) { \
     .option_name = option->name, \
     .group_name = cargs->active_group, \
-    .subcommand_name = cargs->active_subcommand ? cargs->active_subcommand->name : NULL \
+    .subcommand_name = subcommand_current(cargs) ? subcommand_current(cargs)->name : NULL \
 }
 
 #define CARGS_ERROR_DEFAULT(cargs) \
     (cargs_error_t) { .code = CARGS_SUCCESS, .message = NULL, .context = { \
         .option_name = NULL, .group_name = cargs->active_group , \
-        .subcommand_name = cargs->active_subcommand ? cargs->active_subcommand->name : NULL \
+        .subcommand_name = subcommand_current(cargs) ? subcommand_current(cargs)->name : NULL \
 }}
 
 

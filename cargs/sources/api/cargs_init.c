@@ -207,10 +207,9 @@ static int __validate_structure(cargs_t *cargs, cargs_option_t *options)
 		// Validate subcommand options recursively
 		if (option->type == TYPE_SUBCOMMAND && option->subcommand.options != NULL)
 		{
-			const cargs_option_t *prev_subcommand = cargs->active_subcommand;
-			cargs->active_subcommand = option;
+			subcommand_push(cargs, option);
 			__validate_structure(cargs, option->subcommand.options);
-			cargs->active_subcommand = prev_subcommand;
+			subcommand_pop(cargs);
 		}
 	}
 	return (status.code);
@@ -225,7 +224,9 @@ cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char
 		.options = options,
 		.error_stack.count = 0,
 	};
-
+    
+    subcommand_stack_init(&cargs);
+    
 	__validate_structure(&cargs, options);
 	if (cargs.error_stack.count > 0) {
 		fprintf(stderr, "Error while initializing cargs:\n\n");
@@ -234,7 +235,6 @@ cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char
 	}
 
 	cargs.active_group = NULL;
-	cargs.active_subcommand = NULL;
 
 	return (cargs);
 }

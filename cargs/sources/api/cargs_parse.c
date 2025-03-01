@@ -12,21 +12,25 @@
 //     cargs_error_t status = { CARGS_SUCCESS, NULL };
     
 //     // Pour chaque option définie
-//     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
+//     for (int i = 0; options[i].type != TYPE_NONE; ++i)
+//     {
 //         cargs_option_t *option = &options[i];
         
 //         // Si l'option n'a pas été activée, pas besoin de vérifier ses dépendances
 //         if (!option->is_set)
 //             continue;
-            
+
 //         // Vérifier les dépendances requises
-//         if (option->requires != NULL) {
-//             for (int j = 0; option->requires[j] != NULL; ++j) {
+//         if (option->requires != NULL)
+//         {
+//             for (int j = 0; option->requires[j] != NULL; ++j)
+//             {
 //                 const char *required_name = option->requires[j];
 //                 bool found = false;
                 
 //                 // Chercher l'option requise dans toutes les options définies
-//                 for (int k = 0; options[k].type != TYPE_NONE && !found; ++k) {
+//                 for (int k = 0; options[k].type != TYPE_NONE && !found; ++k)
+//                 {
 //                     cargs_option_t *other = &options[k];
 //                     if ((other->lname && strcmp(other->lname, required_name) == 0) ||
 //                         (other->name && strcmp(other->name, required_name) == 0)) {
