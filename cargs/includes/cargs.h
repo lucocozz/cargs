@@ -3,6 +3,7 @@
 
 #include "cargs/types.h"
 #include "cargs/macros.h"
+#include "cargs/errors.h"
 #include "cargs/api.h"
 
 

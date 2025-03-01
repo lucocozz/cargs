@@ -13,6 +13,7 @@
 
 
 // Optionals options fields
+
 #define DEFINE_NAME(lname, sname) (lname ? lname : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (value_t){ .raw = (uintptr_t)val }, .is_set = true
 #define HANDLER(fn)             .handler = (cargs_handler_t)(fn)
@@ -59,14 +60,13 @@
     .value_type = VALUE_TYPE_NONE \
 }
 
-#define OPTION_BASE(_short, _long, _help, _value_type, _handler, opts...) (cargs_option_t){ \
+#define OPTION_BASE(_short, _long, _help, _value_type,  opts...) (cargs_option_t){ \
     .type = TYPE_OPTION, \
     .name = DEFINE_NAME(_long, _short), \
     .sname = _short, \
     .lname = _long, \
     .help = _help, \
     .value_type = _value_type, \
-    .handler = _handler, \
     ##opts \
 }
 
@@ -97,13 +97,13 @@
 // Option macros
 
 #define OPTION_FLAG(short_name, long_name, help, options...) \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_BOOL, bool_handler, options)
+    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), options)
 #define OPTION_STRING(short_name, long_name, help, options...) \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_STRING, string_handler, options)
+    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_STRING, HANDLER(string_handler), options)
 #define OPTION_INT(short_name, long_name, help, options...) \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_INT, int_handler, options)
+    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_INT, HANDLER(int_handler), options)
 #define OPTION_FLOAT(short_name, long_name, help, options...) \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLOAT, float_handler, options)
+    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), options)
 
 
 // Common options
@@ -130,12 +130,14 @@
 
 // Positional arguments
 
-#define POSITIONAL_STRING(name, help) \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_STRING)
-#define POSITIONAL_INT(name, help) \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_INT)
-#define POSITIONAL_BOOL(name, help) \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_BOOL)
+#define POSITIONAL_STRING(name, help, options...) \
+    POSITIONAL_BASE(name, help, VALUE_TYPE_STRING, HANDLER(string_handler), options)
+#define POSITIONAL_INT(name, help, options...) \
+    POSITIONAL_BASE(name, help, VALUE_TYPE_INT, HANDLER(int_handler), options)
+#define POSITIONAL_BOOL(name, help, options...) \
+    POSITIONAL_BASE(name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), options)
+#define POSITIONAL_FLOAT(name, help, options...) \
+    POSITIONAL_BASE(name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), options)
 
 
 // Subcommand macros

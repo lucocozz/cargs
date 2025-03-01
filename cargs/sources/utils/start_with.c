@@ -1,15 +1,23 @@
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
-bool	start_with(const char *start_with, const char *str)
+
+/**
+ * Checks if a string starts with a specific prefix.
+ * @param prefix The prefix string to search for.
+ * @param str The string to search in.
+ * @return A pointer to the first character after the prefix if found,
+ *         NULL otherwise or if any parameter is NULL.
+ */
+char *start_with(const char *prefix, const char *str)
 {
-	size_t	i = 0;
+    if (prefix == NULL || str == NULL)
+        return (NULL);
 
-	while (start_with[i] != '\0' && str[i] != '\0')
-	{
-		if (start_with[i] != str[i])
-			return (false);
-		++i;
-	}
-	return (start_with[i] == '\0');
+    size_t prefix_len = strlen(prefix);
+    
+    if (strncmp(str, prefix, prefix_len) == 0)
+        return ((char *)(str + prefix_len));
+    return (NULL);
 }

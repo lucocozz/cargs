@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "cargs/types.h"
 
@@ -53,8 +54,9 @@
 #define UNUSED(x) (void)(x)
 
 
-bool	start_with(const char *start_with, const char *str);
+char    *start_with(const char *prefix, const char *str);
 int     cmp_value(value_type_t type, const value_t a, const value_t b);
-value_t choices_to_value(value_type_t type, value_t choices, int choices_count, int index);
+value_t choices_to_value(value_type_t type, value_t choices, size_t choices_count, int index);
+
 
 #endif // CARGS_UTILS_H
