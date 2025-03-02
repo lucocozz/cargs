@@ -7,7 +7,7 @@
 #include "cargs/utils.h"
 
 
-static cargs_error_t __ensure_option_validity(cargs_t *cargs, cargs_option_t *option)
+static cargs_error_t __ensure_option_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
 	cargs_error_t status = CARGS_ERROR(
 		CARGS_SUCCESS, NULL,
@@ -55,7 +55,36 @@ static cargs_error_t __ensure_option_validity(cargs_t *cargs, cargs_option_t *op
 					status.code = CARGS_ERROR_INVALID_DEPENDENCY;
 					status.message = "Option cannot require and conflict with the same option";
 					cargs_push_error(cargs, status);
-	}	}	}	}
+				}
+			}
+		}
+	}
+
+	if (option->requires != NULL)
+	{
+		for (int i = 0; option->requires[i] != NULL; ++i)
+		{
+			cargs_option_t *required = find_option_by_name(options, option->requires[i]);
+			if (required == NULL) {
+				status.code = CARGS_ERROR_INVALID_DEPENDENCY;
+				status.message = "Required option not found";
+				cargs_push_error(cargs, status);
+			}
+		}
+	}
+
+	if (option->conflicts != NULL)
+	{
+		for (int i = 0; option->conflicts[i] != NULL; ++i)
+		{
+			cargs_option_t *conflict = find_option_by_name(options, option->conflicts[i]);
+			if (conflict == NULL) {
+				status.code = CARGS_ERROR_INVALID_DEPENDENCY;
+				status.message = "Conflicting option not found";
+				cargs_push_error(cargs, status);
+			}
+		}
+	}
 
 	return (status);
 }
@@ -138,10 +167,10 @@ static cargs_error_t __ensure_subcommand_validity(cargs_t *cargs, cargs_option_t
 	return (status);
 }	
 
-static cargs_error_t __ensure_validity(cargs_t *cargs, cargs_option_t *option)
+static cargs_error_t __ensure_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
 	switch (option->type) {
-		case TYPE_OPTION: return __ensure_option_validity(cargs, option);
+		case TYPE_OPTION: return __ensure_option_validity(cargs, options, option);
 		case TYPE_POSITIONAL: return __ensure_positional_validity(cargs, option);
 		case TYPE_GROUP: return __ensure_group_validity(cargs, option);
 		case TYPE_SUBCOMMAND: return __ensure_subcommand_validity(cargs, option);
@@ -191,7 +220,7 @@ static int __validate_structure(cargs_t *cargs, cargs_option_t *options)
 		cargs_option_t *option = &options[i];
 		status.context.option_name = option->name;
 
-		status = __ensure_validity(cargs, option);
+		status = __ensure_validity(cargs, options, option);
 
 		for (int j = i + 1; options[j].type != TYPE_NONE; ++j)
 		{

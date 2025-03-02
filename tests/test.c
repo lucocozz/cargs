@@ -11,11 +11,10 @@ int custom_handler(cargs_option_t *options, char *arg) {
 
 CARGS_OPTIONS(
     toto,
+    OPTION_INT('b', "beta", "Beta value"),
     OPTION_INT('a', "alpha", "Alpha value",
-                REQUIRES("gamma"),
                 CONFLICTS("beta"),
                 HANDLER(custom_handler)),
-    OPTION_INT('b', "beta", "Beta value"),
 );
 
 
@@ -31,9 +30,8 @@ CARGS_OPTIONS(
                 // REQUIRES("host")),
     OPTION_STRING('H', "host", "Host name",
                 // DEFAULT("localhost"),
-                // REQUIRES("port"),
-                CHOICES_STRING("localhost", "127.0.0.1", "::1"),
-                CONFLICTS("socket")),
+                // CONFLICTS("port"),
+                CHOICES_STRING("localhost", "127.0.0.1", "::1")),
     GROUP_END(),
 
     SUBCOMMAND("toto", toto),
