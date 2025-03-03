@@ -5,8 +5,9 @@
 #include <stdlib.h>
 
 
-int	int_handler(cargs_option_t *option, char *value)
+int	int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
 {
+	UNUSED(cargs);
 	option->value = (value_t){ .as_int = atoll(value) };
 	if (option->validator != NULL)
 		option->validator(option->value, option->validator_data);

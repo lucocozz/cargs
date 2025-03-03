@@ -40,7 +40,7 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
 
         if (option->handler == NULL)
             return (CARGS_ERROR_INVALID_HANDLER);
-        status = option->handler(option, value);
+        status = option->handler(cargs, option, value);
         if (status != CARGS_SUCCESS)
             return (status);
     }

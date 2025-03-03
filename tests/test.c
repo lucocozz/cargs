@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // Exemple d'utilisation
-int custom_handler(cargs_option_t *options, char *arg) {
+int custom_handler(cargs_t *cargs, cargs_option_t *options, char *arg) {
     printf("Handler called with: %s\n", arg);
     return (0);
 }
@@ -21,7 +21,7 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    VERSION_OPTION(),
 
     GROUP_START("Network", FLAGS(FLAG_EXCLUSIVE)),
     OPTION_INT('p', "port", "Port number",
@@ -45,7 +45,7 @@ CARGS_OPTIONS(
 int main(int argc, char **argv)
 {
     // print_options(options);
-	cargs_t cargs = cargs_init(options, "test", "1.0.0", NULL);
+	cargs_t cargs = cargs_init(options, "test", "1.0.0", "Test program");
 	cargs_parse(&cargs, argc, argv);
 	return (0);
 }

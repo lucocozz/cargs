@@ -15,5 +15,5 @@ int handle_positional(cargs_t *cargs, cargs_option_t *options, char *value, int 
 
 	if (option->handler == NULL)
 		return (CARGS_ERROR_INVALID_HANDLER);
-	return (option->handler(option, value));
+	return (option->handler(cargs, option, value));
 }
