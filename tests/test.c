@@ -45,7 +45,7 @@ CARGS_OPTIONS(
 int main(int argc, char **argv)
 {
     // print_options(options);
-	cargs_t cargs = cargs_init(options, "test", "1.0.0", "Test program");
+	cargs_t cargs = cargs_init(options, "Test", "1.0.0", "Test program");
 	cargs_parse(&cargs, argc, argv);
 	return (0);
 }
