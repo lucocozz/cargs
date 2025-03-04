@@ -29,11 +29,19 @@ typedef enum value_type_e {
 typedef union value_u {
     uintptr_t   raw;
     void*       as_ptr;
+
     char        as_char;
-    int64_t     as_int;
-    double      as_float;
     char*       as_string;
+
+    int         as_int;
+    int8_t      as_int8;
+    int16_t     as_int16;
+    int32_t     as_int32;
+    int64_t     as_int64;
+
+    double      as_float;
     bool        as_bool;
+
     char**      as_string_array;
     int64_t*    as_int_array;
     double*     as_float_array;
@@ -46,7 +54,9 @@ typedef struct range_s {
 
 typedef union validator_data_u {
     void*       custom;
+
     range_t     range;
+
     char**      choices_string;
     int64_t*    choices_int;
     double*     choices_float;

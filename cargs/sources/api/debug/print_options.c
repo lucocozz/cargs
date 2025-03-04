@@ -31,7 +31,7 @@ static void print_value(const char* prefix, value_type_t type, value_t value)
     printf("%s: ", prefix);
     switch (type) {
         case VALUE_TYPE_INT:
-            printf("%ld", value.as_int);
+            printf("%d", value.as_int);
             break;
         case VALUE_TYPE_STRING:
             printf("\"%s\"", value.as_string ? value.as_string : "null");
@@ -62,19 +62,19 @@ void print_option(cargs_option_t *option)
     
     print_flags(option->flags);
     
-    if (option->requires) {
+    if (option->requires)
+    {
         printf("Requires:");
-        for (const char **req = option->requires; *req; req++) {
+        for (const char **req = option->requires; *req; req++)
             printf(" %s", *req);
-        }
         printf("\n");
     }
     
-    if (option->conflicts) {
+    if (option->conflicts)
+    {
         printf("Conflicts:");
-        for (const char **conf = option->conflicts; *conf; conf++) {
+        for (const char **conf = option->conflicts; *conf; conf++)
             printf(" %s", *conf);
-        }
         printf("\n");
     }
     
