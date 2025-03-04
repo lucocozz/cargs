@@ -4,4 +4,5 @@ cargs_utils_sources = files([
 	'choices_to_value.c',
 	'subcommand_stack.c',
 	'parsing.c',
+	'find_option.c',
 ])
