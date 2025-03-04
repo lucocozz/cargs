@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 
-// Exemple d'utilisation
 int custom_handler(cargs_t *cargs, cargs_option_t *options, char *arg) {
     printf("Handler called with: %s\n", arg);
     return (0);
@@ -11,12 +10,10 @@ int custom_handler(cargs_t *cargs, cargs_option_t *options, char *arg) {
 
 CARGS_OPTIONS(
     toto,
-    OPTION_INT('b', "beta", "Beta value"),
+    OPTION_INT('b', "beta", "Beta value", DEFAULT(21)),
     OPTION_INT('a', "alpha", "Alpha value",
-                CONFLICTS("beta"),
-                HANDLER(custom_handler)),
+                CONFLICTS("beta")),
 );
-
 
 CARGS_OPTIONS(
     options,
@@ -27,10 +24,7 @@ CARGS_OPTIONS(
     OPTION_INT('p', "port", "Port number",
                 DEFAULT(8080),
                 CHOICES_INT(80, 443, 8080)),
-                // REQUIRES("host")),
     OPTION_STRING('H', "host", "Host name",
-                // DEFAULT("localhost"),
-                // CONFLICTS("port"),
                 CHOICES_STRING("localhost", "127.0.0.1", "::1")),
     GROUP_END(),
 
@@ -39,13 +33,17 @@ CARGS_OPTIONS(
                 DEFAULT(30),
                 RANGE(1, 60),
                 HANDLER(custom_handler)),
+    OPTION_INT('b', "beta", "Beta value", DEFAULT(42)),
     POSITIONAL_STRING("file", "File to process"),
 );
 
 int main(int argc, char **argv)
 {
-    // print_options(options);
 	cargs_t cargs = cargs_init(options, "Test", "1.0.0", "Test program");
-	cargs_parse(&cargs, argc, argv);
+	printf("status: %d\n", cargs_parse(&cargs, argc, argv));
+
+    if (cargs_is_set(cargs, "beta"))
+        printf("Beta: %ld\n", cargs_get_value(cargs, ".beta").as_int);
+
 	return (0);
 }
