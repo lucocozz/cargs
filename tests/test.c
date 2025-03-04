@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+
 int custom_handler(cargs_t *cargs, cargs_option_t *options, char *arg) {
     printf("Handler called with: %s\n", arg);
     return (0);
@@ -40,10 +41,10 @@ CARGS_OPTIONS(
 int main(int argc, char **argv)
 {
 	cargs_t cargs = cargs_init(options, "Test", "1.0.0", "Test program");
-	printf("status: %d\n", cargs_parse(&cargs, argc, argv));
+    cargs_parse(&cargs, argc, argv);
 
-    if (cargs_is_set(cargs, "beta"))
-        printf("Beta: %ld\n", cargs_get_value(cargs, ".beta").as_int);
-
+    printf("beta: %d\n", cargs_get_value(cargs, "beta").as_int);
+    printf(".beta: %d\n", cargs_get_value(cargs, ".beta").as_int);
+    printf("toto.beta: %d\n", cargs_get_value(cargs, "toto.beta").as_int);
 	return (0);
 }
