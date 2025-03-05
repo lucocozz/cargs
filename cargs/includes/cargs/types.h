@@ -7,7 +7,9 @@
 
 #include "cargs/errors.h"
 
+#ifndef MAX_SUBCOMMAND_DEPTH
 #define MAX_SUBCOMMAND_DEPTH 8
+#endif
 
 typedef struct cargs_option_s cargs_option_t;
 typedef union value_u value_t;
@@ -113,6 +115,7 @@ typedef struct cargs_option_s {
     // Value metadata
     value_type_t    value_type;
     value_t         value;
+    bool            is_allocated;
     value_t         choices;
     size_t          choices_count;
 
