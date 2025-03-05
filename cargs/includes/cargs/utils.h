@@ -57,6 +57,7 @@
 char    *start_with(const char *prefix, const char *str);
 int     cmp_value(value_type_t type, const value_t a, const value_t b);
 value_t choices_to_value(value_type_t type, value_t choices, size_t choices_count, int index);
+void	free_option_value(cargs_option_t *option);
 
 void                    subcommand_stack_init(cargs_t *cargs);
 const cargs_option_t	*subcommand_current(cargs_t *cargs);
@@ -70,6 +71,7 @@ cargs_option_t *find_positional(cargs_option_t *options, int position);
 cargs_option_t *find_subcommand(cargs_option_t *options, const char *name);
 
 cargs_option_t *find_option_by_active_path(cargs_t cargs, const char *option_path);
+
 
 
 #endif // CARGS_UTILS_H

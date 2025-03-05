@@ -35,7 +35,5 @@ int handle_long_option(cargs_t *cargs, cargs_option_t *options, char *arg, char 
 			return (CARGS_ERROR_MISSING_VALUE);
 	}
 
-	if (option->handler == NULL)
-		return (CARGS_ERROR_INVALID_HANDLER);
-	return (option->handler(cargs, option, value));
+	return (execute_callbacks(cargs, option, value));
 }

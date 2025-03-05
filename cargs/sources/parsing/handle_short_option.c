@@ -4,11 +4,12 @@
 #include "cargs/types.h"
 #include "cargs/errors.h"
 #include "cargs/utils.h"
+#include "cargs/parsing.h"
+
 
 int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char **argv, int argc, int *current_index)
 {
     size_t  len = strlen(arg);
-    int     status = CARGS_SUCCESS;
 
     // Format "-abc"
     for (size_t i = 0; i < len; ++i)
@@ -38,11 +39,7 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
                 return (CARGS_ERROR_MISSING_VALUE);
         }
 
-        if (option->handler == NULL)
-            return (CARGS_ERROR_INVALID_HANDLER);
-        status = option->handler(cargs, option, value);
-        if (status != CARGS_SUCCESS)
-            return (status);
+        return (execute_callbacks(cargs, option, value));
     }
     return (CARGS_SUCCESS);
 }

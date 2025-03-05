@@ -5,4 +5,5 @@ cargs_parsing_sources = files([
 	'handle_positional.c',
 	'handle_subcommand.c',
 	'validate_dependencies.c',
+	'execute_callbacks.c',
 ])
