@@ -13,11 +13,11 @@ void	cargs_print_version(cargs_t *cargs)
 		printf("\n%s\n", cargs->description);
 }
 
-int version_handler(cargs_t *cargs, cargs_option_t *options, char *arg)
+cargs_status_t version_handler(cargs_t *cargs, cargs_option_t *options, char *arg)
 {
 	UNUSED(arg);
 	cargs_print_version(cargs);
 	if (options->flags & FLAG_EXIT)
 		exit(EXIT_SUCCESS);
-	return (CARGS_SUCCESS);
+	return (cargs_msg_success());
 }

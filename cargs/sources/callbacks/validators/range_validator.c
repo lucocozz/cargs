@@ -1,10 +1,10 @@
 #include "cargs/types.h"
 
-#include <assert.h>
 
-bool	range_validator(value_t value, validator_data_t data)
+cargs_status_t	range_validator(value_t value, validator_data_t data)
 {
 	if (value.as_int < data.range.min || value.as_int > data.range.max)
-		return (false);
-	return (true);
+		return (cargs_msg_fmt("Value %d is out of range [%d, %d]",
+			value.as_int, data.range.min, data.range.max));
+	return (cargs_msg_success());
 }

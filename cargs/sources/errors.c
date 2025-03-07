@@ -11,7 +11,6 @@ const char *cargs_strerror(cargs_error_type_t error)
         case CARGS_SUCCESS: return "Success";
         case CARGS_ERROR_DUPLICATE_OPTION: return "Duplicate option";
         case CARGS_ERROR_INVALID_HANDLER: return "Invalid handler";
-        // case CARGS_ERROR_INVALID_VALIDATOR: return "Invalid validator";
         case CARGS_ERROR_INVALID_DEFAULT: return "Invalid default value";
         case CARGS_ERROR_INVALID_GROUP: return "Invalid group";
         case CARGS_ERROR_INVALID_DEPENDENCY: return "Invalid dependency";
@@ -54,7 +53,7 @@ void cargs_print_error_stack(const cargs_t *cargs)
         fprintf(stderr, COLOR(ANSI_BOLD, "\tError: "));
         fprintf(stderr, COLOR(ANSI_YELLOW ANSI_BOLD, "%s\n"), cargs_strerror(error->code));
 
-        if (error->message) {
+        if (error->message[0] != '\0') {
             fprintf(stderr, COLOR(ANSI_BOLD, "\tDetails: "));
             fprintf(stderr, COLOR(ANSI_ITALIC, "%s\n"), error->message);
         }
@@ -69,16 +68,16 @@ void    cargs_clear_errors(cargs_t *cargs)
     cargs->error_stack.count = 0;
 }
 
-void	cargs_push_error(cargs_t *cargs, cargs_error_t error)
+void    cargs_push_error(cargs_t *cargs, cargs_error_t error)
 {
-	if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK)
-	{
-		cargs_error_t *last = &cargs->error_stack.errors[CARGS_MAX_ERRORS_STACK - 1];
-		*last = CARGS_ERROR(CARGS_ERROR_STACK_OVERFLOW, "Too many errors", {0});
-        cargs->error_stack.count++;
-		return;
-	}
+    if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK) {
+        cargs_error_t *last = &cargs->error_stack.errors[CARGS_MAX_ERRORS_STACK - 1];
+        last->context = (cargs_error_context_t){0};
+        last->code = CARGS_ERROR_STACK_OVERFLOW;
+        snprintf(last->message, CARGS_MAX_ERROR_MESSAGE_SIZE, "Too many errors");
+        return;
+    }
 
-	cargs_error_t *last = &cargs->error_stack.errors[cargs->error_stack.count++];
+    cargs_error_t *last = &cargs->error_stack.errors[cargs->error_stack.count++];
     *last = error;
 }

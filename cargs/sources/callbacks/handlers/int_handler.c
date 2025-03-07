@@ -5,9 +5,9 @@
 #include <stdlib.h>
 
 
-int	int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
+cargs_status_t	int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
 {
 	UNUSED(cargs);
-	option->value = (value_t){ .as_int = atoll(value) };
-	return (CARGS_SUCCESS);
+	option->value = (value_t){ .as_int64 = atoll(value) };
+	return (cargs_msg_success());
 }

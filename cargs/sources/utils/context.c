@@ -12,9 +12,8 @@ void context_init(cargs_t *cargs)
 
 void context_init_subcommands(cargs_t *cargs)
 {
-    for (size_t i = 0; i < MAX_SUBCOMMAND_DEPTH; i++) {
+    for (size_t i = 0; i < MAX_SUBCOMMAND_DEPTH; i++)
         cargs->context.subcommand_stack[i] = NULL;
-    }
     cargs->context.subcommand_depth = 0;
 }
 
@@ -28,10 +27,7 @@ const cargs_option_t *context_get_subcommand(cargs_t *cargs)
 void context_push_subcommand(cargs_t *cargs, const cargs_option_t *cmd)
 {
     if (cargs->context.subcommand_depth >= MAX_SUBCOMMAND_DEPTH) {
-        cargs_error_context_t context = cargs_error_context(cargs, cmd);
-        cargs_error_t error = cargs_error_fmt(context, CARGS_ERROR_STACK_OVERFLOW,
-            "Maximum subcommand depth (%d) reached", MAX_SUBCOMMAND_DEPTH);
-        cargs_push_error(cargs, error);
+        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_STACK_OVERFLOW, "Subcommand stack overflow");
         return;
     }
     cargs->context.subcommand_stack[cargs->context.subcommand_depth++] = cmd;

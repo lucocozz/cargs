@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 
-int bool_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+cargs_status_t bool_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
 {
 	UNUSED(cargs);
 	UNUSED(arg);
 	option->value.as_bool = !option->value.as_bool;
-	return (CARGS_SUCCESS);
+	return (cargs_msg_success());
 }
