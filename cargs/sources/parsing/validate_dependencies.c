@@ -54,7 +54,7 @@ static int __validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
 
         if (option->type == TYPE_GROUP)
         {
-            cargs->active_group = option->name;
+            context_set_group(cargs, option);
             current_group_is_exclusive = option->flags & FLAG_EXCLUSIVE;
             first_set_option_name = NULL;
             continue;
@@ -69,7 +69,7 @@ static int __validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
                 first_set_option_name = option->name;
             else {
                 fprintf(stderr, "%s: Exclusive options group '%s' conflict: '%s' and '%s'\n",
-                    cargs->program_name, cargs->active_group, first_set_option_name, option->name);
+                    cargs->program_name, cargs->context.group, first_set_option_name, option->name);
                 return (CARGS_ERROR_EXCLUSIVE_GROUP);
             }
         }
@@ -111,9 +111,9 @@ int validate_dependencies(cargs_t *cargs, cargs_option_t *options)
     if (status != CARGS_SUCCESS)
         return (status);
     
-    for (size_t i = 0; i < cargs->subcommand_depth; ++i)
+    for (size_t i = 0; i < cargs->context.subcommand_depth; ++i)
     {
-        const cargs_option_t *subcommand = cargs->subcommand_stack[i];
+        const cargs_option_t *subcommand = cargs->context.subcommand_stack[i];
         if (!subcommand || !subcommand->subcommand.options)
             continue;
 

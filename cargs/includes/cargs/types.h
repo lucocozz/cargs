@@ -148,12 +148,16 @@ typedef struct cargs_s {
 	const char		        *version;
     const char              *description;
 	cargs_option_t	        *options;
+
     cargs_error_stack_t     error_stack;
 
-    // fields for active option
-    const char              *active_group;
+    // fields for active context
+    struct {
+        const char              *option;
+        const char              *group;
     const cargs_option_t    *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
     size_t                  subcommand_depth;
+    } context;
 } cargs_t;
 
 
