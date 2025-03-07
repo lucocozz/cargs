@@ -59,7 +59,7 @@ int validate_structure(cargs_t *cargs, cargs_option_t *options)
 	for (int i = 0; options[i].type != TYPE_NONE; ++i)
 	{
 		cargs_option_t *option = &options[i];
-		status.context.option_name = option->name;
+		context_set_option(cargs, option);
 
 		status = __ensure_validity(cargs, options, option);
 
@@ -77,9 +77,9 @@ int validate_structure(cargs_t *cargs, cargs_option_t *options)
 		// Validate subcommand options recursively
 		if (option->type == TYPE_SUBCOMMAND && option->subcommand.options != NULL)
 		{
-			subcommand_push(cargs, option);
+			context_push_subcommand(cargs, option);
 			validate_structure(cargs, option->subcommand.options);
-			subcommand_pop(cargs);
+			context_pop_subcommand(cargs);
 		}
 	}
 	return (status.code);

@@ -74,4 +74,16 @@ cargs_option_t *find_option_by_active_path(cargs_t cargs, const char *option_pat
 
 
 
+void                    context_init(cargs_t *cargs);
+void                    context_init_subcommands(cargs_t *cargs);
+const cargs_option_t    *context_get_subcommand(cargs_t *cargs);
+void                    context_push_subcommand(cargs_t *cargs, const cargs_option_t *cmd);
+const cargs_option_t    *context_pop_subcommand(cargs_t *cargs);
+void                    context_set_option(cargs_t *cargs, cargs_option_t *option);
+void                    context_unset_option(cargs_t *cargs);
+void                    context_set_group(cargs_t *cargs, cargs_option_t *group);
+void                    context_unset_group(cargs_t *cargs);
+cargs_error_context_t   get_error_context(cargs_t *cargs);
+
+
 #endif // CARGS_UTILS_H

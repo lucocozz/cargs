@@ -10,7 +10,7 @@ cargs_error_t ensure_group_validity(cargs_t *cargs, cargs_option_t *option)
 		CARGS_ERROR_CONTEXT(cargs, option)
 	);
 	
-	cargs->active_group = option->name;
+	context_set_group(cargs, option);
 	if (option->flags & ~GROUP_FLAG_MASK) {
 		status.code = CARGS_ERROR_INVALID_FLAG;
 		cargs_push_error(cargs, status);

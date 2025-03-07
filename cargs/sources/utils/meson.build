@@ -6,4 +6,5 @@ cargs_utils_sources = files([
 	'parsing.c',
 	'find_option.c',
 	'free_option_value.c',
+	'context.c',
 ])
