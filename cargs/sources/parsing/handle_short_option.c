@@ -17,8 +17,8 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
         char option_char = arg[i];        
         cargs_option_t *option = find_option_by_sname(options, option_char);
         if (option == NULL) {
-            fprintf(stderr, "%s: Unknown: '-%c'\n", cargs->program_name, option_char);
-            return (CARGS_ERROR_INVALID_ARGUMENT);
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_ARGUMENT,
+                "Unknown option: '-%c'", option_char);
         }
         context_set_option(cargs, option);
 
@@ -36,8 +36,10 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
                 *current_index += 1;
                 value = argv[*current_index];
             }
-            else
-                return (CARGS_ERROR_MISSING_VALUE);
+            else {
+                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_VALUE,
+                    "Missing value for option: '-%c'", option_char);
+            }
         }
 
         return (execute_callbacks(cargs, option, value));

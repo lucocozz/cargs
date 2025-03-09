@@ -9,7 +9,7 @@ int validate_dependencies(cargs_t *cargs, cargs_option_t *options);
 int handle_positional(cargs_t *cargs, cargs_option_t *options, char *value, int position);
 int handle_long_option(cargs_t *cargs, cargs_option_t *options, char *arg, char **argv, int argc, int *current_index);
 int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char **argv, int argc, int *current_index);
-int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value);
+int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value);
 
 
 #endif // CARGS_PARSING_H

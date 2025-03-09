@@ -1,20 +1,13 @@
 #include <stdlib.h>
 #include "cargs/types.h"
 #include "cargs/errors.h"
+#include "cargs/utils.h"
 
-
-void context_init(cargs_t *cargs)
-{
-    cargs->context.option = NULL;
-    cargs->context.group = NULL;
-    context_init_subcommands(cargs);
-}
 
 void context_init_subcommands(cargs_t *cargs)
 {
-    for (size_t i = 0; i < MAX_SUBCOMMAND_DEPTH; i++) {
+    for (size_t i = 0; i < MAX_SUBCOMMAND_DEPTH; i++)
         cargs->context.subcommand_stack[i] = NULL;
-    }
     cargs->context.subcommand_depth = 0;
 }
 
@@ -28,10 +21,7 @@ const cargs_option_t *context_get_subcommand(cargs_t *cargs)
 void context_push_subcommand(cargs_t *cargs, const cargs_option_t *cmd)
 {
     if (cargs->context.subcommand_depth >= MAX_SUBCOMMAND_DEPTH) {
-        cargs_error_context_t context = cargs_error_context(cargs, cmd);
-        cargs_error_t error = cargs_error_fmt(context, CARGS_ERROR_STACK_OVERFLOW,
-            "Maximum subcommand depth (%d) reached", MAX_SUBCOMMAND_DEPTH);
-        cargs_push_error(cargs, error);
+        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_STACK_OVERFLOW, "Subcommand stack overflow");
         return;
     }
     cargs->context.subcommand_stack[cargs->context.subcommand_depth++] = cmd;
@@ -46,7 +36,6 @@ const cargs_option_t *context_pop_subcommand(cargs_t *cargs)
     cargs->context.subcommand_stack[cargs->context.subcommand_depth] = NULL;
     return (cmd);
 }
-
 
 void    context_set_option(cargs_t *cargs, cargs_option_t *option) {
     cargs->context.option = option->name;
@@ -72,4 +61,11 @@ cargs_error_context_t get_error_context(cargs_t *cargs)
         .subcommand_name = context_get_subcommand(cargs)->name
     };
     return (context);
+}
+
+void context_init(cargs_t *cargs)
+{
+    cargs->context.option = NULL;
+    cargs->context.group = NULL;
+    context_init_subcommands(cargs);
 }

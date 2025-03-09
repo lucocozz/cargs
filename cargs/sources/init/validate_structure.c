@@ -16,43 +16,37 @@ static cargs_error_t __ensure_validity(cargs_t *cargs, cargs_option_t *options, 
 		case TYPE_POSITIONAL: return ensure_positional_validity(cargs, option);
 		case TYPE_GROUP: return ensure_group_validity(cargs, option);
 		case TYPE_SUBCOMMAND: return ensure_subcommand_validity(cargs, option);
-		default: return CARGS_ERROR(
-			CARGS_ERROR_MALFORMED_OPTION, "Invalid option type",
-			CARGS_ERROR_CONTEXT(cargs, option)
-		);
+		default:
+			CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION, "Invalid option type");
+			return (cargs_error_t){ .code = CARGS_ERROR_MALFORMED_OPTION };
+			
 	}
 }
 
 static cargs_error_t	__is_unique(cargs_t *cargs, cargs_option_t *option, cargs_option_t *other_option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
-
-
 	if (option->name && other_option->name
 	&& strcmp(option->name, other_option->name) == 0) {
-		status.code = CARGS_ERROR_DUPLICATE_OPTION;
-		status.message = "Name must be unique";
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION,
+			"%s: Name must be unique", option->name);
 	}
 
 	if (option->sname && other_option->sname
 	&& option->sname == other_option->sname) {
-		status.code = CARGS_ERROR_DUPLICATE_OPTION;
-		status.message = "Short name must be unique";
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION,
+			"%c: Short name must be unique", option->sname);
 	}
 
 	if (option->lname && other_option->lname
 	&& strcmp(option->lname, other_option->lname) == 0) {
-		status.code = CARGS_ERROR_DUPLICATE_OPTION;
-		status.message = "Long name must be unique";
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION,
+			"%s: Long name must be unique", option->lname);
 	}
 
-	return (status);
+	return (CARGS_OK());
 }
 
-int validate_structure(cargs_t *cargs, cargs_option_t *options)
+cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 {
 	cargs_error_t status;
 
@@ -70,8 +64,6 @@ int validate_structure(cargs_t *cargs, cargs_option_t *options)
 			if (option->type != other_option->type)
 				continue;
 			status = __is_unique(cargs, option, other_option);
-			if (status.code != CARGS_SUCCESS)
-				cargs_push_error(cargs, status);
 		}
 
 		// Validate subcommand options recursively
@@ -82,5 +74,5 @@ int validate_structure(cargs_t *cargs, cargs_option_t *options)
 			context_pop_subcommand(cargs);
 		}
 	}
-	return (status.code);
+	return (status);
 }

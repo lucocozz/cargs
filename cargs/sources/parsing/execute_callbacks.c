@@ -5,10 +5,12 @@
 
 int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
 {
-	int status = CARGS_SUCCESS;
+	int status;
 
-	if (option->handler == NULL)
-		return (CARGS_ERROR_INVALID_HANDLER);
+	if (option->handler == NULL) {
+		CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER,
+			"Option %s has no handler", option->name);
+	}
 
 	status = option->handler(cargs, option, value);
 	if (status != CARGS_SUCCESS)
@@ -16,7 +18,7 @@ int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
 
 	if (option->validator != NULL)
 	{
-		status = option->validator(option->value, option->validator_data);
+		status = option->validator(cargs, option->value, option->validator_data);
 		if (status != CARGS_SUCCESS) {
 			free_option_value(option);
 			return (status);
@@ -25,5 +27,5 @@ int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
 
 	option->is_set = true;
 
-	return (CARGS_SUCCESS);
+	return (status);
 }

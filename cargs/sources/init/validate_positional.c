@@ -5,20 +5,14 @@
 
 cargs_error_t ensure_positional_validity(cargs_t *cargs, cargs_option_t *option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
-
 	if (option->name == NULL) {
-		status.code = CARGS_ERROR_MALFORMED_OPTION;
-		status.message = "Positional option must have a name";
-		cargs_push_error(cargs, status);
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
+			"Positional option must have a name");
 	}
 
 	if (option->flags & ~POSITIONAL_FLAG_MASK) {
-		status.code = CARGS_ERROR_INVALID_FLAG;
-		cargs_push_error(cargs, status);
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_FLAG,
+			"Invalid flags for positional option '%s'", option->name);
 	}
 
 	if (option->choices_count > 0 && option->value.raw != 0)
@@ -29,11 +23,10 @@ cargs_error_t ensure_positional_validity(cargs_t *cargs, cargs_option_t *option)
 			valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
 		}
 		if (!valid_default) {
-			status.code = CARGS_ERROR_INVALID_DEFAULT;
-			status.message = "Default value must be one of the available choices";
-			cargs_push_error(cargs, status);
+			CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_DEFAULT,
+				"Default value of positional option '%s' must be one of the available choices", option->name);
 		}
 	}
 
-	return (status);
+	return (CARGS_OK());
 }

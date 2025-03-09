@@ -15,9 +15,9 @@ typedef struct cargs_option_s cargs_option_t;
 typedef union value_u value_t;
 typedef union validator_data_u validator_data_t;
 
-typedef int (*cargs_handler_t)(cargs_t*, cargs_option_t*, char*);
-typedef int (*cargs_free_handler_t)(cargs_option_t*);
-typedef int (*cargs_validator_t)(value_t, validator_data_t);
+typedef int  (*cargs_handler_t)(cargs_t*, cargs_option_t*, char*);
+typedef void (*cargs_free_handler_t)(cargs_option_t*);
+typedef int  (*cargs_validator_t)(cargs_t*, value_t, validator_data_t);
 
 typedef enum value_type_e {
     VALUE_TYPE_NONE = 0,
@@ -155,8 +155,8 @@ typedef struct cargs_s {
     struct {
         const char              *option;
         const char              *group;
-    const cargs_option_t    *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
-    size_t                  subcommand_depth;
+        const cargs_option_t    *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
+        size_t                  subcommand_depth;
     } context;
 } cargs_t;
 

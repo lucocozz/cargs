@@ -16,12 +16,12 @@ static int __validate_requires(cargs_t *cargs, cargs_option_t *options, cargs_op
         cargs_option_t *required = find_option_by_name(options, option->requires[i]);
 
         if (!required) {
-            fprintf(stderr, "%s: Required option not found: '%s'\n", cargs->program_name, option->requires[i]);
-            return (CARGS_ERROR_INVALID_DEPENDENCY);
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_DEPENDENCY,
+                "Required option not found '%s' for option '%s'", option->requires[i], option->name);
         }
         if (!required->is_set) {
-            fprintf(stderr, "%s: Required option is missing: '%s'\n", cargs->program_name, option->requires[i]);
-            return (CARGS_ERROR_MISSING_REQUIRED);
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_REQUIRED,
+                "Required option is missing: '%s' with option '%s'", option->requires[i], option->name);
         }
     }
     return (CARGS_SUCCESS);
@@ -36,8 +36,8 @@ static int __validate_conflicts(cargs_t *cargs, cargs_option_t *options, cargs_o
     {
         cargs_option_t *conflict = find_option_by_name(options, option->conflicts[i]);
         if (conflict && conflict->is_set) {
-            fprintf(stderr, "%s: Conflict: '%s' and '%s'\n", cargs->program_name, option->name, conflict->name);
-            return (CARGS_ERROR_CONFLICTING_OPTIONS);
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_CONFLICTING_OPTIONS,
+                "Conflict between '%s' and '%s'", option->name, conflict->name);
         }
     }
     return (CARGS_SUCCESS);
@@ -68,9 +68,9 @@ static int __validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
             if (!first_set_option_name)
                 first_set_option_name = option->name;
             else {
-                fprintf(stderr, "%s: Exclusive options group '%s' conflict: '%s' and '%s'\n",
-                    cargs->program_name, cargs->context.group, first_set_option_name, option->name);
-                return (CARGS_ERROR_EXCLUSIVE_GROUP);
+                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_EXCLUSIVE_GROUP,
+                    "Exclusive options group '%s' conflict: '%s' and '%s'",
+                    cargs->context.group, first_set_option_name, option->name);
             }
         }
     }

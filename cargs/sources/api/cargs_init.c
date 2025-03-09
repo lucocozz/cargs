@@ -7,7 +7,7 @@
 #include "cargs/utils.h"
 
 
-int validate_structure(cargs_t *cargs, cargs_option_t *options);
+cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options);
 
 
 cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version, const char *description)

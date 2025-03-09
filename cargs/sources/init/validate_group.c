@@ -5,16 +5,11 @@
 
 cargs_error_t ensure_group_validity(cargs_t *cargs, cargs_option_t *option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
-	
 	context_set_group(cargs, option);
 	if (option->flags & ~GROUP_FLAG_MASK) {
-		status.code = CARGS_ERROR_INVALID_FLAG;
-		cargs_push_error(cargs, status);
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_GROUP,
+			"Invalid flags for group '%s'", option->name);
 	}
 
-	return (status);
+	return (CARGS_OK());
 }

@@ -4,36 +4,24 @@
 
 static cargs_error_t __validate_basics(cargs_t *cargs, cargs_option_t *option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
-
 	if (option->sname == 0 && option->lname == NULL) {
-		status.code = CARGS_ERROR_MALFORMED_OPTION;
-		status.message = "Option must have a short name or a long name";
-		cargs_push_error(cargs, status);
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
+			"Option must have a short name or a long name");
 	}
 	if (option->flags & ~OPTION_FLAG_MASK) {
-		status.code = CARGS_ERROR_INVALID_FLAG;
-		cargs_push_error(cargs, status);
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_FLAG,
+			"Invalid flag for option: '%s'", option->name);
 	}
 	if (option->handler == NULL) {
-		status.code = CARGS_ERROR_INVALID_HANDLER;
-		status.message = "Option must have a handler";
-		cargs_push_error(cargs, status);
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER,
+			"Option '%s' must have a handler", option->name);
 	}
 
-	return (status);
+	return (CARGS_OK());
 }
 
 static cargs_error_t __validate_default_value(cargs_t *cargs, cargs_option_t *option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
-
 	if (option->choices_count > 0 && option->value.raw != 0)
 	{
 		bool valid_default = false;
@@ -42,21 +30,16 @@ static cargs_error_t __validate_default_value(cargs_t *cargs, cargs_option_t *op
 			valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
 		}
 		if (!valid_default) {
-			status.code = CARGS_ERROR_INVALID_DEFAULT;
-			status.message = "Default value must be one of the available choices";
-			cargs_push_error(cargs, status);
+			CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_DEFAULT,
+				"Default value of option '%s' must be one of the available choices", option->name);
 		}
 	}
 
-	return (status);
+	return (CARGS_OK());
 }
 
 static cargs_error_t __validate_dependencies(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
 
 	if (option->requires != NULL && option->conflicts != NULL)
 	{
@@ -64,9 +47,9 @@ static cargs_error_t __validate_dependencies(cargs_t *cargs, cargs_option_t *opt
 			for (int j = 0; option->conflicts[j] != NULL; ++j)
 			{
 				if (strcmp(option->requires[i], option->conflicts[j]) == 0) {
-					status.code = CARGS_ERROR_INVALID_DEPENDENCY;
-					status.message = "Option cannot require and conflict with the same option";
-					cargs_push_error(cargs, status);
+					CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_DEPENDENCY,
+						"Option '%s' cannot require and conflict with the same option: '%s'",
+						option->name, option->requires[i]);
 				}
 			}
 		}
@@ -78,9 +61,8 @@ static cargs_error_t __validate_dependencies(cargs_t *cargs, cargs_option_t *opt
 		{
 			cargs_option_t *required = find_option_by_name(options, option->requires[i]);
 			if (required == NULL) {
-				status.code = CARGS_ERROR_INVALID_DEPENDENCY;
-				status.message = "Required option not found";
-				cargs_push_error(cargs, status);
+				CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_DEPENDENCY,
+					"Required option not found '%s' in option '%s'", option->requires[i], option->name);
 			}
 		}
 	}
@@ -91,32 +73,27 @@ static cargs_error_t __validate_dependencies(cargs_t *cargs, cargs_option_t *opt
 		{
 			cargs_option_t *conflict = find_option_by_name(options, option->conflicts[i]);
 			if (conflict == NULL) {
-				status.code = CARGS_ERROR_INVALID_DEPENDENCY;
-				status.message = "Conflicting option not found";
-				cargs_push_error(cargs, status);
+				CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_DEPENDENCY,
+					"Conflicting option not found '%s' in option '%s'", option->conflicts[i], option->name);
 			}
 		}
 	}
 
-	return (status);
+	return (CARGS_OK());
 }
 
 cargs_error_t ensure_option_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
-	cargs_error_t status = CARGS_ERROR(
-		CARGS_SUCCESS, NULL,
-		CARGS_ERROR_CONTEXT(cargs, option)
-	);
+	cargs_error_t status = CARGS_OK();
 
 	status = __validate_basics(cargs, option);
 	if (status.code != CARGS_SUCCESS)
-		return status;
+		return (status);
 
 	status = __validate_default_value(cargs, option);
 	if (status.code != CARGS_SUCCESS)
-		return status;
+		return (status);
 
 	status = __validate_dependencies(cargs, options, option);
-	
 	return (status);
 }

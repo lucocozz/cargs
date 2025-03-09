@@ -18,8 +18,8 @@ int handle_long_option(cargs_t *cargs, cargs_option_t *options, char *arg, char 
 	
 	cargs_option_t *option = find_option_by_lname(options, option_name);
     if (option == NULL) {
-		fprintf(stderr, "%s: Unknown: '--%s'\n", cargs->program_name, option_name);
-        return (CARGS_ERROR_INVALID_ARGUMENT);
+		CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_ARGUMENT,
+			"Unknown option: '--%s'", option_name);
     }
 	context_set_option(cargs, option);
 
@@ -32,8 +32,10 @@ int handle_long_option(cargs_t *cargs, cargs_option_t *options, char *arg, char 
 			*current_index += 1;
 			value = argv[*current_index];
 		}
-		else
-			return (CARGS_ERROR_MISSING_VALUE);
+		else {
+			CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_VALUE,
+				"Missing value for option: '--%s'", option_name);
+		}
 	}
 
 	return (execute_callbacks(cargs, option, value));

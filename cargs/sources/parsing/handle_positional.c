@@ -9,8 +9,8 @@ int handle_positional(cargs_t *cargs, cargs_option_t *options, char *value, int 
 {
 	cargs_option_t *option = find_positional(options, position);
     if (option == NULL) {
-		fprintf(stderr, "%s: Unknown: '%s'\n", cargs->program_name, value);
-        return (CARGS_ERROR_INVALID_ARGUMENT);
+		CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_ARGUMENT,
+			"Unknown positional: '%s'", value);
 	}
 	context_set_option(cargs, option);
 
