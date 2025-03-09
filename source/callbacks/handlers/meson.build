@@ -1,4 +1,4 @@
-cargs_handlers_sources = files([
+handlers_sources = files([
 	'help_handler.c',
 	'version_handler.c',
 	'bool_handler.c',

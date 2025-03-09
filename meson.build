@@ -14,18 +14,18 @@ elif cc.get_id() == 'gcc'
     add_project_arguments('-Wno-variadic-macros', language: 'c')
 endif
 
-cargs_includes = include_directories('cargs/includes/')
+public_includes = include_directories('includes')
 
-subdir('cargs/sources')
+subdir('source')
 
 cargs_lib = static_library(
 	meson.project_name(),
 	cargs_sources,
-	include_directories: cargs_includes,
+	include_directories: public_includes,
 )
 
 cargs_dep = declare_dependency(
-	include_directories: cargs_includes,
+	include_directories: public_includes,
 	link_with: cargs_lib,
 )
 
