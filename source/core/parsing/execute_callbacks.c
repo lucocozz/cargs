@@ -1,6 +1,6 @@
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/utils.h"
+#include "cargs/internal/utils.h"
 
 
 int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)

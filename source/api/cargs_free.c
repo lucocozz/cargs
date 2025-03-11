@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include "cargs/types.h"
-#include "cargs/utils.h"
+#include "cargs/internal/utils.h"
 
 
 static void	__free_options(cargs_option_t *options)

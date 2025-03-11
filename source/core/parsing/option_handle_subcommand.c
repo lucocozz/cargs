@@ -1,6 +1,7 @@
 #include "cargs/types.h"
-#include "cargs/parsing.h"
-#include "cargs/utils.h"
+#include "cargs/internal/parsing.h"
+#include "cargs/internal/context.h"
+#include "cargs/internal/utils.h"
 
 
 int handle_subcommand(cargs_t *cargs, cargs_option_t *option, int argc, char **argv)

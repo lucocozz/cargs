@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "cargs/types.h"
-#include "cargs/api/debug.h"
+#include "cargs/internal/debug.h"
 
 
 static const char* value_type_to_string(value_type_t type)

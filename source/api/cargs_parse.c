@@ -1,10 +1,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "cargs/utils.h"
+#include "cargs/internal/utils.h"
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/parsing.h"
+#include "cargs/internal/parsing.h"
 
 int cargs_parse(cargs_t *cargs, int argc, char **argv)
 {

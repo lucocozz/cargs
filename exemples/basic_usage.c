@@ -1,5 +1,5 @@
 #include "cargs.h"
-#include "cargs/api/debug.h"
+#include "cargs/internal/debug.h"
 
 #include <stdio.h>
 

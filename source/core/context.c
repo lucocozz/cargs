@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/utils.h"
+#include "cargs/internal/utils.h"
 
 
 void context_init_subcommands(cargs_t *cargs)

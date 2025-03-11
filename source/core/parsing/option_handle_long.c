@@ -2,8 +2,10 @@
 #include <string.h>
 
 #include "cargs/types.h"
-#include "cargs/parsing.h"
-#include "cargs/utils.h"
+#include "cargs/internal/parsing.h"
+#include "cargs/internal/utils.h"
+#include "cargs/errors.h"
+#include "cargs/internal/context.h"
 
 
 int handle_long_option(cargs_t *cargs, cargs_option_t *options, char *arg, char **argv, int argc, int *current_index) 

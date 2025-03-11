@@ -1,6 +1,7 @@
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/utils.h"
+#include "cargs/internal/context.h"
+#include "cargs/internal/utils.h"
 
 
 cargs_error_t ensure_subcommand_validity(cargs_t *cargs, cargs_option_t *option);

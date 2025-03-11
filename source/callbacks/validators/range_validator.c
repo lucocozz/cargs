@@ -1,6 +1,6 @@
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/utils.h"
+#include "cargs/internal/utils.h"
 
 
 int	range_validator(cargs_t *cargs, value_t value, validator_data_t data)

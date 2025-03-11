@@ -1,6 +1,6 @@
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/utils.h"
+#include "cargs/internal/utils.h"
 
 static cargs_error_t __validate_basics(cargs_t *cargs, cargs_option_t *option)
 {

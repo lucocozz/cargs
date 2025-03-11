@@ -3,8 +3,9 @@
 
 #include "cargs/types.h"
 #include "cargs/errors.h"
-#include "cargs/utils.h"
-#include "cargs/parsing.h"
+#include "cargs/internal/context.h"
+#include "cargs/internal/utils.h"
+#include "cargs/internal/parsing.h"
 
 
 int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char **argv, int argc, int *current_index)
