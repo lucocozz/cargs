@@ -15,7 +15,7 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
     // Format "-abc"
     for (size_t i = 0; i < len; ++i)
 	{
-        char option_char = arg[i];        
+        char option_char = arg[i];
         cargs_option_t *option = find_option_by_sname(options, option_char);
         if (option == NULL) {
             CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_ARGUMENT,
@@ -42,8 +42,9 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
                     "Missing value for option: '-%c'", option_char);
             }
         }
-
-        return (execute_callbacks(cargs, option, value));
+        int status = execute_callbacks(cargs, option, value);
+        if (status != CARGS_SUCCESS)
+            return (status);
     }
     return (CARGS_SUCCESS);
 }
