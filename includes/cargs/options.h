@@ -80,50 +80,50 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
  .value_type = VALUE_TYPE_NONE \
 }
 
-#define OPTION_BASE(_short, _long, _help, _value_type, opts...) (cargs_option_t){ \
+#define OPTION_BASE(_short, _long, _help, _value_type, ...) (cargs_option_t){ \
  .type = TYPE_OPTION, \
  .name = DEFINE_NAME(_long, _short), \
  .sname = _short, \
  .lname = _long, \
  .help = _help, \
  .value_type = _value_type, \
- ##opts \
+ ##__VA_ARGS__ \
 }
 
-#define POSITIONAL_BASE(_name, _help, _value_type, opts...) (cargs_option_t){ \
+#define POSITIONAL_BASE(_name, _help, _value_type, ...) (cargs_option_t){ \
  .type = TYPE_POSITIONAL, \
  .name = _name, \
  .help = _help, \
  .value_type = _value_type, \
- ##opts \
+ ##__VA_ARGS__ \
 }
 
-#define GROUP_BASE(_name, opts...) (cargs_option_t){ \
+#define GROUP_BASE(_name, ...) (cargs_option_t){ \
  .type = TYPE_GROUP, \
  .name = _name, \
- ##opts \
+ ##__VA_ARGS__ \
 }
 
-#define SUBCOMMAND_BASE(_name, sub_opts, opts...) (cargs_option_t){ \
+#define SUBCOMMAND_BASE(_name, sub_opts, ...) (cargs_option_t){ \
  .type = TYPE_SUBCOMMAND, \
  .name = _name, \
  .subcommand = { \
-	 .options = sub_opts, \
-	 ##opts \
+	.options = sub_opts, \
+	##__VA_ARGS__ \
  } \
 }
 
 /*
  * Option type macros
  */
-#define OPTION_FLAG(short_name, long_name, help, options...) \
- OPTION_BASE(short_name, long_name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), options)
-#define OPTION_STRING(short_name, long_name, help, options...) \
- OPTION_BASE(short_name, long_name, help, VALUE_TYPE_STRING, HANDLER(string_handler), options)
-#define OPTION_INT(short_name, long_name, help, options...) \
- OPTION_BASE(short_name, long_name, help, VALUE_TYPE_INT, HANDLER(int_handler), options)
-#define OPTION_FLOAT(short_name, long_name, help, options...) \
- OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), options)
+#define OPTION_FLAG(short_name, long_name, help, ...) \
+ OPTION_BASE(short_name, long_name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
+#define OPTION_STRING(short_name, long_name, help, ...) \
+ OPTION_BASE(short_name, long_name, help, VALUE_TYPE_STRING, HANDLER(string_handler), __VA_ARGS__)
+#define OPTION_INT(short_name, long_name, help, ...) \
+ OPTION_BASE(short_name, long_name, help, VALUE_TYPE_INT, HANDLER(int_handler), __VA_ARGS__)
+#define OPTION_FLOAT(short_name, long_name, help, ...) \
+ OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
 
 /*
  * Common options
@@ -136,35 +136,39 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 /*
  * Group macros
  */
-#define GROUP_START(name, opts...) \
- GROUP_BASE(name, ##opts)
+#define GROUP_START(name, ...) \
+ GROUP_BASE(name, __VA_ARGS__)
 #define GROUP_END() \
  GROUP_BASE(NULL)
 
 /*
  * Positional argument macros
  */
-#define POSITIONAL_STRING(name, help, options...) \
- POSITIONAL_BASE(name, help, VALUE_TYPE_STRING, HANDLER(string_handler), options)
-#define POSITIONAL_INT(name, help, options...) \
- POSITIONAL_BASE(name, help, VALUE_TYPE_INT, HANDLER(int_handler), options)
-#define POSITIONAL_BOOL(name, help, options...) \
- POSITIONAL_BASE(name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), options)
-#define POSITIONAL_FLOAT(name, help, options...) \
- POSITIONAL_BASE(name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), options)
+#define POSITIONAL_STRING(name, help, ...) \
+ POSITIONAL_BASE(name, help, VALUE_TYPE_STRING, HANDLER(string_handler), __VA_ARGS__)
+#define POSITIONAL_INT(name, help, ...) \
+ POSITIONAL_BASE(name, help, VALUE_TYPE_INT, HANDLER(int_handler), __VA_ARGS__)
+#define POSITIONAL_BOOL(name, help, ...) \
+ POSITIONAL_BASE(name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
+#define POSITIONAL_FLOAT(name, help, ...) \
+ POSITIONAL_BASE(name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
 
 /*
  * Subcommand macro
  */
-#define SUBCOMMAND(name, sub_options, opts...) \
- SUBCOMMAND_BASE(name, sub_options, ##opts)
+#define SUBCOMMAND(name, sub_options, ...) \
+ SUBCOMMAND_BASE(name, sub_options, __VA_ARGS__)
 
 /*
  * Options array definition macro
+ * @param name: Name of the options array
+ * @param ...: Option definitions
  */
-#define CARGS_OPTIONS(name, options...) \
+#define CARGS_OPTIONS(name, ...) \
+ PRAGMA_DISABLE_PEDANTIC() \
  PRAGMA_DISABLE_OVERRIDE() \
- cargs_option_t name[] = { options OPTION_END() }; \
+ cargs_option_t name[] = { __VA_ARGS__, OPTION_END() }; \
+ PRAGMA_RESTORE() \
  PRAGMA_RESTORE()
 
 #endif /* CARGS_OPTIONS_H */
