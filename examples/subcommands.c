@@ -53,11 +53,11 @@ int main(int argc, char **argv)
 	if (debug)
 		printf("Debug mode enabled\n");
 	 
-	 // Check which subcommand was used
+	// Check which subcommand was used
 	if (cargs_is_set(cargs, "add")) {
 		const char* file = cargs_get_value(cargs, "add.file").as_string;
 		bool force = cargs_get_value(cargs, "add.force").as_bool;
-		bool verbose = cargs_get_value(cargs, "add.verbose").as_bool;
+		bool verbose = cargs_get_value(cargs, "verbose").as_bool;
 
 		printf("Adding file: %s\n", file);
 		if (force) printf("  with force option\n");
@@ -70,10 +70,9 @@ int main(int argc, char **argv)
 		printf("Removing file: %s\n", file);
 		if (recursive) printf("  recursively\n");
 	}
-	else {
+	else
 		printf("No subcommand specified. Use --help to see available commands.\n");
-	}
-	 
+
 	// Free resources
 	cargs_free(&cargs);
 	return 0;
