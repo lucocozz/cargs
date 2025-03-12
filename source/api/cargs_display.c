@@ -46,9 +46,9 @@ void cargs_print_usage(cargs_t cargs)
  *
  * @param cargs  Cargs context
  */
-void cargs_print_version(cargs_t cargs)
-{
-    printf("%s v%s\n", cargs.program_name, cargs.version);
-    if (cargs.description != NULL)
-        printf("\n%s\n", cargs.description);
-}
+// void cargs_print_version(cargs_t cargs)
+// {
+//     printf("%s v%s\n", cargs.program_name, cargs.version);
+//     if (cargs.description != NULL)
+//         printf("\n%s\n", cargs.description);
+// }
