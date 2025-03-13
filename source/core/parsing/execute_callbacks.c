@@ -27,5 +27,7 @@ int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
 
 	option->is_set = true;
 
+	if (option->flags & FLAG_EXIT)
+		return (CARGS_SOULD_EXIT);
 	return (status);
 }

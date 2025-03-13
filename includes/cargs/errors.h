@@ -18,6 +18,7 @@
  */
 typedef enum cargs_error_type_e {
     CARGS_SUCCESS = 0,
+    CARGS_SOULD_EXIT,
     
     /* Structure errors */
     CARGS_ERROR_DUPLICATE_OPTION,
