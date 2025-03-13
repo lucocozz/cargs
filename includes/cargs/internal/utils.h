@@ -66,5 +66,6 @@ cargs_option_t *find_option_by_sname(cargs_option_t *options, char sname);
 cargs_option_t *find_positional(cargs_option_t *options, int position);
 cargs_option_t *find_subcommand(cargs_option_t *options, const char *name);
 cargs_option_t *find_option_by_active_path(cargs_t cargs, const char *option_path);
+const cargs_option_t *get_active_options(cargs_t *cargs);
 
 #endif /* CARGS_INTERNAL_UTILS_H */

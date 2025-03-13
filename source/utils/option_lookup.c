@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "cargs/types.h"
+#include "cargs/internal/context.h"
 
 
 cargs_option_t *find_option_by_lname(cargs_option_t *options, const char *lname) 
@@ -59,6 +60,14 @@ cargs_option_t *find_option_by_name(cargs_option_t *options, const char *name)
         }
     }
     return (NULL);
+}
+
+const cargs_option_t *get_active_options(cargs_t *cargs)
+{
+    const cargs_option_t *cmd = context_get_subcommand(cargs);
+    if (cmd != NULL)
+        return (cmd->subcommand.options);
+    return (cargs->options);
 }
 
 static cargs_option_t	*__find_from_relative_path(cargs_t cargs, const char *option_name)
