@@ -62,8 +62,8 @@ CARGS_OPTIONS(
 	OPTION_FLAG('d', "debug", "Enable debug mode"),
 
 	// Define subcommands
-	SUBCOMMAND("add", add_options, ACTION(add_command)),
-	SUBCOMMAND("remove", remove_options, ACTION(remove_command))
+	SUBCOMMAND("add", add_options, HELP("Add files to the index"), ACTION(add_command)),
+	SUBCOMMAND("rm", remove_options, HELP("Remove files from the index"), ACTION(remove_command))
 )
 
 int main(int argc, char **argv)

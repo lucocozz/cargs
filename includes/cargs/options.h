@@ -30,7 +30,7 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 /*
  * Optional option fields macros
  */
-#define DEFINE_NAME(lname, sname) (lname ? lname : CHAR_TO_STRING(sname))
+#define _DEFINE_NAME(lname, sname) (lname ? lname : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (value_t){ .raw = (uintptr_t)val }, \
                                 .default_value = (value_t){ .raw = (uintptr_t)val }, \
                                 .is_set = true, \
@@ -42,6 +42,7 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 #define REQUIRES(values...)     .requires = (const char*[]){values, NULL}
 #define CONFLICTS(values...)    .conflicts = (const char*[]){values, NULL}
 #define GROUP_DESC(desc)        .help = desc
+#define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
 
 /*
@@ -86,7 +87,7 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 
 #define OPTION_BASE(_short, _long, _help, _value_type, ...) (cargs_option_t){ \
  .type = TYPE_OPTION, \
- .name = DEFINE_NAME(_long, _short), \
+ .name = _DEFINE_NAME(_long, _short), \
  .sname = _short, \
  .lname = _long, \
  .help = _help, \
