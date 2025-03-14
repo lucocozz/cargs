@@ -71,11 +71,11 @@ cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 		if (option->type == TYPE_OPTION && strcmp(option->name, "help") == 0)
 			have_helper = true;
 
-		// Validate subcommand options recursively
-		if (option->type == TYPE_SUBCOMMAND && option->subcommand.options != NULL)
+		// Validate sub_options recursively
+		if (option->type == TYPE_SUBCOMMAND && option->sub_options != NULL)
 		{
 			context_push_subcommand(cargs, option);
-			validate_structure(cargs, option->subcommand.options);
+			validate_structure(cargs, option->sub_options);
 			context_pop_subcommand(cargs);
 		}
 	}

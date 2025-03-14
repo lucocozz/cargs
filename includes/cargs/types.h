@@ -161,11 +161,8 @@ struct cargs_option_s {
     bool            is_set;
     
     /* Subcommand metadata */
-    struct {
-        cargs_action_t          action;
-        struct cargs_option_s   *options;
-        const char              *description;
-    } subcommand;
+    cargs_action_t          action;
+    struct cargs_option_s   *sub_options;
 };
 
 /* Maximum depth of nested subcommands */

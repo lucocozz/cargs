@@ -15,9 +15,9 @@ int	cargs_execute_command(cargs_t *cargs, void *data)
 		CARGS_REPORT_ERROR(cargs, CARGS_ERROR_NO_COMMAND,
 			"Internal error: No command to execute");
 	}
-	if (command->subcommand.action == NULL) {
+	if (command->action == NULL) {
 		CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER,
 			"Internal error: Command %s has no action handler", command->name);
 	}
-	return (command->subcommand.action(cargs, data));
+	return (command->action(cargs, data));
 }

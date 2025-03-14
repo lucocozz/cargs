@@ -32,9 +32,9 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
  */
 #define DEFINE_NAME(lname, sname) (lname ? lname : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (value_t){ .raw = (uintptr_t)val }, \
-								.default_value = (value_t){ .raw = (uintptr_t)val }, \
-								.is_set = true, \
-								.have_default = true
+                                .default_value = (value_t){ .raw = (uintptr_t)val }, \
+                                .is_set = true, \
+                                .have_default = true
 #define HANDLER(fn)             .handler = (cargs_handler_t)(fn)
 #define ACTION(fn)              .action = (cargs_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (cargs_free_handler_t)(fn)
@@ -111,10 +111,8 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 #define SUBCOMMAND_BASE(_name, sub_opts, ...) (cargs_option_t){ \
  .type = TYPE_SUBCOMMAND, \
  .name = _name, \
- .subcommand = { \
-	.options = sub_opts, \
-	##__VA_ARGS__ \
- } \
+ .sub_options = sub_opts, \
+ ##__VA_ARGS__ \
 }
 
 /*

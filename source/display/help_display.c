@@ -570,7 +570,7 @@ static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size
     
     // Create a temporary option structure with the subcommand description
     cargs_option_t temp_option = {
-        .help = option->subcommand.description,
+        .help = option->help,
         .flags = 0,
         .value_type = VALUE_TYPE_NONE,
         .is_set = false,

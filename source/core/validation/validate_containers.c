@@ -11,7 +11,7 @@ cargs_error_t validate_subcommand(cargs_t *cargs, cargs_option_t *option)
 			"Subcommand must have a name");
 	}
 
-	if (option->subcommand.options == NULL) {
+	if (option->sub_options == NULL) {
 		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
 			"Subcommand '%s' must have options", option->name);
 	}

@@ -115,10 +115,10 @@ int validate_dependencies(cargs_t *cargs, cargs_option_t *options)
     for (size_t i = 0; i < cargs->context.subcommand_depth; ++i)
     {
         const cargs_option_t *subcommand = cargs->context.subcommand_stack[i];
-        if (!subcommand || !subcommand->subcommand.options)
+        if (!subcommand || !subcommand->sub_options)
             continue;
 
-        status = __validate_options_set(cargs, subcommand->subcommand.options);
+        status = __validate_options_set(cargs, subcommand->sub_options);
         if (status != CARGS_SUCCESS)
             return (status);
     }

@@ -64,9 +64,9 @@ cargs_option_t *find_option_by_name(cargs_option_t *options, const char *name)
 
 const cargs_option_t *get_active_options(cargs_t *cargs)
 {
-    const cargs_option_t *cmd = context_get_subcommand(cargs);
-    if (cmd != NULL)
-        return (cmd->subcommand.options);
+    const cargs_option_t *command = context_get_subcommand(cargs);
+    if (command != NULL)
+        return (command->sub_options);
     return (cargs->options);
 }
 
@@ -79,7 +79,7 @@ static cargs_option_t	*__find_from_relative_path(cargs_t cargs, const char *opti
 		if (i == 0)
 			options = cargs.options;
 		else
-			options = cargs.context.subcommand_stack[i - 1]->subcommand.options;
+			options = cargs.context.subcommand_stack[i - 1]->sub_options;
 
 		cargs_option_t *option = find_option_by_name(options, option_name);
 		if (option != NULL)
@@ -130,7 +130,7 @@ cargs_option_t *find_option_by_active_path(cargs_t cargs, const char *option_pat
 		return (NULL);
 		
 		component = next_dot + 1;
-		options = cargs.context.subcommand_stack[i]->subcommand.options;
+		options = cargs.context.subcommand_stack[i]->sub_options;
 	}
 
     return (find_option_by_name(options, component));
