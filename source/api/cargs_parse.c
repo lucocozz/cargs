@@ -18,8 +18,14 @@ int cargs_parse(cargs_t *cargs, int argc, char **argv)
         cargs_free(cargs);
         exit(CARGS_SUCCESS);
     }
-    if (status != CARGS_SUCCESS) {
+    if (status != CARGS_SUCCESS)
+    {
+        printf("\n");
         display_usage(cargs, NULL);
+        printf("\nTry '%s", cargs->program_name);        
+	    for (size_t i = 0; i < cargs->context.subcommand_depth; ++i)
+	    	printf(" %s", cargs->context.subcommand_stack[i]->name);
+	    printf(" --help' for more information.\n");
         return (status);
     }
 

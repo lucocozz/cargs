@@ -68,7 +68,7 @@ typedef enum option_flags_e {
 #define OPTION_FLAG_MASK (FLAG_REQUIRED | FLAG_HIDDEN | FLAG_ADVANCED | FLAG_DEPRECATED | FLAG_EXPERIMENTAL | FLAG_EXIT)
 #define OPTION_ARRAY_FLAG_MASK (FLAG_SORTED | FLAG_UNIQUE)
 #define GROUP_FLAG_MASK (FLAG_EXCLUSIVE)
-#define POSITIONAL_FLAG_MASK (FLAG_NONE)
+#define POSITIONAL_FLAG_MASK (FLAG_REQUIRED)
 #define SUBCOMMAND_FLAG_MASK (FLAG_NONE)
 
 /**
@@ -138,7 +138,9 @@ struct cargs_option_s {
     /* Value metadata */
     value_type_t    value_type;
     value_t         value;
+    value_t         default_value;
     bool            is_allocated;
+    bool            have_default;
     value_t         choices;
     size_t          choices_count;
     

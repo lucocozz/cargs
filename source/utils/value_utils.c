@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 
 void	free_option_value(cargs_option_t *option)
@@ -43,4 +44,26 @@ int cmp_value(value_type_t type, const value_t a, const value_t b)
 		case VALUE_TYPE_BOOL: return a.as_bool - b.as_bool;
 		default: return -1;
 	}
+}
+
+void	print_value(FILE *stream, value_type_t type, value_t value)
+{
+	switch (type) {
+		case VALUE_TYPE_INT: fprintf(stream, "%d", value.as_int); break;
+		case VALUE_TYPE_STRING: fprintf(stream, "\"%s\"", value.as_string); break;
+		case VALUE_TYPE_FLOAT: fprintf(stream, "%f", value.as_float); break;
+		case VALUE_TYPE_BOOL: fprintf(stream, "%s", value.as_bool ? "true" : "false"); break;
+		default: break;
+	}
+}
+
+void	print_value_array(FILE *stream, value_type_t type, value_t *values, size_t count)
+{
+	fprintf(stream, "[");
+	for (size_t i = 0; i < count; ++i) {
+		print_value(stream, type, values[i]);
+		if (i < count - 1)
+			fprintf(stream, ", ");
+	}
+	fprintf(stream, "]");
 }

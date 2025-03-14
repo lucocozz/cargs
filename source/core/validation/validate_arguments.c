@@ -22,7 +22,7 @@ static cargs_error_t __validate_basics(cargs_t *cargs, cargs_option_t *option)
 
 static cargs_error_t __validate_default_value(cargs_t *cargs, cargs_option_t *option)
 {
-	if (option->choices_count > 0 && option->value.raw != 0)
+	if (option->choices_count > 0 && option->have_default)
 	{
 		bool valid_default = false;
 		for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {

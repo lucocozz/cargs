@@ -1,24 +1,16 @@
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
 #include "cargs/errors.h"
+#include "cargs/internal/display.h"
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-void	cargs_print_version(cargs_t *cargs)
+int version_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
 {
-	printf("%s v%s\n", cargs->program_name, cargs->version);
-	if (cargs->description != NULL)
-		printf("\n%s\n", cargs->description);
-}
+    UNUSED(arg);
+	UNUSED(option);
+    display_version(cargs);
 
-int version_handler(cargs_t *cargs, cargs_option_t *options, char *arg)
-{
-	UNUSED(arg);
-	cargs_print_version(cargs);
-	if (options->flags & FLAG_EXIT)
-		exit(EXIT_SUCCESS);
-	return (CARGS_SUCCESS);
+    return (CARGS_SUCCESS);
 }

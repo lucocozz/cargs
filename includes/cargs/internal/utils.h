@@ -12,6 +12,8 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
+
 #include "cargs/types.h"  /* Inclure les types publics */
 
 /**
@@ -28,6 +30,7 @@
 #define ANSI_MAGENTA    "\x1b[35m"
 #define ANSI_CYAN       "\x1b[36m"
 #define ANSI_WHITE      "\x1b[37m"
+#define ANSI_GRAY       "\x1b[90m"
 
 /**
  * Conditional color output macros
@@ -56,6 +59,8 @@ char *start_with(const char *prefix, const char *str);
 int     cmp_value(value_type_t type, const value_t a, const value_t b);
 value_t choices_to_value(value_type_t type, value_t choices, size_t choices_count, int index);
 void    free_option_value(cargs_option_t *option);
+void	print_value(FILE *stream, value_type_t type, value_t value);
+void	print_value_array(FILE *stream, value_type_t type, value_t *values, size_t count);
 
 /**
  * Option lookup functions

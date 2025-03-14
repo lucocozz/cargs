@@ -14,7 +14,7 @@ CARGS_OPTIONS(
 	HELP_OPTION(FLAGS(FLAG_EXIT)),
 	OPTION_FLAG('f', "force", "Force add"),
 	OPTION_FLAG('v', "verbose", "Verbose output"),
-	POSITIONAL_STRING("file", "File to add")
+	POSITIONAL_STRING("file", "File to add", FLAGS(FLAG_REQUIRED))
 )
 
 // Define options for "remove" subcommand
