@@ -110,7 +110,17 @@ cargs_error_t validate_positional(cargs_t *cargs, cargs_option_t *option)
 			"Invalid flags for positional option '%s'", option->name);
 	}
 
-	if (option->choices_count > 0 && option->value.raw != 0)
+	if (option->handler == NULL) {
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER,
+			"Positional option '%s' must have a handler", option->name);
+	}
+
+	if ((option->flags & FLAG_REQUIRED) && option->have_default) {
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_FLAG,
+			"Positional option '%s' cannot be required and have a default value", option->name);
+	}
+
+	if (option->choices_count > 0 && option->have_default)
 	{
 		bool valid_default = false;
 		for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {

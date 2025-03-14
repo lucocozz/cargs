@@ -17,6 +17,7 @@ CARGS_OPTIONS(
     // Positional arguments
     POSITIONAL_STRING("source", "Source file", FLAGS(FLAG_REQUIRED)),
     POSITIONAL_STRING("destination", "Destination file", FLAGS(FLAG_REQUIRED)),
+    // POSITIONAL_INT("file_size", "File size in KB", DEFAULT(1024), FLAGS(FLAG_REQUIRED)),
     POSITIONAL_INT("buffer_size", "Buffer size in KB", DEFAULT(64))
 )
 
