@@ -28,7 +28,7 @@ int parse_args(cargs_t *cargs, cargs_option_t *options, int argc, char **argv)
             continue;
         }
 
-        char *long_arg = start_with("--", arg);
+        char *long_arg = starts_with("--", arg);
         if (long_arg != NULL) {
             status = handle_long_option(cargs, options, long_arg, argv, argc, &i);
             if (status != CARGS_SUCCESS)
@@ -36,7 +36,7 @@ int parse_args(cargs_t *cargs, cargs_option_t *options, int argc, char **argv)
             continue;
         }
 
-        char *short_arg = start_with("-", arg);
+        char *short_arg = starts_with("-", arg);
         if (short_arg != NULL) {
             status = handle_short_option(cargs, options, short_arg, argv, argc, &i);
             if (status != CARGS_SUCCESS)

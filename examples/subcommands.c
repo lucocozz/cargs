@@ -8,6 +8,36 @@
 #include "cargs.h"
 #include <stdio.h>
 
+
+int add_command(cargs_t *cargs, void *data)
+{
+	(void)data;
+
+	const char *file = cargs_get_value(*cargs, "add.file").as_string;
+	bool force = cargs_get_value(*cargs, "add.force").as_bool;
+	bool verbose = cargs_get_value(*cargs, "verbose").as_bool;
+
+	printf("Adding file: %s\n", file);
+	if (force) printf("  with force option\n");
+	if (verbose) printf("  with verbose output\n");
+
+	return 0;
+}
+
+int remove_command(cargs_t *cargs, void *data)
+{
+	(void)data;
+
+	const char* file = cargs_get_value(*cargs, "file").as_string;
+	bool recursive = cargs_get_value(*cargs, "rm.recursive").as_bool;
+
+	printf("Removing file: %s\n", file);
+	if (recursive) printf("  recursively\n");
+
+	return 0;
+}
+
+
 // Define options for "add" subcommand
 CARGS_OPTIONS(
 	add_options,
@@ -24,35 +54,6 @@ CARGS_OPTIONS(
 	OPTION_FLAG('r', "recursive", "Recursive remove"),
 	POSITIONAL_STRING("file", "File to remove")
 )
-
-
-int add_command(cargs_t *cargs, void *data)
-{
-	(void)data;
-
-	const char* file = cargs_get_value(*cargs, "add.file").as_string;
-	bool force = cargs_get_value(*cargs, "add.force").as_bool;
-	bool verbose = cargs_get_value(*cargs, "verbose").as_bool;
-
-	printf("Adding file: %s\n", file);
-	if (force) printf("  with force option\n");
-	if (verbose) printf("  with verbose output\n");
-
-	return 0;
-}
-
-int remove_command(cargs_t *cargs, void *data)
-{
-	(void)data;
-
-	const char* file = cargs_get_value(*cargs, "remove.file").as_string;
-	bool recursive = cargs_get_value(*cargs, "remove.recursive").as_bool;
-
-	printf("Removing file: %s\n", file);
-	if (recursive) printf("  recursively\n");
-
-	return 0;
-}
 
 // Define main options with subcommands
 CARGS_OPTIONS(

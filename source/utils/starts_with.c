@@ -10,7 +10,7 @@
  * @return A pointer to the first character after the prefix if found,
  *         NULL otherwise or if any parameter is NULL.
  */
-char *start_with(const char *prefix, const char *str)
+char *starts_with(const char *prefix, const char *str)
 {
     if (prefix == NULL || str == NULL)
         return (NULL);

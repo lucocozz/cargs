@@ -51,7 +51,7 @@
 /**
  * String utility functions
  */
-char *start_with(const char *prefix, const char *str);
+char *starts_with(const char *prefix, const char *str);
 
 /**
  * Value manipulation functions

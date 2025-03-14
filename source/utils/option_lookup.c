@@ -3,6 +3,7 @@
 
 #include "cargs/types.h"
 #include "cargs/internal/context.h"
+#include "cargs/internal/utils.h"
 
 
 cargs_option_t *find_option_by_lname(cargs_option_t *options, const char *lname) 
@@ -45,7 +46,7 @@ cargs_option_t *find_subcommand(cargs_option_t *options, const char *name)
 {
     for (int i = 0; options[i].type != TYPE_NONE; ++i)
     {
-        if (options[i].type == TYPE_SUBCOMMAND && strcmp(options[i].name, name) == 0)
+        if (options[i].type == TYPE_SUBCOMMAND && starts_with(name, options[i].name) != NULL)
             return (&options[i]);
     }
     return (NULL);
