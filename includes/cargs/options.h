@@ -36,6 +36,7 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 								.is_set = true, \
 								.have_default = true
 #define HANDLER(fn)             .handler = (cargs_handler_t)(fn)
+#define ACTION(fn)              .action = (cargs_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (cargs_free_handler_t)(fn)
 #define HINT(_hint)             .hint = _hint
 #define REQUIRES(values...)     .requires = (const char*[]){values, NULL}

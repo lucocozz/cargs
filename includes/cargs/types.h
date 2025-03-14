@@ -120,6 +120,7 @@ union validator_data_u {
 typedef int  (*cargs_handler_t)(cargs_t*, cargs_option_t*, char*);
 typedef void (*cargs_free_handler_t)(cargs_option_t*);
 typedef int  (*cargs_validator_t)(cargs_t*, value_t, validator_data_t);
+typedef int  (*cargs_action_t)(cargs_t*, void*);
 
 /**
  * cargs_option_s - Defines a command-line option
@@ -161,6 +162,7 @@ struct cargs_option_s {
     
     /* Subcommand metadata */
     struct {
+        cargs_action_t          action;
         struct cargs_option_s   *options;
         const char              *description;
     } subcommand;
@@ -215,7 +217,7 @@ struct cargs_s {
     const char          *description;
     cargs_option_t      *options;
     cargs_error_stack_t error_stack;
-    
+
     /* Internal fields - do not access directly */
     struct {
         const char              *option;

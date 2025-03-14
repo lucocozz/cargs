@@ -70,4 +70,26 @@ bool    cargs_is_set(cargs_t cargs, const char *option_path);
  */
 value_t cargs_get_value(cargs_t cargs, const char *option_path);
 
+
+/**
+ * cargs_have_subcommand - Check if a subcommand was parsed
+ *
+ * @param cargs  Cargs context
+ *
+ * @return true if a subcommand was parsed, false otherwise
+ */
+bool cargs_have_subcommand(cargs_t cargs);
+
+
+/**
+ * cargs_execute_command - Execute the parsed subcommand
+ *
+ * @param cargs  Cargs context
+ * @param data   Data to pass to the subcommand action
+ *
+ * @return Status code (0 for success, non-zero for error)
+ */
+int	cargs_execute_command(cargs_t *cargs, void *data);
+
+
 #endif /* CARGS_API_H */

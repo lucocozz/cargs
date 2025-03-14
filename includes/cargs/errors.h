@@ -39,7 +39,10 @@ typedef enum cargs_error_type_e {
     CARGS_ERROR_EXCLUSIVE_GROUP,
     CARGS_ERROR_INVALID_CHOICE,
     CARGS_ERROR_INVALID_RANGE,
-    
+
+    /* Execution errors */
+    CARGS_ERROR_NO_COMMAND,
+
     /* Value errors */
     CARGS_ERROR_INVALID_VALUE,
     

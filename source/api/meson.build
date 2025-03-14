@@ -4,4 +4,5 @@ api_sources = files([
 	'cargs_free.c',
 	'cargs_value_access.c',
 	'cargs_display.c',
+	'cargs_exec.c',
 ])

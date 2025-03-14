@@ -25,6 +25,35 @@ CARGS_OPTIONS(
 	POSITIONAL_STRING("file", "File to remove")
 )
 
+
+int add_command(cargs_t *cargs, void *data)
+{
+	(void)data;
+
+	const char* file = cargs_get_value(*cargs, "add.file").as_string;
+	bool force = cargs_get_value(*cargs, "add.force").as_bool;
+	bool verbose = cargs_get_value(*cargs, "verbose").as_bool;
+
+	printf("Adding file: %s\n", file);
+	if (force) printf("  with force option\n");
+	if (verbose) printf("  with verbose output\n");
+
+	return 0;
+}
+
+int remove_command(cargs_t *cargs, void *data)
+{
+	(void)data;
+
+	const char* file = cargs_get_value(*cargs, "remove.file").as_string;
+	bool recursive = cargs_get_value(*cargs, "remove.recursive").as_bool;
+
+	printf("Removing file: %s\n", file);
+	if (recursive) printf("  recursively\n");
+
+	return 0;
+}
+
 // Define main options with subcommands
 CARGS_OPTIONS(
 	options,
@@ -33,8 +62,8 @@ CARGS_OPTIONS(
 	OPTION_FLAG('d', "debug", "Enable debug mode"),
 
 	// Define subcommands
-	SUBCOMMAND("add", add_options),
-	SUBCOMMAND("remove", remove_options)
+	SUBCOMMAND("add", add_options, ACTION(add_command)),
+	SUBCOMMAND("remove", remove_options, ACTION(remove_command))
 )
 
 int main(int argc, char **argv)
@@ -54,24 +83,14 @@ int main(int argc, char **argv)
 		printf("Debug mode enabled\n");
 	 
 	// Check which subcommand was used
-	if (cargs_is_set(cargs, "add")) {
-		const char* file = cargs_get_value(cargs, "add.file").as_string;
-		bool force = cargs_get_value(cargs, "add.force").as_bool;
-		bool verbose = cargs_get_value(cargs, "verbose").as_bool;
-
-		printf("Adding file: %s\n", file);
-		if (force) printf("  with force option\n");
-		if (verbose) printf("  with verbose output\n");
-	}
-	else if (cargs_is_set(cargs, "remove")) {
-		const char* file = cargs_get_value(cargs, "remove.file").as_string;
-		bool recursive = cargs_get_value(cargs, "remove.recursive").as_bool;
-
-		printf("Removing file: %s\n", file);
-		if (recursive) printf("  recursively\n");
+	if (cargs_have_subcommand(cargs)) {
+		// Execute the subcommand
+		status = cargs_execute_command(&cargs, NULL);
+		if (status != CARGS_SUCCESS)
+			return status;
 	}
 	else
-		printf("No subcommand specified. Use --help to see available commands.\n");
+		printf("No command specified. Use --help to see available commands.\n");
 
 	// Free resources
 	cargs_free(&cargs);
