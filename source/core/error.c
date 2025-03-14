@@ -16,6 +16,7 @@ const char *cargs_strerror(cargs_error_type_t error)
         case CARGS_ERROR_INVALID_DEPENDENCY: return "Invalid dependency";
         case CARGS_ERROR_INVALID_FLAG: return "Invalid flag";
         case CARGS_ERROR_MALFORMED_OPTION: return "Malformed option";
+        case CARGS_ERROR_MISSING_HELP: return "Missing help option";
         case CARGS_ERROR_STACK_OVERFLOW: return "Error stack overflow";
         default: return "Unknown error";
     }

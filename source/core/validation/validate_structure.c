@@ -4,19 +4,19 @@
 #include "cargs/internal/utils.h"
 
 
-cargs_error_t ensure_subcommand_validity(cargs_t *cargs, cargs_option_t *option);
-cargs_error_t ensure_group_validity(cargs_t *cargs, cargs_option_t *option);
-cargs_error_t ensure_option_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option);
-cargs_error_t ensure_positional_validity(cargs_t *cargs, cargs_option_t *option);
+cargs_error_t validate_subcommand(cargs_t *cargs, cargs_option_t *option);
+cargs_error_t validate_group(cargs_t *cargs, cargs_option_t *option);
+cargs_error_t validate_option(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option);
+cargs_error_t validate_positional(cargs_t *cargs, cargs_option_t *option);
 
 
 static cargs_error_t __ensure_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
 	switch (option->type) {
-		case TYPE_OPTION: return ensure_option_validity(cargs, options, option);
-		case TYPE_POSITIONAL: return ensure_positional_validity(cargs, option);
-		case TYPE_GROUP: return ensure_group_validity(cargs, option);
-		case TYPE_SUBCOMMAND: return ensure_subcommand_validity(cargs, option);
+		case TYPE_OPTION: return validate_option(cargs, options, option);
+		case TYPE_POSITIONAL: return validate_positional(cargs, option);
+		case TYPE_GROUP: return validate_group(cargs, option);
+		case TYPE_SUBCOMMAND: return validate_subcommand(cargs, option);
 		default:
 			CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION, "Invalid option type");
 			return (cargs_error_t){ .code = CARGS_ERROR_MALFORMED_OPTION };
@@ -49,6 +49,7 @@ static cargs_error_t	__is_unique(cargs_t *cargs, cargs_option_t *option, cargs_o
 
 cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 {
+	bool have_helper = false;
 	cargs_error_t status;
 
 	for (int i = 0; options[i].type != TYPE_NONE; ++i)
@@ -67,6 +68,9 @@ cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 			status = __is_unique(cargs, option, other_option);
 		}
 
+		if (option->type == TYPE_OPTION && strcmp(option->name, "help") == 0)
+			have_helper = true;
+
 		// Validate subcommand options recursively
 		if (option->type == TYPE_SUBCOMMAND && option->subcommand.options != NULL)
 		{
@@ -74,6 +78,10 @@ cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 			validate_structure(cargs, option->subcommand.options);
 			context_pop_subcommand(cargs);
 		}
+	}
+	if (!have_helper) {
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MISSING_HELP,
+			"Missing 'help' option");
 	}
 	return (status);
 }

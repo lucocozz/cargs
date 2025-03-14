@@ -4,7 +4,7 @@
 #include "cargs/internal/utils.h"
 
 
-cargs_error_t ensure_subcommand_validity(cargs_t *cargs, cargs_option_t *option)
+cargs_error_t validate_subcommand(cargs_t *cargs, cargs_option_t *option)
 {
 	if (option->name == NULL) {
 		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
@@ -24,7 +24,7 @@ cargs_error_t ensure_subcommand_validity(cargs_t *cargs, cargs_option_t *option)
 	return (CARGS_OK());
 }
 
-cargs_error_t ensure_group_validity(cargs_t *cargs, cargs_option_t *option)
+cargs_error_t validate_group(cargs_t *cargs, cargs_option_t *option)
 {
 	context_set_group(cargs, option);
 	if (option->flags & ~GROUP_FLAG_MASK) {

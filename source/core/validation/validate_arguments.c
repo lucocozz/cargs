@@ -82,7 +82,7 @@ static cargs_error_t __validate_dependencies(cargs_t *cargs, cargs_option_t *opt
 	return (CARGS_OK());
 }
 
-cargs_error_t ensure_option_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
+cargs_error_t validate_option(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
 	cargs_error_t status = CARGS_OK();
 
@@ -98,7 +98,7 @@ cargs_error_t ensure_option_validity(cargs_t *cargs, cargs_option_t *options, ca
 	return (status);
 }
 
-cargs_error_t ensure_positional_validity(cargs_t *cargs, cargs_option_t *option)
+cargs_error_t validate_positional(cargs_t *cargs, cargs_option_t *option)
 {
 	if (option->name == NULL) {
 		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,

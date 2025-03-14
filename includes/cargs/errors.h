@@ -28,6 +28,7 @@ typedef enum cargs_error_type_e {
     CARGS_ERROR_INVALID_DEPENDENCY,
     CARGS_ERROR_INVALID_FLAG,
     CARGS_ERROR_MALFORMED_OPTION,
+    CARGS_ERROR_MISSING_HELP,
     
     /* Parsing errors */
     CARGS_ERROR_INVALID_ARGUMENT,
