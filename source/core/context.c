@@ -55,10 +55,12 @@ void    context_unset_group(cargs_t *cargs) {
 
 cargs_error_context_t get_error_context(cargs_t *cargs)
 {
+    const cargs_option_t *subcommand = context_get_subcommand(cargs);
+
     cargs_error_context_t context = {
         .option_name = cargs->context.option,
         .group_name = cargs->context.group,
-        .subcommand_name = context_get_subcommand(cargs)->name
+        .subcommand_name = subcommand ? subcommand->name : NULL
     };
     return (context);
 }
