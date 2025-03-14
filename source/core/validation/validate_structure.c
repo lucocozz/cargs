@@ -50,6 +50,7 @@ static cargs_error_t	__is_unique(cargs_t *cargs, cargs_option_t *option, cargs_o
 cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 {
 	bool have_helper = false;
+	bool optional_positional = false;
 	cargs_error_t status;
 
 	for (int i = 0; options[i].type != TYPE_NONE; ++i)
@@ -70,7 +71,16 @@ cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options)
 
 		if (option->type == TYPE_OPTION && strcmp(option->name, "help") == 0)
 			have_helper = true;
-
+		
+		
+		// Checking bad order of positional arguments. Required positional arguments must be before optional positional arguments
+		if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_REQUIRED) && optional_positional) {
+			CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_POSITION,
+				"Required positional must be before all optional positional arguments");
+		}
+		if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_REQUIRED) == 0)
+				optional_positional = true;
+				
 		// Validate sub_options recursively
 		if (option->type == TYPE_SUBCOMMAND && option->sub_options != NULL)
 		{

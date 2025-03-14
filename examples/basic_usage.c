@@ -22,7 +22,7 @@ CARGS_OPTIONS(
         OPTION_STRING('H', "host", "Server hostname", DEFAULT("localhost"), HINT("hostname"), CHOICES_STRING("localhost", "0.0.0.0")),
         OPTION_INT('p', "port", "Port number", DEFAULT(8080), CHOICES_INT(80, 443, 8080)),
     GROUP_END(),
-    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED)), //TODO: verify order
+    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED)),
     POSITIONAL_STRING("output", "Output file")
 )
 

@@ -15,6 +15,17 @@ const char *cargs_strerror(cargs_error_type_t error)
         case CARGS_ERROR_INVALID_GROUP: return "Invalid group";
         case CARGS_ERROR_INVALID_DEPENDENCY: return "Invalid dependency";
         case CARGS_ERROR_INVALID_FLAG: return "Invalid flag";
+        case CARGS_ERROR_INVALID_POSITION: return "Invalid position";
+        case CARGS_ERROR_INVALID_ARGUMENT: return "Invalid argument";
+        case CARGS_ERROR_MISSING_VALUE: return "Missing value";
+        case CARGS_ERROR_MISSING_REQUIRED: return "Missing required option";
+        case CARGS_ERROR_CONFLICTING_OPTIONS: return "Conflicting options";
+        case CARGS_ERROR_INVALID_FORMAT: return "Invalid format";
+        case CARGS_ERROR_EXCLUSIVE_GROUP: return "Exclusive group";
+        case CARGS_ERROR_INVALID_CHOICE: return "Invalid choice";
+        case CARGS_ERROR_INVALID_RANGE: return "Invalid range";
+        case CARGS_ERROR_NO_COMMAND: return "No command";
+        case CARGS_ERROR_INVALID_VALUE: return "Invalid value";
         case CARGS_ERROR_MALFORMED_OPTION: return "Malformed option";
         case CARGS_ERROR_MISSING_HELP: return "Missing help option";
         case CARGS_ERROR_STACK_OVERFLOW: return "Error stack overflow";
