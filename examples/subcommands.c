@@ -52,7 +52,7 @@ CARGS_OPTIONS(
 	remove_options,
 	HELP_OPTION(FLAGS(FLAG_EXIT)),
 	OPTION_FLAG('r', "recursive", "Recursive remove"),
-	POSITIONAL_STRING("file", "File to remove")
+	POSITIONAL_STRING("file", "File to remove", CHOICES_STRING("file1", "file2"))
 )
 
 // Define main options with subcommands
@@ -64,7 +64,7 @@ CARGS_OPTIONS(
 
 	// Define subcommands
 	SUBCOMMAND("add", add_options, HELP("Add files to the index"), ACTION(add_command)),
-	SUBCOMMAND("rm", remove_options, HELP("Remove files from the index"), ACTION(remove_command))
+	SUBCOMMAND("rm", remove_options, HELP("Remove files from the index"), ACTION(remove_command), FLAGS(FLAG_DEPRECATED))
 )
 
 int main(int argc, char **argv)
@@ -80,8 +80,7 @@ int main(int argc, char **argv)
 
 	// Check global options
 	bool debug = cargs_get_value(cargs, "debug").as_bool;
-	if (debug)
-		printf("Debug mode enabled\n");
+	if (debug) printf("Debug mode enabled\n");
 	 
 	// Check which subcommand was used
 	if (cargs_have_subcommand(cargs)) {

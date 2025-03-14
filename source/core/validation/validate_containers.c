@@ -21,6 +21,11 @@ cargs_error_t validate_subcommand(cargs_t *cargs, cargs_option_t *option)
 			"Invalid flags for subcommand '%s'", option->name);
 	}
 
+	if (option->choices_count > 0) {
+		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_CHOICE,
+			"Subcommand '%s' cannot have choices", option->name);
+	}
+
 	return (CARGS_OK());
 }
 

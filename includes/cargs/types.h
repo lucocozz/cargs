@@ -69,7 +69,7 @@ typedef enum option_flags_e {
 #define OPTION_ARRAY_FLAG_MASK (FLAG_SORTED | FLAG_UNIQUE)
 #define GROUP_FLAG_MASK (FLAG_EXCLUSIVE)
 #define POSITIONAL_FLAG_MASK (FLAG_REQUIRED)
-#define SUBCOMMAND_FLAG_MASK (FLAG_NONE)
+#define SUBCOMMAND_FLAG_MASK (FLAG_HIDDEN | FLAG_ADVANCED | FLAG_DEPRECATED | FLAG_EXPERIMENTAL)
 
 /**
  * value_u - Union to hold option values of different types

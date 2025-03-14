@@ -559,7 +559,7 @@ static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size
         printf(" ");
         name_len++;
     }
-    
+
     // Print subcommand name
     printf("%s", option->name);
     name_len += strlen(option->name);
@@ -567,18 +567,9 @@ static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size
     // Calculate padding for description alignment
     size_t padding = (DESCRIPTION_COLUMN > name_len) ? 
                      (DESCRIPTION_COLUMN - name_len) : 2;
-    
-    // Create a temporary option structure with the subcommand description
-    cargs_option_t temp_option = {
-        .help = option->help,
-        .flags = 0,
-        .value_type = VALUE_TYPE_NONE,
-        .is_set = false,
-        .choices_count = 0
-    };
-    
+       
     // Use the common description printing function
-    _print_option_description(&temp_option, padding);
+    _print_option_description(option, padding);
 }
 
 /*
