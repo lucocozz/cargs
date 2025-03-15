@@ -438,12 +438,15 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
     }
     
     // Append additional attributes
-    if (option->flags & FLAG_REQUIRED || 
-        option->flags & FLAG_DEPRECATED || 
+    if (option->flags & FLAG_EXIT       ||
+        option->flags & FLAG_REQUIRED   ||
+        option->flags & FLAG_DEPRECATED ||
         option->flags & FLAG_EXPERIMENTAL)
     {
         char attrs_buf[128] = {0};
         
+        if (option->flags & FLAG_EXIT)
+            strcat(attrs_buf, " (exit)");
         if (option->flags & FLAG_REQUIRED)
             strcat(attrs_buf, " (required)");
         if (option->flags & FLAG_DEPRECATED)
