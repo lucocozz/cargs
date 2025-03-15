@@ -29,6 +29,6 @@ int cargs_parse(cargs_t *cargs, int argc, char **argv)
         return (status);
     }
 
-    status = validate_dependencies(cargs, cargs->options);
+    status = post_parse_validation(cargs, cargs->options);
     return (status);
 }

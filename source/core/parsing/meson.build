@@ -4,6 +4,6 @@ parsing_sources = files([
 	'option_handle_short.c',
 	'option_handle_positional.c',
 	'option_handle_subcommand.c',
-	'validate_dependencies.c',
+	'post_parse_validation.c',
 	'execute_callbacks.c',
 ])

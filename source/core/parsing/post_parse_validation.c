@@ -7,6 +7,20 @@
 #include "cargs/internal/utils.h"
 
 
+static int __validate_required_positional(cargs_t *cargs, cargs_option_t *options)
+{
+    for (int i = 0; options[i].type != TYPE_NONE; ++i)
+    {
+        cargs_option_t *option = &options[i];
+        
+        if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_REQUIRED) && !option->is_set) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_REQUIRED,
+                "Required positional argument missing: '%s'", option->name);
+        }
+    }
+    return (CARGS_SUCCESS);
+}
+
 static int __validate_requires(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
     if (!option->requires || !option->is_set)
@@ -86,6 +100,10 @@ static int __validate_options_set(cargs_t *cargs, cargs_option_t *options)
     if (status != CARGS_SUCCESS)
         return (status);
 
+    status = __validate_required_positional(cargs, options);
+    if (status != CARGS_SUCCESS)
+        return (status);
+
     for (int i = 0; options[i].type != TYPE_NONE; ++i)
     {
         cargs_option_t *option = &options[i];
@@ -104,7 +122,7 @@ static int __validate_options_set(cargs_t *cargs, cargs_option_t *options)
     return (status);
 }
 
-int validate_dependencies(cargs_t *cargs, cargs_option_t *options)
+int post_parse_validation(cargs_t *cargs, cargs_option_t *options)
 {
     int status = CARGS_SUCCESS;
     

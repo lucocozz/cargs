@@ -35,7 +35,7 @@
  /**
   * Validation and callback execution
   */
- int validate_dependencies(cargs_t *cargs, cargs_option_t *options);
+ int post_parse_validation(cargs_t *cargs, cargs_option_t *options);
  int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value);
  
  #endif /* CARGS_INTERNAL_PARSING_H */
