@@ -5,7 +5,7 @@ SHARED_LIB = lib$(NAME).so
 
 # Build options
 TESTS ?= false
-EXAMPLES ?= false
+EXAMPLES ?= true
 BUILD_TYPE ?= debugoptimized
 
 # Basic Meson options
@@ -70,18 +70,21 @@ examples: reconfigure
 	@find $(BUILD_DIR)/examples -type f -executable -not -name "*.p" | sort | while read example; do \
 		name=$$(basename $$example); \
 		case $$name in \
-			basic_usage)     desc="Demonstrates basic flag, string, and integer options" ;; \
-			subcommands)     desc="Shows how to implement git-like subcommands" ;; \
-			positional_args) desc="Shows how to handle positional arguments" ;; \
-			custom_handlers) desc="Shows how to create custom option handlers" ;; \
-			*)               desc="Example program" ;; \
+			basic_usage)          desc="Basic flags, string, and integer options" ;; \
+			subcommands)          desc="Git-like subcommands implementation" ;; \
+			positional_args)      desc="Handling positional arguments" ;; \
+			custom_handlers)      desc="Creating custom option handlers" ;; \
+			advanced_options)     desc="Dependencies, conflicts, and exclusive groups" ;; \
+			nested_commands)      desc="Complex nested subcommands (like git or docker)" ;; \
+			validators)           desc="Built-in and custom validators for options" ;; \
+			*)                    desc="Example program" ;; \
 		esac; \
 		printf "  \033[1;36m%-20s\033[0m %s\n" $$name "$$desc"; \
 	done
 	@echo ""
 	@echo "\033[1;33mHow to run:\033[0m"
 	@echo "  \033[1;37m$(BUILD_DIR)/examples/basic_usage --help\033[0m"
-	@echo "  \033[1;37m$(BUILD_DIR)/examples/subcommands add --help\033[0m"
+	@echo "  \033[1;37m$(BUILD_DIR)/examples/nested_commands service create --help\033[0m"
 	@echo "\033[1;34m═════════════════════════════════════════════════\033[0m"
 
 # Code quality

@@ -3,7 +3,10 @@ example_programs = [
   'basic_usage',
   'subcommands',
   'positional_args',
-  'custom_handlers'
+  'custom_handlers',
+  'advanced_options',
+  'nested_commands',
+  'validators',
 ]
 
 # Build each example
