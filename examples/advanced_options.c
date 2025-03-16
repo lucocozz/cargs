@@ -45,8 +45,8 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "advanced_options", "1.0.0", 
-                              "Example of advanced options");
+    cargs_t cargs = cargs_init(options, "advanced_options", "1.0.0"); 
+    cargs.description = "Example of advanced options";
     
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {

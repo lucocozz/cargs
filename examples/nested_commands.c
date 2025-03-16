@@ -176,8 +176,8 @@ int config_get_action(cargs_t *cargs, void *data) {
 }
 
 int main(int argc, char **argv) {
-    cargs_t cargs = cargs_init(options, "nested_commands", "1.0.0",
-                             "Example of nested subcommands and path formats");
+    cargs_t cargs = cargs_init(options, "nested_commands", "1.0.0");
+    cargs.description = "Example of nested subcommands and path formats";
     
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {

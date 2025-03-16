@@ -87,8 +87,8 @@ int remove_command(cargs_t *cargs, void *data)
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "subcommands_example", "1.0.0", 
-                             "Example of subcommands");
+    cargs_t cargs = cargs_init(options, "subcommands_example", "1.0.0");
+    cargs.description = "Example of subcommands";
 
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {

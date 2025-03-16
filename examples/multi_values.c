@@ -352,8 +352,8 @@ void process_maps_iterator(cargs_t cargs) {
 int main(int argc, char **argv)
 {
     // Initialize cargs
-    cargs_t cargs = cargs_init(options, "multi_values", "1.0.0", 
-                           "Example of multi-value options with different access approaches");
+    cargs_t cargs = cargs_init(options, "multi_values", "1.0.0");
+    cargs.description = "Example of multi-value options with different access approaches";
 
     // Parse command-line arguments
     int status = cargs_parse(&cargs, argc, argv);

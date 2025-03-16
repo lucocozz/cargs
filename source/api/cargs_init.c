@@ -11,12 +11,13 @@
 cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options);
 
 
-cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version, const char *description)
+cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version)
 {
 	cargs_t cargs = {
 		.program_name = program_name,
 		.version = version,
-		.description = description,
+		.description = NULL,
+		.env_prefix = NULL,
 		.options = options,
 		.error_stack.count = 0,
 	};

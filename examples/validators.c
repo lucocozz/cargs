@@ -77,8 +77,8 @@ CARGS_OPTIONS(
 )
 
 int main(int argc, char **argv) {
-    cargs_t cargs = cargs_init(options, "validators_example", "1.0.0",
-                             "Example of validators");
+    cargs_t cargs = cargs_init(options, "validators_example", "1.0.0");
+    cargs.description = "Example of validators";
     
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {

@@ -22,8 +22,7 @@
  *
  * @return Initialized cargs_t context
  */
-cargs_t cargs_init(cargs_option_t *options, const char *program_name, 
-				   const char *version, const char *description);
+cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version);
 
 /**
  * cargs_parse - Parse command-line arguments

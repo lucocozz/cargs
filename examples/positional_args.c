@@ -37,8 +37,8 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "positional_example", "1.0.0", 
-                             "Example of positional arguments");
+    cargs_t cargs = cargs_init(options, "positional_example", "1.0.0");
+    cargs.description = "Example of positional arguments";
     
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {

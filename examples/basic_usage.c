@@ -39,8 +39,8 @@ CARGS_OPTIONS(
 int main(int argc, char **argv)
 {
     // Initialize cargs
-    cargs_t cargs = cargs_init(options, "basic_example", "1.0.0", 
-                             "Basic example of cargs library");
+    cargs_t cargs = cargs_init(options, "basic_example", "1.0.0");
+    cargs.description = "Basic example of cargs library";
 
     // Parse command-line arguments
     int status = cargs_parse(&cargs, argc, argv);
