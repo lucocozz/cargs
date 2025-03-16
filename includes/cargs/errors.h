@@ -44,6 +44,9 @@ typedef enum cargs_error_type_e {
     /* Execution errors */
     CARGS_ERROR_NO_COMMAND,
 
+    /* Internal errors */
+    CARGS_ERROR_MEMORY,
+
     /* Value errors */
     CARGS_ERROR_INVALID_VALUE,
     

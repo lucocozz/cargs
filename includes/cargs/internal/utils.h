@@ -13,6 +13,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "cargs/types.h"  /* Inclure les types publics */
 
@@ -52,6 +54,19 @@
  * String utility functions
  */
 char *starts_with(const char *prefix, const char *str);
+char **split(const char *str, const char *charset);
+void free_split(char **split);
+
+
+/**
+ * Multi_value utility functions
+ */
+#define MULTI_VALUE_INITIAL_CAPACITY 8
+void	adjust_array_size(cargs_option_t *option);
+void	adjust_map_size(cargs_option_t *option);
+int     map_find_key(cargs_option_t *option, const char *key);
+void    apply_array_flags(cargs_option_t *option);
+void    apply_map_flags(cargs_option_t *option);
 
 /**
  * Value manipulation functions

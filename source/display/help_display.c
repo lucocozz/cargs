@@ -203,16 +203,35 @@ static void _organize_options(const cargs_option_t *options, help_data_t *data)
  * Helper functions for formatting
  */
 
-static const char *_get_value_type_name(value_type_t type)
+// Helper function to get the base type name without collection indicators
+static const char *_get_base_type_name(value_type_t type)
 {
-    switch (type)
-    {
+    switch (type) {
         case VALUE_TYPE_INT:    return "NUM";
         case VALUE_TYPE_STRING: return "STR";
         case VALUE_TYPE_FLOAT:  return "FLOAT";
         case VALUE_TYPE_BOOL:   return "BOOL";
-        default:                return "";
+        default: return "VALUE";
     }
+}
+
+// Helper function to get the collection format pattern
+static const char *_get_collection_format(value_type_t type)
+{
+    if (type & VALUE_TYPE_ARRAY)
+        return "%s,...";
+    else if (type & VALUE_TYPE_MAP)
+        return "KEY=%s,...";
+    return NULL;
+}
+
+// Helper function to format a collection hint
+static char *_format_collection_hint(const char *format, const char *type_name)
+{
+    static char buffer[64]; // Buffer for the formatted string
+    
+    snprintf(buffer, sizeof(buffer), format, type_name);
+    return buffer;
 }
 
 static void _print_value_hint(const cargs_option_t *option)
@@ -220,10 +239,20 @@ static void _print_value_hint(const cargs_option_t *option)
     if (option->value_type == VALUE_TYPE_BOOL)
         return; // No hint for boolean flags
 
+    // Get the base type name or hint
+    const char *type_name;
     if (option->hint)
-        printf(" <%s>", option->hint);
+        type_name = option->hint;
     else
-        printf(" <%s>", _get_value_type_name(option->value_type));
+        type_name = _get_base_type_name(option->value_type);
+    
+    // Get the collection format if applicable
+    const char *collection_format = _get_collection_format(option->value_type);
+    
+    // Print the formatted hint
+    printf(" <%s>", collection_format ? 
+           _format_collection_hint(collection_format, type_name) : 
+           type_name);
 }
 
 static void _print_wrapped_text(const char *text, size_t indent, size_t line_width)
@@ -364,13 +393,13 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
             switch (option->value_type)
             {
                 case VALUE_TYPE_INT:
-                    snprintf(item, sizeof(item), "%ld", option->choices.as_int_array[i]);
+                    snprintf(item, sizeof(item), "%ld", option->choices.as_array_int[i]);
                     break;
                 case VALUE_TYPE_STRING:
-                    snprintf(item, sizeof(item), "%s", option->choices.as_string_array[i]);
+                    snprintf(item, sizeof(item), "%s", option->choices.as_array_string[i]);
                     break;
                 case VALUE_TYPE_FLOAT:
-                    snprintf(item, sizeof(item), "%.2f", option->choices.as_float_array[i]);
+                    snprintf(item, sizeof(item), "%.2f", option->choices.as_array_float[i]);
                     break;
                 default:
                     break;
@@ -505,10 +534,26 @@ static size_t _print_option_name(const cargs_option_t *option, size_t indent)
     if (option->value_type != VALUE_TYPE_BOOL)
     {
         _print_value_hint(option);
+        
+        // Calculate hint length for correct padding
+        const char *type_name;
         if (option->hint)
-            name_len += 3 + strlen(option->hint); // " <hint>"
+            type_name = option->hint;
         else
-            name_len += 3 + strlen(_get_value_type_name(option->value_type)); // " <TYPE>"
+            type_name = _get_base_type_name(option->value_type);
+        
+        // Get the collection format if applicable
+        const char *collection_format = _get_collection_format(option->value_type);
+        
+        // Calculate length based on whether it's a collection or not
+        if (collection_format) {
+            // Approximate the length for collection format
+            // Format is "KEY=%s,..." or "%s,..."
+            const char *format_str = _format_collection_hint(collection_format, type_name);
+            name_len += 3 + strlen(format_str); // " <hint_format>"
+        } else {
+            name_len += 3 + strlen(type_name); // " <hint>"
+        }
     }
     
     return name_len;

@@ -72,6 +72,17 @@ value_t cargs_get_value(cargs_t cargs, const char *option_path);
 
 
 /**
+ * cargs_get_value_count - Get the number of values for an option
+ *
+ * @param cargs        Cargs context
+ * @param option_path  Option path (name or subcommand.name format)
+ *
+ * @return Number of values for the option
+ */
+size_t	cargs_get_value_count(cargs_t cargs, const char *option_path);
+
+
+/**
  * cargs_have_subcommand - Check if a subcommand was parsed
  *
  * @param cargs  Cargs context
@@ -90,6 +101,83 @@ bool cargs_have_subcommand(cargs_t cargs);
  * @return Status code (0 for success, non-zero for error)
  */
 int	cargs_execute_command(cargs_t *cargs, void *data);
+
+/**
+ * cargs_get_array_element - Get an element from an array option at the specified index
+ *
+ * @param cargs        Cargs context
+ * @param option_path  Option path (name or subcommand.name format)
+ * @param index        Index of the element to retrieve
+ *
+ * @return Value of the element at the specified index, or {0} if not found or index out of bounds
+ */
+value_t cargs_get_array_element(cargs_t cargs, const char *option_path, size_t index);
+
+/**
+ * cargs_get_map_value - Get a value from a map option with the specified key
+ *
+ * @param cargs        Cargs context
+ * @param option_path  Option path (name or subcommand.name format)
+ * @param key          Key to look up in the map
+ *
+ * @return Value associated with the key, or {0} if not found
+ */
+value_t cargs_get_map_value(cargs_t cargs, const char *option_path, const char *key);
+
+/**
+ * cargs_array_iterator - Create an iterator for efficiently traversing an array option
+ *
+ * @param cargs        Cargs context
+ * @param option_path  Option path (name or subcommand.name format)
+ *
+ * @return Iterator structure for the array, with count=0 if option not found
+ */
+cargs_array_iterator_t cargs_array_iterator(cargs_t cargs, const char *option_path);
+
+/**
+ * cargs_array_next - Get the next element from an array iterator
+ *
+ * @param it      Array iterator
+ * @param value   Pointer to store the next value
+ *
+ * @return true if a value was retrieved, false if end of array
+ */
+bool cargs_array_next(cargs_array_iterator_t *it, value_t *value);
+
+/**
+ * cargs_array_reset - Reset an array iterator to the beginning
+ *
+ * @param it  Array iterator to reset
+ */
+void cargs_array_reset(cargs_array_iterator_t *it);
+
+/**
+ * cargs_map_iterator - Create an iterator for efficiently traversing a map option
+ *
+ * @param cargs        Cargs context
+ * @param option_path  Option path (name or subcommand.name format)
+ *
+ * @return Iterator structure for the map, with count=0 if option not found
+ */
+cargs_map_iterator_t cargs_map_iterator(cargs_t cargs, const char *option_path);
+
+/**
+ * cargs_map_next - Get the next key-value pair from a map iterator
+ *
+ * @param it    Map iterator
+ * @param key   Pointer to store the next key (can be NULL if not needed)
+ * @param value Pointer to store the next value (can be NULL if not needed)
+ *
+ * @return true if a pair was retrieved, false if end of map
+ */
+bool cargs_map_next(cargs_map_iterator_t *it, const char **key, value_t *value);
+
+/**
+ * cargs_map_reset - Reset a map iterator to the beginning
+ *
+ * @param it  Map iterator to reset
+ */
+void cargs_map_reset(cargs_map_iterator_t *it);
 
 
 #endif /* CARGS_API_H */

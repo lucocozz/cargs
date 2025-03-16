@@ -77,6 +77,7 @@ examples: reconfigure
 			advanced_options)     desc="Dependencies, conflicts, and exclusive groups" ;; \
 			nested_commands)      desc="Complex nested subcommands (like git or docker)" ;; \
 			validators)           desc="Built-in and custom validators for options" ;; \
+			multi_values)         desc="Handling multiple values for an option" ;; \
 			*)                    desc="Example program" ;; \
 		esac; \
 		printf "  \033[1;36m%-20s\033[0m %s\n" $$name "$$desc"; \

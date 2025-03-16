@@ -7,6 +7,7 @@ example_programs = [
   'advanced_options',
   'nested_commands',
   'validators',
+  'multi_values',
 ]
 
 # Build each example

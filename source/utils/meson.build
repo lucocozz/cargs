@@ -1,5 +1,6 @@
 utils_sources = files([
-	'starts_with.c',
+	'strings.c',
 	'value_utils.c',
 	'option_lookup.c',
+	'multi_values.c',
 ])

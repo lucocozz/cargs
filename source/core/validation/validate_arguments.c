@@ -8,10 +8,15 @@ static cargs_error_t __validate_basics(cargs_t *cargs, cargs_option_t *option)
 		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
 			"Option must have a short name or a long name");
 	}
-	if (option->flags & ~OPTION_FLAG_MASK) {
+	if ((option->value_type == VALUE_TYPE_PRIMITIVE && option->flags & ~OPTION_FLAG_MASK)
+	||	(option->value_type == VALUE_TYPE_ARRAY && option->flags & ~OPTION_ARRAY_FLAG_MASK)
+	||	(option->value_type == VALUE_TYPE_MAP && option->flags & ~OPTION_MAP_FLAG_MASK))
+	{
 		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_FLAG,
 			"Invalid flag for option: '%s'", option->name);
 	}
+
+
 	if (option->handler == NULL) {
 		CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER,
 			"Option '%s' must have a handler", option->name);
