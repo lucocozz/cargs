@@ -73,16 +73,19 @@ typedef enum option_flags_e {
     FLAG_DEPRECATED     = 1 << 3, /* Option is marked as deprecated */
     FLAG_EXPERIMENTAL   = 1 << 4, /* Option is marked as experimental */
     FLAG_EXIT           = 1 << 5, /* Program exits after option handler */
-    
+    FLAG_ENV_OVERRIDE   = 1 << 6, /* Option value can be overridden by environment variable */
+    FLAG_AUTO_ENV       = 1 << 7, /* Automatically generate environment variable name */
+    FLAG_NO_ENV_PREFIX  = 1 << 8, /* Do not use environment variable prefix */
+
     /* Array an Map type flags */
-    FLAG_SORTED         = 1 << 6,  /* Array values are sorted */
-    FLAG_UNIQUE         = 1 << 7,  /* Array values are unique */
-    FLAG_SORTED_VALUE   = 1 << 8,  /* Map values are sorted */
-    FLAG_SORTED_KEY     = 1 << 9,  /* Map keys are sorted */
-    FLAG_UNIQUE_VALUE   = 1 << 10, /* Map values are unique */
+    FLAG_SORTED         = 1 << 9,  /* Array values are sorted */
+    FLAG_UNIQUE         = 1 << 10,  /* Array values are unique */
+    FLAG_SORTED_VALUE   = 1 << 11,  /* Map values are sorted */
+    FLAG_SORTED_KEY     = 1 << 12,  /* Map keys are sorted */
+    FLAG_UNIQUE_VALUE   = 1 << 13, /* Map values are unique */
     
     /* Group flags */
-    FLAG_EXCLUSIVE      = 1 << 11, /* Only one option in group can be set */
+    FLAG_EXCLUSIVE      = 1 << 14, /* Only one option in group can be set */
 } option_flags_t;
 
 /* Flag masks for validation */
@@ -180,17 +183,18 @@ struct cargs_option_s {
     const char      *lname;     /* Long name (e.g., --verbose) */
     const char      *help;      /* Help text */
     const char      *hint;      /* Value hint displayed in help */
-    
+
     /* Value metadata */
     value_type_t    value_type;
     value_t         value;
-    value_t         default_value;
     bool            is_allocated;
+    value_t         default_value;
     bool            have_default;
     value_t         choices;
     size_t          choices_count;
     size_t          value_count;
     size_t          value_capacity;
+    char            *env_name;
     
     
     /* Callbacks metadata */
@@ -259,13 +263,15 @@ typedef struct cargs_error_stack_s {
  * cargs_s - Main library context
  */
 struct cargs_s {
+    /* Public fields */
+    const char *program_name;
+    const char *version;
+    const char *description;
+    const char *env_prefix;
+    
     /* Internal fields - do not access directly */
-    const char          *program_name;
-    const char          *version;
-    const char          *description;
     cargs_option_t      *options;
     cargs_error_stack_t error_stack;
-
     struct {
         const char              *option;
         const char              *group;

@@ -122,11 +122,11 @@ static int __validate_options_set(cargs_t *cargs, cargs_option_t *options)
     return (status);
 }
 
-int post_parse_validation(cargs_t *cargs, cargs_option_t *options)
+int post_parse_validation(cargs_t *cargs)
 {
     int status = CARGS_SUCCESS;
     
-    status = __validate_options_set(cargs, options);
+    status = __validate_options_set(cargs, cargs->options);
     if (status != CARGS_SUCCESS)
         return (status);
     

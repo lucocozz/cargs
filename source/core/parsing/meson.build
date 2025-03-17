@@ -6,4 +6,5 @@ parsing_sources = files([
 	'option_handle_subcommand.c',
 	'post_parse_validation.c',
 	'execute_callbacks.c',
+	'load_env_vars.c',
 ])

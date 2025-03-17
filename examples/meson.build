@@ -8,6 +8,7 @@ example_programs = [
   'nested_commands',
   'validators',
   'multi_values',
+  'env_vars',
 ]
 
 # Build each example

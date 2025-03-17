@@ -29,6 +29,10 @@ int cargs_parse(cargs_t *cargs, int argc, char **argv)
         return (status);
     }
 
-    status = post_parse_validation(cargs, cargs->options);
+    status = load_env_vars(cargs);
+    if (status != CARGS_SUCCESS)
+        return (status);
+
+    status = post_parse_validation(cargs);
     return (status);
 }

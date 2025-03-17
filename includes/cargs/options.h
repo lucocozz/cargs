@@ -58,6 +58,7 @@ int free_map_bool_handler(cargs_option_t *option);
 #define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
+#define ENV_VAR(name)           .env_name = name
 
 /*
  * Validator macros
