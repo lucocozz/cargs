@@ -20,7 +20,6 @@ int int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int float_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int help_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int version_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
 
 int array_string_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
@@ -35,6 +34,10 @@ int free_map_string_handler(cargs_option_t *option);
 int free_map_int_handler(cargs_option_t *option);
 int free_map_float_handler(cargs_option_t *option);
 int free_map_bool_handler(cargs_option_t *option);
+
+int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
+int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
+
 
 /* 
  * Support macro for character to string conversion
@@ -63,18 +66,21 @@ int free_map_bool_handler(cargs_option_t *option);
 /*
  * Validator macros
  */
-#define VALIDATOR_DATA(data, size) \
-    .validator_data = (validator_data_t){ .custom = (void*)data }, \
-    .validator_data_size = size
-
-#define VALIDATOR(fn, data, size) \
+#define VALIDATOR(fn, data) \
     .validator = (cargs_validator_t)(fn), \
-    VALIDATOR_DATA(data, size)
+    .validator_data = (validator_data_t){ .custom = (void*)data }
+
+#define PRE_VALIDATOR(fn, data) \
+    .pre_validator = (cargs_pre_validator_t)(fn), \
+    .pre_validator_data = (validator_data_t){ .custom = (void*)data }
 
 #define RANGE(min, max) \
     .validator = (cargs_validator_t)range_validator, \
-    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }, \
-    .validator_data_size = sizeof(range_t)
+    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
+
+#define REGEX(re) \
+    .pre_validator = (cargs_pre_validator_t)regex_validator, \
+    .pre_validator_data = (validator_data_t){ .regex = re }
 
 /*
  * Choice macros for different types

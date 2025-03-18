@@ -9,6 +9,7 @@ example_programs = [
   'validators',
   'multi_values',
   'env_vars',
+  'regex',
 ]
 
 # Build each example

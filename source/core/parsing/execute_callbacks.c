@@ -35,6 +35,13 @@ int	execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
 			"Option %s has no handler", option->name);
 	}
 
+    if (option->pre_validator != NULL)
+	{
+        int status = option->pre_validator(cargs, value, option->pre_validator_data);
+        if (status != CARGS_SUCCESS)
+            return status;
+    }
+
 	status = option->handler(cargs, option, value);
 	if (status != CARGS_SUCCESS)
 		return (status);

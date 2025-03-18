@@ -69,6 +69,7 @@ examples:
             validators)           desc="Built-in and custom validators for options" ;; \
             multi_values)         desc="Handling multiple values for an option" ;; \
             env_vars)             desc="Reading options from environment variables" ;; \
+            regex)                desc="Using regular expressions for option values" ;; \
             *)                    desc="Example program" ;; \
         esac; \
         printf "  \033[1;36m%-20s\033[0m %s\n" "$name" "$desc"; \

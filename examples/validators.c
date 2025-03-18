@@ -11,7 +11,8 @@
 #include <ctype.h>
 
 // Custom validator for email addresses
-int email_validator(cargs_t *cargs, value_t value, validator_data_t data) {
+int email_validator(cargs_t *cargs, value_t value, validator_data_t data)
+{
     (void)data; // Unused parameter
     
     const char* email = value.as_string;
@@ -38,7 +39,8 @@ int email_validator(cargs_t *cargs, value_t value, validator_data_t data) {
 }
 
 // Custom validator for even numbers
-int even_validator(cargs_t *cargs, value_t value, validator_data_t data) {
+int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+{
     (void)data; // Unused parameter
     
     int number = value.as_int;
@@ -57,23 +59,23 @@ CARGS_OPTIONS(
     
     // Built-in range validator
     OPTION_INT('p', "port", "Port number", 
-               DEFAULT(8080), RANGE(1, 65535)),
+                DEFAULT(8080), RANGE(1, 65535)),
     
     // Built-in choices validator
     OPTION_STRING('l', "log-level", "Log level", 
-                 DEFAULT("info"), 
-                 CHOICES_STRING("debug", "info", "warning", "error")),
+                DEFAULT("info"), 
+                CHOICES_STRING("debug", "info", "warning", "error")),
     
     // Custom email validator
     OPTION_BASE('e', "email", "Email address", VALUE_TYPE_STRING,
                 HANDLER(string_handler), 
-                VALIDATOR(email_validator, NULL, 0)),
+                VALIDATOR(email_validator, NULL)),
     
     // Custom even number validator
     OPTION_BASE('n', "number", "An even number", VALUE_TYPE_INT,
-               HANDLER(int_handler), 
-               VALIDATOR(even_validator, NULL, 0),
-               DEFAULT(42))
+                HANDLER(int_handler), 
+                VALIDATOR(even_validator, NULL),
+                DEFAULT(42))
 )
 
 int main(int argc, char **argv) {

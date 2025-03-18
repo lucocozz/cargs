@@ -157,17 +157,27 @@ typedef struct range_s {
 } range_t;
 
 /**
+ * regex_data_t - Data structure for regex validation
+ */
+typedef struct regex_data_s {
+    const char *pattern;     /* Regex pattern string */
+    const char *hint;     /* Details for error message and/or format explanation */
+} regex_data_t;
+
+/**
  * validator_data_u - Data used by validator functions
  */
 union validator_data_u {
     void*       custom;      /* Custom validator data */
     range_t     range;       /* Range limits */
+    regex_data_t regex;      /* Regex pattern and info */
 };
 
 /* Callback function types */
 typedef int (*cargs_handler_t)(cargs_t*, cargs_option_t*, char*);
 typedef int (*cargs_free_handler_t)(cargs_option_t*);
 typedef int (*cargs_validator_t)(cargs_t*, value_t, validator_data_t);
+typedef int (*cargs_pre_validator_t)(cargs_t*, const char*, validator_data_t);
 typedef int (*cargs_action_t)(cargs_t*, void*);
 
 /**
@@ -202,8 +212,9 @@ struct cargs_option_s {
     cargs_free_handler_t    free_handler;
     cargs_validator_t       validator;
     validator_data_t        validator_data;
-    size_t                  validator_data_size;
-    
+    cargs_pre_validator_t   pre_validator;
+    validator_data_t        pre_validator_data;
+
     /* Dependencies metadata */
     const char      **requires;
     const char      **conflicts;

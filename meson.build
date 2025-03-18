@@ -25,11 +25,15 @@ inc_dirs = include_directories('includes')
 # Build library
 subdir('source')
 
+
+pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
+
 # Create both static and shared libraries from sources
 cargs_lib = both_libraries(
     'cargs',
     cargs_sources,
     include_directories: inc_dirs,
+    dependencies: [pcre2_dep],
     version: meson.project_version(),
     soversion: '0',
     install: true,
@@ -39,6 +43,7 @@ cargs_lib = both_libraries(
 cargs_dep = declare_dependency(
     link_with: cargs_lib,
     include_directories: inc_dirs,
+    dependencies: [pcre2_dep],
 )
 
 # Install headers (public API only)
