@@ -12,4 +12,5 @@ handlers_sources = files([
 	'map_int_handler.c',
 	'map_float_handler.c',
 	'map_bool_handler.c',
+	'default_free.c'
 ])

@@ -83,9 +83,10 @@ static int _load_env_vars(cargs_t *cargs, cargs_option_t *options)
         bool was_set = option->is_set;
         value_t old_value = option->value;
 
+        //! possible leak here
         int status = execute_callbacks(cargs, option, env_value);
         if (status != CARGS_SUCCESS)
-		{
+        {
             if (was_set) {
                 option->is_set = was_set;
                 option->value = old_value;

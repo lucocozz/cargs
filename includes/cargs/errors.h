@@ -104,7 +104,7 @@ static inline int _cargs_report_error(cargs_t *cargs, int code, const char *fmt,
     va_end(args);
     
     fprintf(stderr, "\n");
-    
+    cargs->error_stack.count++;
     return code;
 }
 

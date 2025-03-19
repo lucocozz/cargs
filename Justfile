@@ -43,11 +43,56 @@ debug:
 release:
     @just build_type="release" reconfigure compile
 
-# Test targets
-test:
-    @just tests="true" reconfigure
+# =====================
+# Test related commands
+# =====================
+
+# Main test command - configure, build and run all tests
+test: setup-tests
     @meson test -C {{build_dir}} -v
-    @echo "Tests completed ✅"
+    @echo "\033[1;32mAll tests completed ✅\033[0m"
+
+# Setup tests (reconfigure with tests enabled and compile)
+setup-tests:
+    @just tests="true" reconfigure compile
+
+# Run only specific test suites
+test-unit: setup-tests
+    @meson test -C {{build_dir}} --suite unit -v
+    @echo "\033[1;32mUnit tests completed ✅\033[0m"
+
+test-integration: setup-tests
+    @meson test -C {{build_dir}} --suite integration -v
+    @echo "\033[1;32mIntegration tests completed ✅\033[0m"
+
+test-functional: setup-tests
+    @meson test -C {{build_dir}} --suite functional -v
+    @echo "\033[1;32mFunctional tests completed ✅\033[0m"
+
+# Run a specific test by name (e.g. just test-one unit_strings)
+test-one suite_test_name="": setup-tests
+    @meson test -C {{build_dir}} {{suite_test_name}} -v
+    @echo "\033[1;32mTest {{suite_test_name}} completed ✅\033[0m"
+
+# Run tests with detailed output
+test-verbose: setup-tests
+    @meson test -C {{build_dir}} -v --print-errorlogs
+    @echo "\033[1;32mAll tests completed with detailed output ✅\033[0m"
+
+# Generate test coverage report (requires gcovr)
+test-coverage: setup-tests
+    @meson configure -Db_coverage=true {{build_dir}}
+    @ninja -C {{build_dir}} coverage
+    @echo "\033[1;32mTest coverage report generated ✅\033[0m"
+    @echo "Coverage report available at: {{build_dir}}/meson-logs/coverage/"
+
+# List all available tests
+test-list:
+    @meson test -C {{build_dir}} --list
+    @echo "\033[1;34m═════════════════════════════════════════════════\033[0m"
+    @echo "\033[1;33mHow to run a specific test:\033[0m"
+    @echo "  \033[1;37mjust test-one unit_strings\033[0m"
+    @echo "\033[1;34m═════════════════════════════════════════════════\033[0m"
 
 # Build and list examples
 examples:
@@ -99,13 +144,6 @@ install:
 uninstall:
     @meson --internal uninstall -C {{build_dir}}
     @echo "Uninstallation complete ✅"
-
-# Simple test script
-quick-test: compile
-    @echo "Running basic tests..."
-    @bash -c '{{build_dir}}/examples/basic_usage --help >/dev/null && echo "✅ basic_usage --help works"'
-    @bash -c '{{build_dir}}/examples/subcommands --help >/dev/null && echo "✅ subcommands --help works"'
-    @echo "Quick tests passed ✅"
 
 # Help function that lists available recipes
 help:

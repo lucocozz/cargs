@@ -20,6 +20,7 @@ int int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int float_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int help_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int version_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
+int default_free(cargs_option_t *option);
 
 int array_string_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
@@ -113,6 +114,7 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
     .lname = _long, \
     .help = _help, \
     .value_type = _value_type, \
+    .free_handler = default_free, \
     ##__VA_ARGS__ \
 }
 
@@ -121,6 +123,7 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
     .name = _name, \
     .help = _help, \
     .value_type = _value_type, \
+    .free_handler = default_free, \
     ##__VA_ARGS__ \
 }
 

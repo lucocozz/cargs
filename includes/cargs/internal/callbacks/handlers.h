@@ -33,6 +33,7 @@ int map_bool_handler(cargs_t *cargs, cargs_option_t *options, char *arg);
 /**
  * Type-specific option free handlers
  */
+int	default_free(cargs_option_t *option);
 int free_array_string_handler(cargs_option_t *option);
 // int free_array_int_handler(cargs_option_t *option);
 // int free_array_float_handler(cargs_option_t *option);
