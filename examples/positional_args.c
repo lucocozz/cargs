@@ -18,21 +18,21 @@ CARGS_OPTIONS(
     
     // Required positional arguments must come before optional ones
     POSITIONAL_STRING("source", "Source file", 
-                     FLAGS(FLAG_REQUIRED), 
-                     HINT("SRC")),
+                    HINT("SRC")),
     
     POSITIONAL_STRING("destination", "Destination file", 
-                     FLAGS(FLAG_REQUIRED), 
-                     HINT("DEST")),
+                    HINT("DEST")),
     
     // Optional positional argument with default value
-    POSITIONAL_INT("buffer_size", "Buffer size in KB", 
-                  DEFAULT(64), 
-                  RANGE(1, 8192)),
+    POSITIONAL_INT("buffer_size", "Buffer size in KB",
+                    FLAGS(FLAG_OPTIONAL),
+                    DEFAULT(64),
+                    RANGE(1, 8192)),
     
     // Optional positional argument without default value
-    POSITIONAL_STRING("log_file", "Log file", 
-                     HINT("LOG"))
+    POSITIONAL_STRING("log_file", "Log file",
+                    FLAGS(FLAG_OPTIONAL),
+                    HINT("LOG"))
 )
 
 int main(int argc, char **argv)

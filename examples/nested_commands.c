@@ -48,15 +48,15 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     config_set_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("key", "Configuration key", FLAGS(FLAG_REQUIRED)),
-    POSITIONAL_STRING("value", "Configuration value", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("key", "Configuration key"),
+    POSITIONAL_STRING("value", "Configuration value")
 )
 
 // Define options for "config get" command
 CARGS_OPTIONS(
     config_get_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("key", "Configuration key", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("key", "Configuration key")
 )
 
 // Define options for the "config" parent command

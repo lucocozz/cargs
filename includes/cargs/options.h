@@ -124,6 +124,7 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
     .help = _help, \
     .value_type = _value_type, \
     .free_handler = default_free, \
+    .flags = FLAG_REQUIRED, \
     ##__VA_ARGS__ \
 }
 

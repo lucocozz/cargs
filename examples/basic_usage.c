@@ -33,7 +33,7 @@ CARGS_OPTIONS(
     OPTION_FLAG('\0', "dry-run", "Run without making changes"),
     
     // Required positional argument
-    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("input", "Input file")
 )
 
 int main(int argc, char **argv)

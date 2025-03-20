@@ -88,6 +88,8 @@ typedef enum option_flags_e {
     FLAG_EXCLUSIVE      = 1 << 14, /* Only one option in group can be set */
 } option_flags_t;
 
+#define FLAG_OPTIONAL (FLAG_REQUIRED ^ FLAG_REQUIRED)
+
 /* Flag masks for validation */
 #define VERSIONING_FLAG_MASK (FLAG_DEPRECATED | FLAG_EXPERIMENTAL)
 #define OPTION_FLAG_MASK (FLAG_REQUIRED | FLAG_HIDDEN | FLAG_ADVANCED | FLAG_EXIT | VERSIONING_FLAG_MASK)

@@ -17,7 +17,7 @@ CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", "Force add operation"),
-    POSITIONAL_STRING("file", "File to add", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("file", "File to add")
 )
 
 // Define options for "remove" subcommand
@@ -25,7 +25,7 @@ CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('r', "recursive", "Recursively remove directories"),
-    POSITIONAL_STRING("file", "File to remove", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("file", "File to remove")
 )
 
 // Define main options with subcommands

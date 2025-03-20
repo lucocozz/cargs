@@ -10,7 +10,7 @@ CARGS_OPTIONS(
     OPTION_FLAG('v', "verbose", "Enable verbose output"),
     OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
     OPTION_INT('p', "port", "Port number", DEFAULT(8080), RANGE(1, 65535)),
-    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("input", "Input file")
 )
 
 // Test successful parsing and execution
