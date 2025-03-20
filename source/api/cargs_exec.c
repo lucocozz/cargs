@@ -4,11 +4,11 @@
 #include "cargs/internal/context.h"
 
 
-bool cargs_have_subcommand(cargs_t cargs) {
+bool cargs_has_command(cargs_t cargs) {
 	return (cargs.context.subcommand_depth > 0);
 }
 
-int	cargs_execute_command(cargs_t *cargs, void *data)
+int	cargs_exec(cargs_t *cargs, void *data)
 {
 	const cargs_option_t *command = context_get_subcommand(cargs);
 	if (command == NULL) {

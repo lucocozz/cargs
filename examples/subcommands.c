@@ -53,11 +53,11 @@ int add_command(cargs_t *cargs, void *data)
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = cargs_get_value(*cargs, "verbose").as_bool;
+    bool verbose = cargs_get(*cargs, "verbose").as_bool;
     
     // Get command-specific options
-    const char* file = cargs_get_value(*cargs, "add.file").as_string;
-    bool force = cargs_get_value(*cargs, "add.force").as_bool;
+    const char* file = cargs_get(*cargs, "add.file").as_string;
+    bool force = cargs_get(*cargs, "add.force").as_bool;
 
     printf("Adding file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -72,11 +72,11 @@ int remove_command(cargs_t *cargs, void *data)
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = cargs_get_value(*cargs, "verbose").as_bool;
+    bool verbose = cargs_get(*cargs, "verbose").as_bool;
     
     // Get command-specific options
-    const char* file = cargs_get_value(*cargs, "rm.file").as_string;
-    bool recursive = cargs_get_value(*cargs, "rm.recursive").as_bool;
+    const char* file = cargs_get(*cargs, "rm.file").as_string;
+    bool recursive = cargs_get(*cargs, "rm.recursive").as_bool;
 
     printf("Removing file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -95,9 +95,9 @@ int main(int argc, char **argv)
         return status;
     }
 
-    if (cargs_have_subcommand(cargs)) {
+    if (cargs_has_command(cargs)) {
         // Execute the subcommand handler
-        status = cargs_execute_command(&cargs, NULL);
+        status = cargs_exec(&cargs, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
     }

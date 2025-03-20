@@ -49,11 +49,11 @@ int main(int argc, char **argv)
     }
 
     // Access parsed values
-    bool verbose = cargs_get_value(cargs, "verbose").as_bool;
-    const char* output = cargs_get_value(cargs, "output").as_string;
-    int port = cargs_get_value(cargs, "p").as_int;  // Using short name as ID when only short name exists
-    bool dry_run = cargs_get_value(cargs, "dry-run").as_bool;
-    const char* input = cargs_get_value(cargs, "input").as_string;
+    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char* output = cargs_get(cargs, "output").as_string;
+    int port = cargs_get(cargs, "p").as_int;  // Using short name as ID when only short name exists
+    bool dry_run = cargs_get(cargs, "dry-run").as_bool;
+    const char* input = cargs_get(cargs, "input").as_string;
 
     // Display configuration
     printf("Configuration:\n");

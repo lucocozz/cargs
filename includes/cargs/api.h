@@ -60,49 +60,49 @@ void    cargs_print_version(cargs_t cargs);
 bool    cargs_is_set(cargs_t cargs, const char *option_path);
 
 /**
- * cargs_get_value - Get the value of an option
+ * cargs_get - Get the value of an option
  *
  * @param cargs        Cargs context
  * @param option_path  Option path (name or subcommand.name format)
  *
  * @return Value of the option, or {0} if not found
  */
-value_t cargs_get_value(cargs_t cargs, const char *option_path);
+value_t cargs_get(cargs_t cargs, const char *option_path);
 
 
 /**
- * cargs_get_value_count - Get the number of values for an option
+ * cargs_count - Get the number of values for an option
  *
  * @param cargs        Cargs context
  * @param option_path  Option path (name or subcommand.name format)
  *
  * @return Number of values for the option
  */
-size_t	cargs_get_value_count(cargs_t cargs, const char *option_path);
+size_t	cargs_count(cargs_t cargs, const char *option_path);
 
 
 /**
- * cargs_have_subcommand - Check if a subcommand was parsed
+ * cargs_has_command - Check if a subcommand was parsed
  *
  * @param cargs  Cargs context
  *
  * @return true if a subcommand was parsed, false otherwise
  */
-bool cargs_have_subcommand(cargs_t cargs);
+bool cargs_has_command(cargs_t cargs);
 
 
 /**
- * cargs_execute_command - Execute the parsed subcommand
+ * cargs_exec - Execute the parsed subcommand
  *
  * @param cargs  Cargs context
  * @param data   Data to pass to the subcommand action
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int	cargs_execute_command(cargs_t *cargs, void *data);
+int	cargs_exec(cargs_t *cargs, void *data);
 
 /**
- * cargs_get_array_element - Get an element from an array option at the specified index
+ * cargs_array_get - Get an element from an array option at the specified index
  *
  * @param cargs        Cargs context
  * @param option_path  Option path (name or subcommand.name format)
@@ -110,10 +110,10 @@ int	cargs_execute_command(cargs_t *cargs, void *data);
  *
  * @return Value of the element at the specified index, or {0} if not found or index out of bounds
  */
-value_t cargs_get_array_element(cargs_t cargs, const char *option_path, size_t index);
+value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
 
 /**
- * cargs_get_map_value - Get a value from a map option with the specified key
+ * cargs_map_get - Get a value from a map option with the specified key
  *
  * @param cargs        Cargs context
  * @param option_path  Option path (name or subcommand.name format)
@@ -121,7 +121,7 @@ value_t cargs_get_array_element(cargs_t cargs, const char *option_path, size_t i
  *
  * @return Value associated with the key, or {0} if not found
  */
-value_t cargs_get_map_value(cargs_t cargs, const char *option_path, const char *key);
+value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
 
 /**
  * cargs_array_iterator - Create an iterator for efficiently traversing an array option

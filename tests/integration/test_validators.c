@@ -28,7 +28,7 @@ Test(validators_integration, range_validation_success)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Valid port should pass validation");
-    cr_assert_eq(cargs_get_value(cargs, "port").as_int, 8000);
+    cr_assert_eq(cargs_get(cargs, "port").as_int, 8000);
     
     cargs_free(&cargs);
 }
@@ -58,7 +58,7 @@ Test(validators_integration, choices_validation_success)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Valid log level should pass validation");
-    cr_assert_str_eq(cargs_get_value(cargs, "level").as_string, "warning");
+    cr_assert_str_eq(cargs_get(cargs, "level").as_string, "warning");
     
     cargs_free(&cargs);
 }
@@ -88,7 +88,7 @@ Test(validators_integration, regex_validation_success)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Valid email should pass validation");
-    cr_assert_str_eq(cargs_get_value(cargs, "email").as_string, "test@example.com");
+    cr_assert_str_eq(cargs_get(cargs, "email").as_string, "test@example.com");
     
     cargs_free(&cargs);
 }

@@ -2,7 +2,7 @@
 #include "cargs/types.h"
 
 
-value_t	cargs_get_value(cargs_t cargs, const char *option_path)
+value_t	cargs_get(cargs_t cargs, const char *option_path)
 {
 	cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 	if (option == NULL)
@@ -19,7 +19,7 @@ bool	cargs_is_set(cargs_t cargs, const char *option_path)
 	return (option->is_set);
 }
 
-size_t	cargs_get_value_count(cargs_t cargs, const char *option_path)
+size_t	cargs_count(cargs_t cargs, const char *option_path)
 {
 	cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 	if (option == NULL)
@@ -28,7 +28,7 @@ size_t	cargs_get_value_count(cargs_t cargs, const char *option_path)
 }
 
 
-value_t cargs_get_array_element(cargs_t cargs, const char *option_path, size_t index)
+value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index)
 {
 	cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 	
@@ -47,7 +47,7 @@ value_t cargs_get_array_element(cargs_t cargs, const char *option_path, size_t i
 	return option->value.as_array[index];
 }
 
-value_t cargs_get_map_value(cargs_t cargs, const char *option_path, const char *key)
+value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key)
 {
 	cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 	

@@ -81,12 +81,12 @@ int main(int argc, char **argv)
 		return status;
 
 	// Access option values as usual
-	const char* host = cargs_get_value(cargs, "host").as_string;
-	int port = cargs_get_value(cargs, "port").as_int;
-	const char* database = cargs_get_value(cargs, "database").as_string;
-	bool verbose = cargs_get_value(cargs, "verbose").as_bool;
-	int timeout = cargs_get_value(cargs, "timeout").as_int;
-	bool debug = cargs_get_value(cargs, "debug").as_bool;
+	const char* host = cargs_get(cargs, "host").as_string;
+	int port = cargs_get(cargs, "port").as_int;
+	const char* database = cargs_get(cargs, "database").as_string;
+	bool verbose = cargs_get(cargs, "verbose").as_bool;
+	int timeout = cargs_get(cargs, "timeout").as_int;
+	bool debug = cargs_get(cargs, "debug").as_bool;
 	
 	// Display configuration
 	printf("═════════════════════════════════════════\n");

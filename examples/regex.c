@@ -89,36 +89,36 @@ int main(int argc, char **argv)
     // Display validated values grouped by category
     printf("Network & Communication:\n");
     printf("  IP Address: %s\n", cargs_is_set(cargs, "ip") ?
-           cargs_get_value(cargs, "ip").as_string : "(not provided)");
+           cargs_get(cargs, "ip").as_string : "(not provided)");
     printf("  MAC Address: %s\n", cargs_is_set(cargs, "mac") ?
-           cargs_get_value(cargs, "mac").as_string : "(not provided)");
+           cargs_get(cargs, "mac").as_string : "(not provided)");
     printf("  Email: %s\n", cargs_is_set(cargs, "email") ?
-           cargs_get_value(cargs, "email").as_string : "(not provided)");
+           cargs_get(cargs, "email").as_string : "(not provided)");
     printf("  URL: %s\n", cargs_is_set(cargs, "url") ?
-           cargs_get_value(cargs, "url").as_string : "(not provided)");
+           cargs_get(cargs, "url").as_string : "(not provided)");
 
     printf("\nCustom Formats:\n");
     printf("  Product ID: %s\n", cargs_is_set(cargs, "product") ?
-           cargs_get_value(cargs, "product").as_string : "(not provided)");
+           cargs_get(cargs, "product").as_string : "(not provided)");
     printf("  RGB Color: %s\n", cargs_is_set(cargs, "color") ?
-           cargs_get_value(cargs, "color").as_string : "(not provided)");
+           cargs_get(cargs, "color").as_string : "(not provided)");
     printf("  Username: %s\n", cargs_is_set(cargs, "name") ?
-           cargs_get_value(cargs, "name").as_string : "(not provided)");
+           cargs_get(cargs, "name").as_string : "(not provided)");
 
     printf("\nInline Patterns:\n");
     printf("  Zip Code: %s\n", cargs_is_set(cargs, "zipcode") ?
-           cargs_get_value(cargs, "zipcode").as_string : "(not provided)");
+           cargs_get(cargs, "zipcode").as_string : "(not provided)");
     printf("  Time: %s\n", cargs_is_set(cargs, "time") ?
-           cargs_get_value(cargs, "time").as_string : "(not provided)");
+           cargs_get(cargs, "time").as_string : "(not provided)");
     printf("  Float: %s\n", cargs_is_set(cargs, "float") ?
-           cargs_get_value(cargs, "float").as_string : "(not provided)");
+           cargs_get(cargs, "float").as_string : "(not provided)");
 
     printf("\nCombined Patterns:\n");
     printf("  Date: %s\n", cargs_is_set(cargs, "date") ?
-           cargs_get_value(cargs, "date").as_string : "(not provided)");
+           cargs_get(cargs, "date").as_string : "(not provided)");
     printf("  Password: %s\n", cargs_is_set(cargs, "password") ?
            "[HIDDEN]" : "(not provided)");
-    printf("  Version: %s\n", cargs_get_value(cargs, "version").as_string);
+    printf("  Version: %s\n", cargs_get(cargs, "version").as_string);
 
     cargs_free(&cargs);
     return 0;

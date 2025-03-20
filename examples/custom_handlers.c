@@ -144,12 +144,12 @@ int main(int argc, char **argv)
     
     // Access parsed values
     if (cargs_is_set(cargs, "ip")) {
-        const char* ip = cargs_get_value(cargs, "ip").as_string;
+        const char* ip = cargs_get(cargs, "ip").as_string;
         printf("Server IP: %s\n", ip);
     }
     
     // Log level
-    int log_level = cargs_get_value(cargs, "log-level").as_int;
+    int log_level = cargs_get(cargs, "log-level").as_int;
     const char* log_level_str;
     switch (log_level) {
         case LOG_DEBUG: log_level_str = "DEBUG"; break;
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     printf("Log level: %s (%d)\n", log_level_str, log_level);
     
     // Timeout duration
-    int timeout = cargs_get_value(cargs, "timeout").as_int;
+    int timeout = cargs_get(cargs, "timeout").as_int;
     printf("Timeout: %d seconds", timeout);
     
     // Format as human-readable duration

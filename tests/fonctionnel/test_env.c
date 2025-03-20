@@ -51,9 +51,9 @@ Test(environments, basic_env, .init = setup_env, .fini = teardown_env)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should parse successfully");
-    cr_assert_str_eq(cargs_get_value(cargs, "host").as_string, "env-server.example.com", "Host should be from environment");
-    cr_assert_eq(cargs_get_value(cargs, "port").as_int, 9000, "Port should be from environment");
-    cr_assert_str_eq(cargs_get_value(cargs, "database").as_string, "postgres://user:pass@localhost/db", "Database URL should be from environment");
+    cr_assert_str_eq(cargs_get(cargs, "host").as_string, "env-server.example.com", "Host should be from environment");
+    cr_assert_eq(cargs_get(cargs, "port").as_int, 9000, "Port should be from environment");
+    cr_assert_str_eq(cargs_get(cargs, "database").as_string, "postgres://user:pass@localhost/db", "Database URL should be from environment");
 
     cargs_free(&cargs);
 }
@@ -69,13 +69,13 @@ Test(environments, cmd_override, .init = setup_env, .fini = teardown_env)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Command line arguments should parse successfully");
-    cr_assert_str_eq(cargs_get_value(cargs, "host").as_string, "cli-server.example.com", "Host should be from command line");
-    cr_assert_eq(cargs_get_value(cargs, "port").as_int, 8888, "Port should be from command line");
-    cr_assert_str_eq(cargs_get_value(cargs, "database").as_string, "mysql://localhost/db", "Database should be from command line");
+    cr_assert_str_eq(cargs_get(cargs, "host").as_string, "cli-server.example.com", "Host should be from command line");
+    cr_assert_eq(cargs_get(cargs, "port").as_int, 8888, "Port should be from command line");
+    cr_assert_str_eq(cargs_get(cargs, "database").as_string, "mysql://localhost/db", "Database should be from command line");
     
     // Timeout has FLAG_ENV_OVERRIDE, so it should still be from environment
-	fprintf(stderr, "timeout: %d\n", cargs_get_value(cargs, "timeout").as_int);
-    cr_assert_eq(cargs_get_value(cargs, "timeout").as_int, 60, "Timeout with FLAG_ENV_OVERRIDE should be from environment");
+	fprintf(stderr, "timeout: %d\n", cargs_get(cargs, "timeout").as_int);
+    cr_assert_eq(cargs_get(cargs, "timeout").as_int, 60, "Timeout with FLAG_ENV_OVERRIDE should be from environment");
     
     cargs_free(&cargs);
 }

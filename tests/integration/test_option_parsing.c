@@ -27,7 +27,7 @@ Test(option_parsing, short_options)
     cr_assert_eq(status, CARGS_SUCCESS, "Parsing failed with status %d", status);
     
     // Assert values were set correctly
-    cr_assert_str_eq(cargs_get_value(cargs, "string").as_string, "test_value");
-    cr_assert_eq(cargs_get_value(cargs, "int").as_int, 123);
-    cr_assert_eq(cargs_get_value(cargs, "flag").as_bool, true);
+    cr_assert_str_eq(cargs_get(cargs, "string").as_string, "test_value");
+    cr_assert_eq(cargs_get(cargs, "int").as_int, 123);
+    cr_assert_eq(cargs_get(cargs, "flag").as_bool, true);
 }

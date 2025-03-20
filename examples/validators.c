@@ -88,11 +88,11 @@ int main(int argc, char **argv) {
     }
     
     // Access parsed values
-    int port = cargs_get_value(cargs, "port").as_int;
-    const char* log_level = cargs_get_value(cargs, "log-level").as_string;
-    int number = cargs_get_value(cargs, "number").as_int;
+    int port = cargs_get(cargs, "port").as_int;
+    const char* log_level = cargs_get(cargs, "log-level").as_string;
+    int number = cargs_get(cargs, "number").as_int;
     const char* email = cargs_is_set(cargs, "email") ? 
-                        cargs_get_value(cargs, "email").as_string : "not set";
+                        cargs_get(cargs, "email").as_string : "not set";
     
     printf("Validated values:\n");
     printf("  Port: %d (range: 1-65535)\n", port);

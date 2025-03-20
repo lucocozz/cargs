@@ -12,10 +12,10 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    
+
     // Optional flag
     OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    
+
     // Required positional arguments must come before optional ones
     POSITIONAL_STRING("source", "Source file", 
                     HINT("SRC")),
@@ -46,15 +46,15 @@ int main(int argc, char **argv)
     }
     
     // Access required positional arguments
-    const char* source = cargs_get_value(cargs, "source").as_string;
-    const char* destination = cargs_get_value(cargs, "destination").as_string;
+    const char* source = cargs_get(cargs, "source").as_string;
+    const char* destination = cargs_get(cargs, "destination").as_string;
     
     // Access optional positional arguments
-    int buffer_size = cargs_get_value(cargs, "buffer_size").as_int;
+    int buffer_size = cargs_get(cargs, "buffer_size").as_int;
     
     // Optional argument may not be set
     const char* log_file = cargs_is_set(cargs, "log_file") ? 
-                          cargs_get_value(cargs, "log_file").as_string : 
+                          cargs_get(cargs, "log_file").as_string : 
                           "(none)";
     
     printf("Configuration:\n");

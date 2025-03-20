@@ -55,7 +55,7 @@ CARGS_OPTIONS(
                     FLAGS(FLAG_SORTED_VALUE)),
                     
     OPTION_MAP_BOOL('\0', "flags", "Feature flags configuration",
-                   HINT("FLAG"))
+                    HINT("FLAG"))
 )
 
 // Process arrays using direct approach (original)
@@ -64,8 +64,8 @@ void process_arrays_direct(cargs_t cargs) {
     
     // Handle array of strings
     if (cargs_is_set(cargs, "names")) {
-        value_t *names = cargs_get_value(cargs, "names").as_array;
-        size_t count = cargs_get_value_count(cargs, "names");
+        value_t *names = cargs_get(cargs, "names").as_array;
+        size_t count = cargs_count(cargs, "names");
         
         printf("Names array (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i)
@@ -75,8 +75,8 @@ void process_arrays_direct(cargs_t cargs) {
 
     // Handle array of integers
     if (cargs_is_set(cargs, "ids")) {
-        value_t *ids = cargs_get_value(cargs, "ids").as_array;
-        size_t count = cargs_get_value_count(cargs, "ids");
+        value_t *ids = cargs_get(cargs, "ids").as_array;
+        size_t count = cargs_count(cargs, "ids");
         
         printf("ID numbers array (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i)
@@ -89,8 +89,8 @@ void process_arrays_direct(cargs_t cargs) {
 void process_maps_direct(cargs_t cargs) {
     // Handle map of strings
     if (cargs_is_set(cargs, "env")) {
-        cargs_pair_t *env = cargs_get_value(cargs, "env").as_map;
-        size_t count = cargs_get_value_count(cargs, "env");
+        cargs_pair_t *env = cargs_get(cargs, "env").as_map;
+        size_t count = cargs_count(cargs, "env");
         
         printf("Environment variables (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
@@ -103,8 +103,8 @@ void process_maps_direct(cargs_t cargs) {
 
     // Handle map of integers
     if (cargs_is_set(cargs, "ports")) {
-        cargs_pair_t *ports = cargs_get_value(cargs, "ports").as_map;
-        size_t count = cargs_get_value_count(cargs, "ports");
+        cargs_pair_t *ports = cargs_get(cargs, "ports").as_map;
+        size_t count = cargs_count(cargs, "ports");
         
         printf("Port mappings (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
@@ -117,8 +117,8 @@ void process_maps_direct(cargs_t cargs) {
 
     // Handle map of floats
     if (cargs_is_set(cargs, "scales")) {
-        cargs_pair_t *scales = cargs_get_value(cargs, "scales").as_map;
-        size_t count = cargs_get_value_count(cargs, "scales");
+        cargs_pair_t *scales = cargs_get(cargs, "scales").as_map;
+        size_t count = cargs_count(cargs, "scales");
         
         printf("Scaling factors (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
@@ -131,8 +131,8 @@ void process_maps_direct(cargs_t cargs) {
 
     // Handle map of booleans
     if (cargs_is_set(cargs, "flags")) {
-        cargs_pair_t *flags = cargs_get_value(cargs, "flags").as_map;
-        size_t count = cargs_get_value_count(cargs, "flags");
+        cargs_pair_t *flags = cargs_get(cargs, "flags").as_map;
+        size_t count = cargs_count(cargs, "flags");
         
         printf("Feature flags (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
@@ -150,11 +150,11 @@ void process_arrays_element(cargs_t cargs) {
     
     // Handle array of strings
     if (cargs_is_set(cargs, "names")) {
-        size_t count = cargs_get_value_count(cargs, "names");
+        size_t count = cargs_count(cargs, "names");
         
         printf("Names array (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
-            const char* name = cargs_get_array_element(cargs, "names", i).as_string;
+            const char* name = cargs_array_get(cargs, "names", i).as_string;
             printf("  [%zu]: \"%s\"\n", i, name);
         }
         printf("\n");
@@ -162,11 +162,11 @@ void process_arrays_element(cargs_t cargs) {
 
     // Handle array of integers
     if (cargs_is_set(cargs, "ids")) {
-        size_t count = cargs_get_value_count(cargs, "ids");
+        size_t count = cargs_count(cargs, "ids");
         
         printf("ID numbers array (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
-            int id = cargs_get_array_element(cargs, "ids", i).as_int;
+            int id = cargs_array_get(cargs, "ids", i).as_int;
             printf("  [%zu]: %d\n", i, id);
         }
         printf("\n");
@@ -181,12 +181,12 @@ void process_maps_element(cargs_t cargs) {
     if (cargs_is_set(cargs, "env")) {
         printf("Direct key lookups:\n");
         
-        const char* user = cargs_get_map_value(cargs, "env", "USER").as_string;
+        const char* user = cargs_map_get(cargs, "env", "USER").as_string;
         if (user) {
             printf("  USER = %s\n", user);
         }
         
-        const char* home = cargs_get_map_value(cargs, "env", "HOME").as_string;
+        const char* home = cargs_map_get(cargs, "env", "HOME").as_string;
         if (home) {
             printf("  HOME = %s\n", home);
         }
@@ -197,12 +197,12 @@ void process_maps_element(cargs_t cargs) {
     if (cargs_is_set(cargs, "ports")) {
         printf("Common port lookups:\n");
         
-        int http = cargs_get_map_value(cargs, "ports", "http").as_int;
+        int http = cargs_map_get(cargs, "ports", "http").as_int;
         if (http) {
             printf("  HTTP port: %d\n", http);
         }
         
-        int https = cargs_get_map_value(cargs, "ports", "https").as_int;
+        int https = cargs_map_get(cargs, "ports", "https").as_int;
         if (https) {
             printf("  HTTPS port: %d\n", https);
         }
@@ -213,13 +213,13 @@ void process_maps_element(cargs_t cargs) {
 
     // Handle map of strings
     if (cargs_is_set(cargs, "env")) {
-        size_t count = cargs_get_value_count(cargs, "env");
-        cargs_pair_t *env = cargs_get_value(cargs, "env").as_map;
+        size_t count = cargs_count(cargs, "env");
+        cargs_pair_t *env = cargs_get(cargs, "env").as_map;
         
         printf("Environment variables (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
             const char *key = env[i].key;
-            const char *value = cargs_get_map_value(cargs, "env", key).as_string;
+            const char *value = cargs_map_get(cargs, "env", key).as_string;
             printf("  '%s' => '%s'\n", key, value);
         }
         printf("\n");
@@ -227,13 +227,13 @@ void process_maps_element(cargs_t cargs) {
 
     // Handle map of integers (similarly for other maps)
     if (cargs_is_set(cargs, "ports")) {
-        size_t count = cargs_get_value_count(cargs, "ports");
-        cargs_pair_t *ports = cargs_get_value(cargs, "ports").as_map;
+        size_t count = cargs_count(cargs, "ports");
+        cargs_pair_t *ports = cargs_get(cargs, "ports").as_map;
         
         printf("Port mappings (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
             const char *key = ports[i].key;
-            int value = cargs_get_map_value(cargs, "ports", key).as_int;
+            int value = cargs_map_get(cargs, "ports", key).as_int;
             printf("  '%s' => %d\n", key, value);
         }
         printf("\n");
@@ -361,7 +361,7 @@ int main(int argc, char **argv)
         return status;
 
     // Get the selected approach
-    int approach = cargs_get_value(cargs, "approach").as_int;
+    int approach = cargs_get(cargs, "approach").as_int;
     
     // Process data using the selected approach
     switch (approach) {

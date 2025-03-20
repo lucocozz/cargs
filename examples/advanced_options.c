@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     }
     
     // Access input
-    const char* input = cargs_get_value(cargs, "input").as_string;
+    const char* input = cargs_get(cargs, "input").as_string;
     printf("Processing file: %s\n", input);
     
     // Check compression options
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     if (cargs_is_set(cargs, "gzip") || 
         cargs_is_set(cargs, "bzip2") || 
         cargs_is_set(cargs, "lzma")) {
-        int level = cargs_get_value(cargs, "level").as_int;
+        int level = cargs_get(cargs, "level").as_int;
         printf(" (level %d)\n", level);
     } else {
         printf("\n");
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     
     // Check authentication
     if (cargs_is_set(cargs, "username")) {
-        const char* username = cargs_get_value(cargs, "username").as_string;
+        const char* username = cargs_get(cargs, "username").as_string;
         printf("Authenticated as: %s\n", username);
     }
     

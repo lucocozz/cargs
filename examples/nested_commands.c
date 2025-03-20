@@ -96,18 +96,18 @@ int service_create_action(cargs_t *cargs, void *data) {
     
     // 1. Relative path (relative to current subcommand)
     // - When inside "service create" handler, "name" refers to "service.create.name"
-    const char* name = cargs_get_value(*cargs, "name").as_string;
-    const char* image = cargs_get_value(*cargs, "image").as_string;
+    const char* name = cargs_get(*cargs, "name").as_string;
+    const char* image = cargs_get(*cargs, "image").as_string;
     
     // 2. Absolute path (full path from root)
     // - Explicitly specifies the full path
-    const char* name_abs = cargs_get_value(*cargs, "service.create.name").as_string;
+    const char* name_abs = cargs_get(*cargs, "service.create.name").as_string;
     (void)name_abs;
     
     // 3. Root-level path (access options at root level)
     // - Starts with "." to force root level
-    const char* output = cargs_get_value(*cargs, ".output").as_string;
-    bool debug = cargs_get_value(*cargs, ".debug").as_bool;
+    const char* output = cargs_get(*cargs, ".output").as_string;
+    bool debug = cargs_get(*cargs, ".debug").as_bool;
     
     printf("Creating service '%s' using image '%s'\n", name, image);
     printf("Output file: %s\n", output);
@@ -127,10 +127,10 @@ int service_list_action(cargs_t *cargs, void *data) {
     (void)data;
     
     // Relative path (within current subcommand context)
-    bool all = cargs_get_value(*cargs, "all").as_bool;
+    bool all = cargs_get(*cargs, "all").as_bool;
     
     // Root-level option
-    bool debug = cargs_get_value(*cargs, ".debug").as_bool;
+    bool debug = cargs_get(*cargs, ".debug").as_bool;
     
     printf("Listing services (all=%s)\n", all ? "true" : "false");
     if (debug) printf("Debug mode enabled\n");
@@ -149,11 +149,11 @@ int config_set_action(cargs_t *cargs, void *data) {
     (void)data;
     
     // Access positional arguments (relative path)
-    const char* key = cargs_get_value(*cargs, "key").as_string;
-    const char* value = cargs_get_value(*cargs, "value").as_string;
+    const char* key = cargs_get(*cargs, "key").as_string;
+    const char* value = cargs_get(*cargs, "value").as_string;
     
     // Alternative: absolute path
-    const char* key_abs = cargs_get_value(*cargs, "config.set.key").as_string;
+    const char* key_abs = cargs_get(*cargs, "config.set.key").as_string;
     (void)key_abs;
     
     // Check if positional arguments are set
@@ -169,7 +169,7 @@ int config_set_action(cargs_t *cargs, void *data) {
 
 int config_get_action(cargs_t *cargs, void *data) {
     (void)data;
-    const char* key = cargs_get_value(*cargs, "config.get.key").as_string;
+    const char* key = cargs_get(*cargs, "config.get.key").as_string;
     
     printf("Getting config value for '%s'\n", key);
     return 0;
@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
     }
     
     // Root-level options can be accessed directly from main
-    bool debug = cargs_get_value(cargs, "debug").as_bool;
+    bool debug = cargs_get(cargs, "debug").as_bool;
     if (debug) {
         printf("[Debug mode enabled at root level]\n");
     }
@@ -211,8 +211,8 @@ int main(int argc, char **argv) {
         }
     }
     
-    if (cargs_have_subcommand(cargs)) {
-        status = cargs_execute_command(&cargs, NULL);
+    if (cargs_has_command(cargs)) {
+        status = cargs_exec(&cargs, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
     }

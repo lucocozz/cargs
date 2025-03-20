@@ -24,11 +24,11 @@ Test(multi_values, array_string)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Array of strings should parse successfully");
-    cr_assert_eq(cargs_get_value_count(cargs, "strings"), 3, "Should have 3 values");
+    cr_assert_eq(cargs_count(cargs, "strings"), 3, "Should have 3 values");
     
-    cr_assert_str_eq(cargs_get_array_element(cargs, "strings", 0).as_string, "one");
-    cr_assert_str_eq(cargs_get_array_element(cargs, "strings", 1).as_string, "three");
-    cr_assert_str_eq(cargs_get_array_element(cargs, "strings", 2).as_string, "two");
+    cr_assert_str_eq(cargs_array_get(cargs, "strings", 0).as_string, "one");
+    cr_assert_str_eq(cargs_array_get(cargs, "strings", 1).as_string, "three");
+    cr_assert_str_eq(cargs_array_get(cargs, "strings", 2).as_string, "two");
     
     cargs_free(&cargs);
 }
@@ -43,11 +43,11 @@ Test(multi_values, array_int)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Array of integers should parse successfully");
-    cr_assert_eq(cargs_get_value_count(cargs, "ints"), 3, "Should have 3 unique values");
+    cr_assert_eq(cargs_count(cargs, "ints"), 3, "Should have 3 unique values");
     
-    cr_assert_eq(cargs_get_array_element(cargs, "ints", 0).as_int, 1);
-    cr_assert_eq(cargs_get_array_element(cargs, "ints", 1).as_int, 3);
-    cr_assert_eq(cargs_get_array_element(cargs, "ints", 2).as_int, 5);
+    cr_assert_eq(cargs_array_get(cargs, "ints", 0).as_int, 1);
+    cr_assert_eq(cargs_array_get(cargs, "ints", 1).as_int, 3);
+    cr_assert_eq(cargs_array_get(cargs, "ints", 2).as_int, 5);
     
     cargs_free(&cargs);
 }
@@ -62,10 +62,10 @@ Test(multi_values, array_int_range)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Array range should parse successfully");
-    cr_assert_eq(cargs_get_value_count(cargs, "ints"), 5, "Should expand to 5 values");
+    cr_assert_eq(cargs_count(cargs, "ints"), 5, "Should expand to 5 values");
     
     for (int i = 0; i < 5; i++) {
-        cr_assert_eq(cargs_get_array_element(cargs, "ints", i).as_int, i + 1);
+        cr_assert_eq(cargs_array_get(cargs, "ints", i).as_int, i + 1);
     }
     
     cargs_free(&cargs);
@@ -81,11 +81,11 @@ Test(multi_values, map_string)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Map of strings should parse successfully");
-    cr_assert_eq(cargs_get_value_count(cargs, "env"), 3, "Should have 3 key-value pairs");
+    cr_assert_eq(cargs_count(cargs, "env"), 3, "Should have 3 key-value pairs");
     
-    cr_assert_str_eq(cargs_get_map_value(cargs, "env", "HOME").as_string, "/home/user");
-    cr_assert_str_eq(cargs_get_map_value(cargs, "env", "USER").as_string, "test");
-    cr_assert_str_eq(cargs_get_map_value(cargs, "env", "SHELL").as_string, "/bin/bash");
+    cr_assert_str_eq(cargs_map_get(cargs, "env", "HOME").as_string, "/home/user");
+    cr_assert_str_eq(cargs_map_get(cargs, "env", "USER").as_string, "test");
+    cr_assert_str_eq(cargs_map_get(cargs, "env", "SHELL").as_string, "/bin/bash");
     
     cargs_free(&cargs);
 }

@@ -36,10 +36,10 @@ Test(basic_usage, successful_parse)
     cr_assert_eq(status, CARGS_SUCCESS, "Parsing failed with status %d", status);
     
     // Check values
-    cr_assert_eq(cargs_get_value(cargs, "verbose").as_bool, true);
-    cr_assert_str_eq(cargs_get_value(cargs, "output").as_string, "custom.txt");
-    cr_assert_eq(cargs_get_value(cargs, "port").as_int, 9000);
-    cr_assert_str_eq(cargs_get_value(cargs, "input").as_string, "input.txt");
+    cr_assert_eq(cargs_get(cargs, "verbose").as_bool, true);
+    cr_assert_str_eq(cargs_get(cargs, "output").as_string, "custom.txt");
+    cr_assert_eq(cargs_get(cargs, "port").as_int, 9000);
+    cr_assert_str_eq(cargs_get(cargs, "input").as_string, "input.txt");
     
     // Clean up
     cargs_free(&cargs);

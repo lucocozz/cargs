@@ -81,11 +81,11 @@ Test(subcommands, basic_parsing, .init = reset)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_eq(status, CARGS_SUCCESS, "Valid subcommand should parse successfully");
-    cr_assert(cargs_have_subcommand(cargs), "cargs_have_subcommand should return true");
+    cr_assert(cargs_has_command(cargs), "cargs_has_command should return true");
     cr_assert(cargs_is_set(cargs, "add"), "add subcommand should be set");
     
     // Execute the command
-    status = cargs_execute_command(&cargs, NULL);
+    status = cargs_exec(&cargs, NULL);
     cr_assert_eq(status, 0, "Command execution should succeed");
     cr_assert(add_executed, "Add command should have been executed");
     cr_assert_not(remove_executed, "Remove command should not have been executed");
@@ -105,7 +105,7 @@ Test(subcommands, with_options, .init = reset)
     
     cr_assert_eq(status, CARGS_SUCCESS, "Subcommand with options should parse successfully");
     cr_assert(cargs_is_set(cargs, "add.force"), "Force option should be set");
-    cr_assert_str_eq(cargs_get_value(cargs, "add.file").as_string, "file.txt", "File argument should be parsed");
+    cr_assert_str_eq(cargs_get(cargs, "add.file").as_string, "file.txt", "File argument should be parsed");
     
     cargs_free(&cargs);
 }
