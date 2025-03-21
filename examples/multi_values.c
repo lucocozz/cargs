@@ -59,11 +59,13 @@ CARGS_OPTIONS(
 )
 
 // Process arrays using direct approach (original)
-void process_arrays_direct(cargs_t cargs) {
+void process_arrays_direct(cargs_t cargs)
+{
     printf("=== APPROACH 1: DIRECT ACCESS ===\n\n");
     
     // Handle array of strings
-    if (cargs_is_set(cargs, "names")) {
+    if (cargs_is_set(cargs, "names"))
+    {
         value_t *names = cargs_get(cargs, "names").as_array;
         size_t count = cargs_count(cargs, "names");
         
@@ -74,7 +76,8 @@ void process_arrays_direct(cargs_t cargs) {
     }
 
     // Handle array of integers
-    if (cargs_is_set(cargs, "ids")) {
+    if (cargs_is_set(cargs, "ids"))
+    {
         value_t *ids = cargs_get(cargs, "ids").as_array;
         size_t count = cargs_count(cargs, "ids");
         
@@ -86,9 +89,11 @@ void process_arrays_direct(cargs_t cargs) {
 }
 
 // Process maps using direct approach (original)
-void process_maps_direct(cargs_t cargs) {
+void process_maps_direct(cargs_t cargs)
+{
     // Handle map of strings
-    if (cargs_is_set(cargs, "env")) {
+    if (cargs_is_set(cargs, "env"))
+    {
         cargs_pair_t *env = cargs_get(cargs, "env").as_map;
         size_t count = cargs_count(cargs, "env");
         
@@ -102,21 +107,23 @@ void process_maps_direct(cargs_t cargs) {
     }
 
     // Handle map of integers
-    if (cargs_is_set(cargs, "ports")) {
+    if (cargs_is_set(cargs, "ports"))
+    {
         cargs_pair_t *ports = cargs_get(cargs, "ports").as_map;
         size_t count = cargs_count(cargs, "ports");
         
         printf("Port mappings (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
-            printf("  '%s' => %ld\n", 
+            printf("  '%s' => %d\n", 
                    ports[i].key, 
-                   ports[i].value.as_int64);
+                   ports[i].value.as_int);
         }
         printf("\n");
     }
 
     // Handle map of floats
-    if (cargs_is_set(cargs, "scales")) {
+    if (cargs_is_set(cargs, "scales"))
+    {
         cargs_pair_t *scales = cargs_get(cargs, "scales").as_map;
         size_t count = cargs_count(cargs, "scales");
         
@@ -130,7 +137,8 @@ void process_maps_direct(cargs_t cargs) {
     }
 
     // Handle map of booleans
-    if (cargs_is_set(cargs, "flags")) {
+    if (cargs_is_set(cargs, "flags"))
+    {
         cargs_pair_t *flags = cargs_get(cargs, "flags").as_map;
         size_t count = cargs_count(cargs, "flags");
         
@@ -145,7 +153,8 @@ void process_maps_direct(cargs_t cargs) {
 }
 
 // Process arrays using element access helpers
-void process_arrays_element(cargs_t cargs) {
+void process_arrays_element(cargs_t cargs)
+{
     printf("=== APPROACH 2: ELEMENT ACCESS HELPERS ===\n\n");
     
     // Handle array of strings
@@ -161,7 +170,8 @@ void process_arrays_element(cargs_t cargs) {
     }
 
     // Handle array of integers
-    if (cargs_is_set(cargs, "ids")) {
+    if (cargs_is_set(cargs, "ids"))
+    {
         size_t count = cargs_count(cargs, "ids");
         
         printf("ID numbers array (%zu items):\n", count);
@@ -174,45 +184,45 @@ void process_arrays_element(cargs_t cargs) {
 }
 
 // Process maps using element access helpers
-void process_maps_element(cargs_t cargs) {
+void process_maps_element(cargs_t cargs)
+{
     // First show direct key access examples
 
     // Handle map of strings
-    if (cargs_is_set(cargs, "env")) {
+    if (cargs_is_set(cargs, "env"))
+    {
         printf("Direct key lookups:\n");
         
         const char* user = cargs_map_get(cargs, "env", "USER").as_string;
-        if (user) {
+        if (user)
             printf("  USER = %s\n", user);
-        }
-        
+
         const char* home = cargs_map_get(cargs, "env", "HOME").as_string;
-        if (home) {
+        if (home)
             printf("  HOME = %s\n", home);
-        }
         printf("\n");
     }
 
     // Handle map of integers with direct key access
-    if (cargs_is_set(cargs, "ports")) {
+    if (cargs_is_set(cargs, "ports"))
+    {
         printf("Common port lookups:\n");
         
         int http = cargs_map_get(cargs, "ports", "http").as_int;
-        if (http) {
+        if (http)
             printf("  HTTP port: %d\n", http);
-        }
-        
+
         int https = cargs_map_get(cargs, "ports", "https").as_int;
-        if (https) {
+        if (https)
             printf("  HTTPS port: %d\n", https);
-        }
         printf("\n");
     }
 
     // Now show complete listings using regular iteration with map value helper
 
     // Handle map of strings
-    if (cargs_is_set(cargs, "env")) {
+    if (cargs_is_set(cargs, "env"))
+    {
         size_t count = cargs_count(cargs, "env");
         cargs_pair_t *env = cargs_get(cargs, "env").as_map;
         
@@ -226,7 +236,8 @@ void process_maps_element(cargs_t cargs) {
     }
 
     // Handle map of integers (similarly for other maps)
-    if (cargs_is_set(cargs, "ports")) {
+    if (cargs_is_set(cargs, "ports"))
+    {
         size_t count = cargs_count(cargs, "ports");
         cargs_pair_t *ports = cargs_get(cargs, "ports").as_map;
         
@@ -245,106 +256,90 @@ void process_arrays_iterator(cargs_t cargs) {
     printf("=== APPROACH 3: ITERATORS ===\n\n");
     
     // Handle array of strings
-    if (cargs_is_set(cargs, "names")) {
-        cargs_array_iterator_t it = cargs_array_iterator(cargs, "names");
-        value_t value;
-        int i = 0;
-        
-        printf("Names array (%zu items):\n", it.count);
-        while (cargs_array_next(&it, &value)) {
-            printf("  [%d]: \"%s\"\n", i++, value.as_string);
-        }
+    if (cargs_is_set(cargs, "names"))
+    {
+        cargs_array_it_t it = cargs_array_it(cargs, "names");
+
+        printf("Names array (%zu items):\n", it._count);
+        for (int i = 0; cargs_array_next(&it); i++)
+            printf("  [%d]: \"%s\"\n", i++, it.value.as_string);
         printf("\n");
     }
 
     // Handle array of integers
-    if (cargs_is_set(cargs, "ids")) {
-        cargs_array_iterator_t it = cargs_array_iterator(cargs, "ids");
-        value_t value;
-        int i = 0;
-        
-        printf("ID numbers array (%zu items):\n", it.count);
-        while (cargs_array_next(&it, &value)) {
-            printf("  [%d]: %d\n", i++, value.as_int);
-        }
+    if (cargs_is_set(cargs, "ids"))
+    {
+        cargs_array_it_t it = cargs_array_it(cargs, "ids");
+
+        printf("ID numbers array (%zu items):\n", it._count);
+        for (int i = 0; cargs_array_next(&it); i++)
+            printf("  [%d]: %d\n", i++, it.value.as_int);
         printf("\n");
     }
 }
 
 // Process maps using iterator approach
-void process_maps_iterator(cargs_t cargs) {
+void process_maps_iterator(cargs_t cargs)
+{
     // Handle map of strings
-    if (cargs_is_set(cargs, "env")) {
-        cargs_map_iterator_t it = cargs_map_iterator(cargs, "env");
-        const char *key;
-        value_t value;
-        
-        printf("Environment variables (%zu items):\n", it.count);
-        while (cargs_map_next(&it, &key, &value)) {
-            printf("  '%s' => '%s'\n", key, value.as_string);
-        }
+    if (cargs_is_set(cargs, "env"))
+    {
+        cargs_map_it_t it = cargs_map_it(cargs, "env");
+
+        printf("Environment variables (%zu items):\n", it._count);
+        for (int i = 0; cargs_map_next(&it); i++)
+            printf("  '%s' => '%s'\n", it.key, it.value.as_string);
         printf("\n");
     }
 
     // Handle map of integers
-    if (cargs_is_set(cargs, "ports")) {
-        cargs_map_iterator_t it = cargs_map_iterator(cargs, "ports");
-        const char *key;
-        value_t value;
-        
-        printf("Port mappings (%zu items):\n", it.count);
-        while (cargs_map_next(&it, &key, &value)) {
-            printf("  '%s' => %ld\n", key, value.as_int64);
-        }
+    if (cargs_is_set(cargs, "ports"))
+    {
+        cargs_map_it_t it = cargs_map_it(cargs, "ports");
+
+        printf("Port mappings (%zu items):\n", it._count);
+        for (int i = 0; cargs_map_next(&it); i++)
+            printf("  '%s' => %d\n", it.key, it.value.as_int);
         printf("\n");
     }
 
     // Handle map of floats
-    if (cargs_is_set(cargs, "scales")) {
-        cargs_map_iterator_t it = cargs_map_iterator(cargs, "scales");
-        const char *key;
-        value_t value;
-        
-        printf("Scaling factors (%zu items):\n", it.count);
-        while (cargs_map_next(&it, &key, &value)) {
-            printf("  '%s' => %.3f\n", key, value.as_float);
-        }
+    if (cargs_is_set(cargs, "scales"))
+    {
+        cargs_map_it_t it = cargs_map_it(cargs, "scales");
+
+        printf("Scaling factors (%zu items):\n", it._count);
+        for (int i = 0; cargs_map_next(&it); i++)
+            printf("  '%s' => %.3f\n", it.key, it.value.as_float);
         printf("\n");
     }
 
     // Handle map of booleans
-    if (cargs_is_set(cargs, "flags")) {
-        cargs_map_iterator_t it = cargs_map_iterator(cargs, "flags");
-        const char *key;
-        value_t value;
-        
-        printf("Feature flags (%zu items):\n", it.count);
-        while (cargs_map_next(&it, &key, &value)) {
-            printf("  '%s' => %s\n", key, value.as_bool ? "enabled" : "disabled");
-        }
+    if (cargs_is_set(cargs, "flags"))
+    {
+        cargs_map_it_t it = cargs_map_it(cargs, "flags");
+
+        printf("Feature flags (%zu items):\n", it._count);
+        for (int i = 0; cargs_map_next(&it); i++)
+            printf("  '%s' => %s\n", it.key, it.value.as_bool ? "enabled" : "disabled");
         printf("\n");
     }
 
     // Example of iterator re-use for multiple scans
-    if (cargs_is_set(cargs, "flags")) {
-        cargs_map_iterator_t it = cargs_map_iterator(cargs, "flags");
-        const char *key;
-        value_t value;
-        
+    if (cargs_is_set(cargs, "flags"))
+    {
+        cargs_map_it_t it = cargs_map_it(cargs, "flags");
+
         printf("Enabled features only:\n");
-        while (cargs_map_next(&it, &key, &value)) {
-            if (value.as_bool) {
-                printf("  '%s'\n", key);
-            }
-        }
-        
+        for (int i = 0; cargs_map_next(&it); i++)
+            if (it.value.as_bool)
+                printf("  '%s'\n", it.key);
+
         printf("\nDisabled features only:\n");
         cargs_map_reset(&it);  // Reset the iterator for second pass
-        while (cargs_map_next(&it, &key, &value)) {
-            if (!value.as_bool) {
-                printf("  '%s'\n", key);
-            }
-        }
+        for (int i = 0; cargs_map_next(&it); i++)
+            if (!it.value.as_bool)
+                printf("  '%s'\n", it.key);
         printf("\n");
     }
 }

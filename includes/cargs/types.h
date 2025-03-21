@@ -136,19 +136,22 @@ typedef struct cargs_pair_s {
  * Array iterator structure to efficiently iterate over array elements
  */
 typedef struct cargs_array_iterator_s {
-    value_t     *array;     /* Pointer to the array */
-    size_t      count;      /* Number of elements */
-    size_t      current;    /* Current position */
-} cargs_array_iterator_t;
+    value_t     *_array;    /* Pointer to the array */
+    size_t      _count;     /* Number of elements */
+    size_t      _position;  /* Current position */
+    value_t     value;      /* Current value */
+} cargs_array_it_t;
 
 /**
  * Map iterator structure to efficiently iterate over key-value pairs
  */
 typedef struct cargs_map_iterator_s {
-    cargs_pair_t    *map;       /* Pointer to the map */
-    size_t          count;      /* Number of elements */
-    size_t          current;    /* Current position */
-} cargs_map_iterator_t;
+    cargs_pair_t    *_map;      /* Pointer to the map */
+    size_t          _count;     /* Number of elements */
+    size_t          _position;  /* Current position */
+    const char      *key;       /* Current key */
+    value_t         value;      /* Current value */
+} cargs_map_it_t;
 
 /**
  * range_t - Min/max range for numeric validation

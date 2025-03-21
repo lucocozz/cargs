@@ -124,59 +124,56 @@ value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
 value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
 
 /**
- * cargs_array_iterator - Create an iterator for efficiently traversing an array option
+ * cargs_array_it - Create an iterator for efficiently traversing an array option
  *
  * @param cargs        Cargs context
  * @param option_path  Option path (name or subcommand.name format)
  *
  * @return Iterator structure for the array, with count=0 if option not found
  */
-cargs_array_iterator_t cargs_array_iterator(cargs_t cargs, const char *option_path);
+cargs_array_it_t cargs_array_it(cargs_t cargs, const char *option_path);
 
 /**
  * cargs_array_next - Get the next element from an array iterator
  *
  * @param it      Array iterator
- * @param value   Pointer to store the next value
  *
  * @return true if a value was retrieved, false if end of array
  */
-bool cargs_array_next(cargs_array_iterator_t *it, value_t *value);
+bool cargs_array_next(cargs_array_it_t *it);
 
 /**
  * cargs_array_reset - Reset an array iterator to the beginning
  *
  * @param it  Array iterator to reset
  */
-void cargs_array_reset(cargs_array_iterator_t *it);
+void cargs_array_reset(cargs_array_it_t *it);
 
 /**
- * cargs_map_iterator - Create an iterator for efficiently traversing a map option
+ * cargs_map_it - Create an iterator for efficiently traversing a map option
  *
  * @param cargs        Cargs context
  * @param option_path  Option path (name or subcommand.name format)
  *
  * @return Iterator structure for the map, with count=0 if option not found
  */
-cargs_map_iterator_t cargs_map_iterator(cargs_t cargs, const char *option_path);
+cargs_map_it_t cargs_map_it(cargs_t cargs, const char *option_path);
 
 /**
  * cargs_map_next - Get the next key-value pair from a map iterator
  *
  * @param it    Map iterator
- * @param key   Pointer to store the next key (can be NULL if not needed)
- * @param value Pointer to store the next value (can be NULL if not needed)
  *
  * @return true if a pair was retrieved, false if end of map
  */
-bool cargs_map_next(cargs_map_iterator_t *it, const char **key, value_t *value);
+bool cargs_map_next(cargs_map_it_t *it);
 
 /**
  * cargs_map_reset - Reset a map iterator to the beginning
  *
  * @param it  Map iterator to reset
  */
-void cargs_map_reset(cargs_map_iterator_t *it);
+void cargs_map_reset(cargs_map_it_t *it);
 
 
 #endif /* CARGS_API_H */

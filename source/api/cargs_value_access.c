@@ -72,67 +72,67 @@ value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key)
 }
 
 
-cargs_array_iterator_t cargs_array_iterator(cargs_t cargs, const char *option_path)
+cargs_array_it_t cargs_array_it(cargs_t cargs, const char *option_path)
 {
-	cargs_array_iterator_t it = {0};
+	cargs_array_it_t it = {0};
 	cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 	
 	if (option == NULL || !(option->value_type & VALUE_TYPE_ARRAY))
 		return it;  // Return empty iterator
 	
-	it.array = option->value.as_array;
-	it.count = option->value_count;
-	it.current = 0;
+	it._array = option->value.as_array;
+	it._count = option->value_count;
+	it._position = 0;
 	return it;
 }
 
-bool cargs_array_next(cargs_array_iterator_t *it, value_t *value)
+bool cargs_array_next(cargs_array_it_t *it)
 {
-	if (it == NULL || value == NULL || it->current >= it->count)
+	if (it == NULL || it->_position >= it->_count)
 		return false;
 	
-	*value = it->array[it->current++];
+	it->value = it->_array[it->_position++];
 	return true;
 }
 
-void cargs_array_reset(cargs_array_iterator_t *it)
+void cargs_array_reset(cargs_array_it_t *it)
 {
 	if (it != NULL)
-		it->current = 0;
+		it->_position = 0;
 }
 
-cargs_map_iterator_t cargs_map_iterator(cargs_t cargs, const char *option_path)
+cargs_map_it_t cargs_map_it(cargs_t cargs, const char *option_path)
 {
-	cargs_map_iterator_t it = {0};
+	cargs_map_it_t it = {0};
 	cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 	
 	if (option == NULL || !(option->value_type & VALUE_TYPE_MAP))
 		return it;  // Return empty iterator
 	
-	it.map = option->value.as_map;
-	it.count = option->value_count;
-	it.current = 0;
+	it._map = option->value.as_map;
+	it._count = option->value_count;
+	it._position = 0;
 	return it;
 }
 
-bool cargs_map_next(cargs_map_iterator_t *it, const char **key, value_t *value)
+bool cargs_map_next(cargs_map_it_t *it, const char **key, value_t *value)
 {
-	if (it == NULL || it->current >= it->count)
+	if (it == NULL || it->_position >= it->_count)
 		return false;
 	
-	cargs_pair_t pair = it->map[it->current++];
+	cargs_pair_t pair = it->_map[it->_position++];
 	
 	if (key != NULL)
-		*key = pair.key;
+		it->key = pair.key;
 	
 	if (value != NULL)
-		*value = pair.value;
+		it->value = pair.value;
 	
-	return true;
+	return (true);
 }
 
-void cargs_map_reset(cargs_map_iterator_t *it)
+void cargs_map_reset(cargs_map_it_t *it)
 {
 	if (it != NULL)
-		it->current = 0;
+		it->_position = 0;
 }

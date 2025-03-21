@@ -64,10 +64,9 @@ Test(multi_values, array_int_range)
     cr_assert_eq(status, CARGS_SUCCESS, "Array range should parse successfully");
     cr_assert_eq(cargs_count(cargs, "ints"), 5, "Should expand to 5 values");
     
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
         cr_assert_eq(cargs_array_get(cargs, "ints", i).as_int, i + 1);
-    }
-    
+
     cargs_free(&cargs);
 }
 
@@ -102,34 +101,33 @@ Test(multi_values, iterators)
     cr_assert_eq(status, CARGS_SUCCESS, "Options should parse successfully");
     
     // Test array iterator
-    cargs_array_iterator_t it = cargs_array_iterator(cargs, "ints");
-    cr_assert_eq(it.count, 3, "Iterator should have 3 elements");
+    cargs_array_it_t it = cargs_array_it(cargs, "ints");
+    cr_assert_eq(it._count, 3, "Iterator should have 3 elements");
     
-    value_t val;
     int count = 0;
-    while (cargs_array_next(&it, &val)) {
+    while (cargs_array_next(&it)) {
         count++;
-        cr_assert_eq(val.as_int, count, "Iterator values should match");
+        cr_assert_eq(it.value.as_int, count, "Iterator values should match");
     }
     cr_assert_eq(count, 3, "Iterator should have yielded 3 values");
     
     // Test map iterator
-    cargs_map_iterator_t map_it = cargs_map_iterator(cargs, "env");
-    cr_assert_eq(map_it.count, 2, "Map iterator should have 2 elements");
+    cargs_map_it_t map_it = cargs_map_it(cargs, "env");
+    cr_assert_eq(map_it._count, 2, "Map iterator should have 2 elements");
     
-    const char *key;
     count = 0;
-    while (cargs_map_next(&map_it, &key, &val))
+    while (cargs_map_next(&map_it))
 	{
         count++;
-        if (strcmp(key, "a") == 0)
-            cr_assert_eq(val.as_int, 1, "Key 'a' should map to 1");
-        else if (strcmp(key, "b") == 0)
-            cr_assert_eq(val.as_int, 2, "Key 'b' should map to 2");
+        if (strcmp(map_it.key, "a") == 0)
+            cr_assert_str_eq(map_it.value.as_string, "1", "Key 'a' should map to \"1\"");
+        else if (strcmp(map_it.key, "b") == 0)
+            cr_assert_str_eq(map_it.value.as_string, "2", "Key 'b' should map to \"2\"");
 		else {
 			cr_assert_fail("Unexpected key");
-			fprintf(stderr, "Unexpected key: %s\n", key);
+			fprintf(stderr, "Unexpected key: %s\n", map_it.key);
 		}
+        
     }
     cr_assert_eq(count, 2, "Map iterator should have yielded 2 key-value pairs");
     
