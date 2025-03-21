@@ -128,7 +128,7 @@ examples:
 # Code quality
 format:
     @echo "Formatting code with clang-format..."
-    @find source includes -name "*.c" -o -name "*.h" | xargs clang-format -i
+    @find source includes -name "*.c" -o -name "*.h" | xargs clang-format -i -style=file
     @echo "Code formatting complete ✅"
 
 lint:

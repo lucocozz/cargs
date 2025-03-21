@@ -2,13 +2,13 @@
  * cargs_display.c - Display functions for cargs
  *
  * This file implements functions for displaying help, usage, and version information.
- * 
+ *
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
-#include <stdio.h>
-#include "cargs/types.h"
 #include "cargs/internal/display.h"
+#include "cargs/types.h"
+#include <stdio.h>
 
 /**
  * cargs_print_help - Print help message for command-line options

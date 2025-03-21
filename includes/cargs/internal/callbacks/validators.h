@@ -3,7 +3,7 @@
  *
  * INTERNAL HEADER - NOT PART OF THE PUBLIC API
  * This header defines standard validator callbacks for different validation types.
- * 
+ *
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
@@ -33,6 +33,5 @@ int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
  * @return Status code (0 for success, non-zero for error)
  */
 int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
-
 
 #endif /* CARGS_INTERNAL_CALLBACKS_VALIDATORS_H */

@@ -1,9 +1,8 @@
 #define PCRE2_CODE_UNIT_WIDTH 8
-#include <pcre2.h>
-#include "cargs/types.h"
 #include "cargs/errors.h"
 #include "cargs/internal/utils.h"
-
+#include "cargs/types.h"
+#include <pcre2.h>
 
 /**
  * regex_validator - Validate a string value against a regular expression
@@ -18,62 +17,44 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
 {
     const char *pattern = data.regex.pattern;
     if (!pattern) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-            "Regular expression pattern is NULL");
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
     }
 
     // Compile the regular expression
-    int errorcode;
-    PCRE2_SIZE erroroffset;
-    pcre2_code *re = pcre2_compile(
-        (PCRE2_SPTR)pattern,
-        PCRE2_ZERO_TERMINATED,
-        0,
-        &errorcode,
-        &erroroffset,
-        NULL
-    );
+    int         errorcode;
+    PCRE2_SIZE  erroroffset;
+    pcre2_code *re = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, 0, &errorcode,
+                                   &erroroffset, NULL);
 
     if (re == NULL) {
         // Failed to compile the regex
         PCRE2_UCHAR buffer[256];
         pcre2_get_error_message(errorcode, buffer, sizeof(buffer));
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
-            "Failed to compile regex '%s': %s", pattern, buffer);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
+                           pattern, buffer);
     }
 
     // Execute the regex against the input string
     pcre2_match_data *match_data = pcre2_match_data_create_from_pattern(re, NULL);
-    int rc = pcre2_match(
-        re,
-        (PCRE2_SPTR)value,
-        PCRE2_ZERO_TERMINATED,
-        0,
-        0,
-        match_data,
-        NULL
-    );
+    int rc = pcre2_match(re, (PCRE2_SPTR)value, PCRE2_ZERO_TERMINATED, 0, 0, match_data, NULL);
 
     // Free resources
     pcre2_match_data_free(match_data);
     pcre2_code_free(re);
 
-    if (rc < 0)
-    {
-        switch (rc)
-        {
+    if (rc < 0) {
+        switch (rc) {
             case PCRE2_ERROR_NOMATCH:
                 if (data.regex.hint && data.regex.hint[0] != '\0') {
+                    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid value '%s': %s",
+                                       value, data.regex.hint);
+                } else {
                     CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                        "Invalid value '%s': %s", value, data.regex.hint);
-                }
-                else {
-                    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                        "Value '%s' does not match the expected format", value);
+                                       "Value '%s' does not match the expected format", value);
                 }
             default:
                 CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
-                    "Internal error: Regex match failed with error code %d", rc);
+                                   "Internal error: Regex match failed with error code %d", rc);
         }
     }
     return (CARGS_SUCCESS);

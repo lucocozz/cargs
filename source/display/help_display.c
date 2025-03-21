@@ -2,43 +2,45 @@
  * help_display.c - Functions for displaying help information
  *
  * This file implements the help display functionality for the cargs library.
- * 
+ *
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
-#include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "cargs/types.h"
-#include "cargs/internal/utils.h"
-#include "cargs/internal/display.h"
 #include "cargs/internal/context.h"
+#include "cargs/internal/display.h"
+#include "cargs/internal/utils.h"
+#include "cargs/types.h"
 
 /*
  * Helper data structures
  */
 
-typedef struct option_entry_s {
-    const cargs_option_t    *option;
-    struct option_entry_s   *next;
+typedef struct option_entry_s
+{
+    const cargs_option_t  *option;
+    struct option_entry_s *next;
 } option_entry_t;
 
-typedef struct group_info_s {
+typedef struct group_info_s
+{
     const char          *name;
     const char          *description;
     option_entry_t      *options;
     struct group_info_s *next;
 } group_info_t;
 
-typedef struct help_data_s {
-    group_info_t    *groups;        // Linked list of option groups
-    option_entry_t  *ungrouped;     // Ungrouped options
-    option_entry_t  *positionals;   // Positional arguments
-    option_entry_t  *subcommands;   // Subcommands
+typedef struct help_data_s
+{
+    group_info_t   *groups;       // Linked list of option groups
+    option_entry_t *ungrouped;    // Ungrouped options
+    option_entry_t *positionals;  // Positional arguments
+    option_entry_t *subcommands;  // Subcommands
 } help_data_t;
-
 
 /*
  * Memory management functions
@@ -49,9 +51,9 @@ static option_entry_t *_create_option_entry(const cargs_option_t *option)
     option_entry_t *entry = malloc(sizeof(option_entry_t));
     if (!entry)
         return NULL;
-    
+
     entry->option = option;
-    entry->next = NULL;
+    entry->next   = NULL;
     return entry;
 }
 
@@ -60,11 +62,10 @@ static void _add_option_to_list(option_entry_t **list, const cargs_option_t *opt
     option_entry_t *entry = _create_option_entry(option);
     if (!entry)
         return;
-    
+
     if (*list == NULL)
         *list = entry;
-    else
-    {
+    else {
         option_entry_t *current = *list;
         while (current->next != NULL)
             current = current->next;
@@ -72,7 +73,8 @@ static void _add_option_to_list(option_entry_t **list, const cargs_option_t *opt
     }
 }
 
-static group_info_t *_find_or_create_group(help_data_t *data, const char *name, const char *description)
+static group_info_t *_find_or_create_group(help_data_t *data, const char *name,
+                                           const char *description)
 {
     // First, look for existing group
     group_info_t *group = data->groups;
@@ -81,17 +83,17 @@ static group_info_t *_find_or_create_group(help_data_t *data, const char *name, 
             return group;
         group = group->next;
     }
-    
+
     // Create new group
     group = malloc(sizeof(group_info_t));
     if (!group)
         return NULL;
-    
-    group->name = name;
+
+    group->name        = name;
     group->description = description;
-    group->options = NULL;
-    group->next = NULL;
-    
+    group->options     = NULL;
+    group->next        = NULL;
+
     // Add to list
     if (data->groups == NULL)
         data->groups = group;
@@ -101,7 +103,7 @@ static group_info_t *_find_or_create_group(help_data_t *data, const char *name, 
             current = current->next;
         current->next = group;
     }
-    
+
     return group;
 }
 
@@ -109,20 +111,19 @@ static void _free_help_data(help_data_t *data)
 {
     // Free groups and their options
     group_info_t *group = data->groups;
-    while (group != NULL)
-    {
+    while (group != NULL) {
         option_entry_t *option = group->options;
         while (option != NULL) {
             option_entry_t *next = option->next;
             free(option);
             option = next;
         }
-        
+
         group_info_t *next_group = group->next;
         free(group);
         group = next_group;
     }
-    
+
     // Free ungrouped options
     option_entry_t *option = data->ungrouped;
     while (option != NULL) {
@@ -130,7 +131,7 @@ static void _free_help_data(help_data_t *data)
         free(option);
         option = next;
     }
-    
+
     // Free positionals
     option = data->positionals;
     while (option != NULL) {
@@ -138,7 +139,7 @@ static void _free_help_data(help_data_t *data)
         free(option);
         option = next;
     }
-    
+
     // Free subcommands
     option = data->subcommands;
     while (option != NULL) {
@@ -154,45 +155,41 @@ static void _free_help_data(help_data_t *data)
 
 static void _organize_options(const cargs_option_t *options, help_data_t *data)
 {
-    const char *current_group = NULL;
-    const char *current_group_desc = NULL;
-    group_info_t *group = NULL;
-    
-    for (int i = 0; options[i].type != TYPE_NONE; ++i)
-    {
+    const char   *current_group      = NULL;
+    const char   *current_group_desc = NULL;
+    group_info_t *group              = NULL;
+
+    for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         const cargs_option_t *option = &options[i];
-        
-        switch (option->type)
-        {
+
+        switch (option->type) {
             case TYPE_GROUP:
-                current_group = option->name;
+                current_group      = option->name;
                 current_group_desc = option->help;
-                group = NULL; // Will be created on demand when options are added
+                group              = NULL;  // Will be created on demand when options are added
                 break;
-                
+
             case TYPE_OPTION:
                 if (option->flags & FLAG_HIDDEN)
                     continue;
-                    
-                if (current_group != NULL)
-                {
+
+                if (current_group != NULL) {
                     // Ensure group exists
                     if (group == NULL)
                         group = _find_or_create_group(data, current_group, current_group_desc);
                     _add_option_to_list(&group->options, option);
-                }
-                else
+                } else
                     _add_option_to_list(&data->ungrouped, option);
                 break;
-                
+
             case TYPE_POSITIONAL:
                 _add_option_to_list(&data->positionals, option);
                 break;
-                
+
             case TYPE_SUBCOMMAND:
                 _add_option_to_list(&data->subcommands, option);
                 break;
-                
+
             default:
                 break;
         }
@@ -207,11 +204,16 @@ static void _organize_options(const cargs_option_t *options, help_data_t *data)
 static const char *_get_base_type_name(value_type_t type)
 {
     switch (type) {
-        case VALUE_TYPE_INT:    return "NUM";
-        case VALUE_TYPE_STRING: return "STR";
-        case VALUE_TYPE_FLOAT:  return "FLOAT";
-        case VALUE_TYPE_BOOL:   return "BOOL";
-        default: return "VALUE";
+        case VALUE_TYPE_INT:
+            return "NUM";
+        case VALUE_TYPE_STRING:
+            return "STR";
+        case VALUE_TYPE_FLOAT:
+            return "FLOAT";
+        case VALUE_TYPE_BOOL:
+            return "BOOL";
+        default:
+            return "VALUE";
     }
 }
 
@@ -228,8 +230,8 @@ static const char *_get_collection_format(value_type_t type)
 // Helper function to format a collection hint
 static char *_format_collection_hint(const char *format, const char *type_name)
 {
-    static char buffer[64]; // Buffer for the formatted string
-    
+    static char buffer[64];  // Buffer for the formatted string
+
     snprintf(buffer, sizeof(buffer), format, type_name);
     return buffer;
 }
@@ -237,7 +239,7 @@ static char *_format_collection_hint(const char *format, const char *type_name)
 static void _print_value_hint(const cargs_option_t *option)
 {
     if (option->value_type == VALUE_TYPE_BOOL)
-        return; // No hint for boolean flags
+        return;  // No hint for boolean flags
 
     // Get the base type name or hint
     const char *type_name;
@@ -245,48 +247,44 @@ static void _print_value_hint(const cargs_option_t *option)
         type_name = option->hint;
     else
         type_name = _get_base_type_name(option->value_type);
-    
+
     // Get the collection format if applicable
     const char *collection_format = _get_collection_format(option->value_type);
-    
+
     // Print the formatted hint
-    printf(" <%s>", collection_format ? 
-           _format_collection_hint(collection_format, type_name) : 
-           type_name);
+    printf(" <%s>",
+           collection_format ? _format_collection_hint(collection_format, type_name) : type_name);
 }
 
 static void _print_wrapped_text(const char *text, size_t indent, size_t line_width)
 {
     if (!text || !*text)
         return;
-    
-    size_t text_len = strlen(text);
-    size_t line_start = 0;
+
+    size_t text_len    = strlen(text);
+    size_t line_start  = 0;
     size_t current_pos = 0;
-    size_t last_space = 0;
-    
+    size_t last_space  = 0;
+
     // Print initial indent for first line (assumed to be already printed by caller)
-    
-    while (current_pos < text_len)
-    {
+
+    while (current_pos < text_len) {
         // Find the next potential line break (space or existing newline)
-        while (current_pos < text_len && 
-               current_pos - line_start < line_width - indent - 2 && // Consider "- " prefix
-               text[current_pos] != '\n')
-        {
+        while (current_pos < text_len &&
+               current_pos - line_start < line_width - indent - 2 &&  // Consider "- " prefix
+               text[current_pos] != '\n') {
             if (text[current_pos] == ' ')
                 last_space = current_pos;
             current_pos++;
         }
-        
+
         // Check if we found a natural break or need to force one
-        if (current_pos < text_len && text[current_pos] == '\n')
-        {
+        if (current_pos < text_len && text[current_pos] == '\n') {
             // Natural newline in the text
             printf("%.*s\n", (int)(current_pos - line_start), text + line_start);
-            current_pos++; // Skip the newline
+            current_pos++;  // Skip the newline
             line_start = current_pos;
-            
+
             // Print indent for continuation line
             if (current_pos < text_len) {
                 for (size_t i = 0; i < indent; i++)
@@ -294,20 +292,17 @@ static void _print_wrapped_text(const char *text, size_t indent, size_t line_wid
                 // No marker for continuation lines, just 2 spaces for alignment
                 printf("  ");
             }
-        } 
-        else if (current_pos - line_start >= line_width - indent - 2)
-        {
+        } else if (current_pos - line_start >= line_width - indent - 2) {
             // Line too long, break at last space if found
             if (last_space > line_start) {
                 printf("%.*s\n", (int)(last_space - line_start), text + line_start);
-                line_start = last_space + 1; // Skip the space
-            }
-            else {
+                line_start = last_space + 1;  // Skip the space
+            } else {
                 // No space found, forced break in the middle of a word
                 printf("%.*s\n", (int)(current_pos - line_start), text + line_start);
                 line_start = current_pos;
             }
-            
+
             // Print indent for continuation line
             if (line_start < text_len) {
                 for (size_t i = 0; i < indent; i++)
@@ -315,17 +310,15 @@ static void _print_wrapped_text(const char *text, size_t indent, size_t line_wid
                 // No marker for continuation lines, just 2 spaces for alignment
                 printf("  ");
             }
-        } 
-        else
-        {
+        } else {
             // End of text reached without needing to wrap
             printf("%s", text + line_start);
             break;
         }
-        
+
         // Reset for next line
         current_pos = line_start;
-        last_space = line_start;
+        last_space  = line_start;
     }
 }
 
@@ -337,61 +330,52 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
 {
     // Determine where description starts
     size_t description_indent = DESCRIPTION_COLUMN;
-    
+
     // If option name is too long, move to next line
-    if (padding < 4)
-    {
+    if (padding < 4) {
         printf("\n");
         // Indent to description column
         for (size_t i = 0; i < description_indent; ++i)
             printf(" ");
         // Add visual marker
         printf("- ");
-    }
-    else
-    {
+    } else {
         // Otherwise, add calculated padding to align description
         for (size_t i = 0; i < padding; ++i)
             printf(" ");
         // Add visual marker
         printf("- ");
     }
-    
+
     // Start with help text
     char *description = NULL;
-    
-    if (option->help)
-    {
+
+    if (option->help) {
         description = strdup(option->help);
         if (!description) {
             printf("Error: Memory allocation failed\n");
             return;
         }
-    }
-    else
-    {
+    } else {
         description = strdup("");
         if (!description) {
             printf("Error: Memory allocation failed\n");
             return;
         }
     }
-    
+
     // Append choices if any
-    if (option->choices_count > 0)
-    {
+    if (option->choices_count > 0) {
         char choices_buf[256] = {0};
         snprintf(choices_buf, sizeof(choices_buf), " [");
-        
-        for (size_t i = 0; i < option->choices_count; ++i)
-        {
+
+        for (size_t i = 0; i < option->choices_count; ++i) {
             char item[64] = {0};
-            
+
             if (i > 0)
                 strncat(choices_buf, ", ", sizeof(choices_buf) - strlen(choices_buf) - 1);
-            
-            switch (option->value_type)
-            {
+
+            switch (option->value_type) {
                 case VALUE_TYPE_INT:
                     snprintf(item, sizeof(item), "%ld", option->choices.as_array_int[i]);
                     break;
@@ -404,51 +388,43 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
                 default:
                     break;
             }
-            
+
             strncat(choices_buf, item, sizeof(choices_buf) - strlen(choices_buf) - 1);
         }
-        
+
         strncat(choices_buf, "]", sizeof(choices_buf) - strlen(choices_buf) - 1);
-        
+
         // Allocate new buffer for combined description
         char *new_desc = malloc(strlen(description) + strlen(choices_buf) + 1);
-        if (new_desc)
-        {
+        if (new_desc) {
             strcpy(new_desc, description);
             strcat(new_desc, choices_buf);
             free(description);
             description = new_desc;
         }
     }
-    
+
     // Append default value if any
-    if (option->have_default && option->value_type != VALUE_TYPE_BOOL)
-    {
+    if (option->have_default && option->value_type != VALUE_TYPE_BOOL) {
         char default_buf[128] = {0};
         snprintf(default_buf, sizeof(default_buf), " (default: ");
         size_t default_len = strlen(default_buf);
-        
-        switch (option->value_type)
-        {
+
+        switch (option->value_type) {
             case VALUE_TYPE_INT:
-                snprintf(default_buf + default_len, 
-                         sizeof(default_buf) - default_len, 
-                         "%d)", option->default_value.as_int);
+                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%d)",
+                         option->default_value.as_int);
                 break;
             case VALUE_TYPE_STRING:
                 if (option->default_value.as_string)
-                    snprintf(default_buf + default_len, 
-                             sizeof(default_buf) - default_len, 
+                    snprintf(default_buf + default_len, sizeof(default_buf) - default_len,
                              "\"%s\")", option->default_value.as_string);
                 else
-                    snprintf(default_buf + default_len, 
-                             sizeof(default_buf) - default_len, 
-                             "null)");
+                    snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "null)");
                 break;
             case VALUE_TYPE_FLOAT:
-                snprintf(default_buf + default_len, 
-                         sizeof(default_buf) - default_len, 
-                         "%.2f)", option->default_value.as_float);
+                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%.2f)",
+                         option->default_value.as_float);
                 break;
             default:
                 strcat(default_buf, ")");
@@ -457,23 +433,19 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
 
         // Allocate new buffer for combined description
         char *new_desc = malloc(strlen(description) + strlen(default_buf) + 1);
-        if (new_desc)
-        {
+        if (new_desc) {
             strcpy(new_desc, description);
             strcat(new_desc, default_buf);
             free(description);
             description = new_desc;
         }
     }
-    
+
     // Append additional attributes
-    if (option->flags & FLAG_EXIT       ||
-        option->flags & FLAG_REQUIRED   ||
-        option->flags & FLAG_DEPRECATED ||
-        option->flags & FLAG_EXPERIMENTAL)
-    {
+    if (option->flags & FLAG_EXIT || option->flags & FLAG_REQUIRED ||
+        option->flags & FLAG_DEPRECATED || option->flags & FLAG_EXPERIMENTAL) {
         char attrs_buf[128] = {0};
-        
+
         if (option->flags & FLAG_EXIT)
             strcat(attrs_buf, " (exit)");
         if (option->flags & FLAG_REQUIRED)
@@ -482,22 +454,21 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
             strcat(attrs_buf, " (deprecated)");
         if (option->flags & FLAG_EXPERIMENTAL)
             strcat(attrs_buf, " (experimental)");
-            
+
         // Allocate new buffer for combined description
         char *new_desc = malloc(strlen(description) + strlen(attrs_buf) + 1);
-        if (new_desc)
-        {
+        if (new_desc) {
             strcpy(new_desc, description);
             strcat(new_desc, attrs_buf);
             free(description);
             description = new_desc;
         }
     }
-    
+
     // Print the wrapped description
     if (strlen(description) > 0)
         _print_wrapped_text(description, description_indent, MAX_LINE_WIDTH);
-    
+
     free(description);
     printf("\n");
 }
@@ -505,95 +476,90 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
 static size_t _print_option_name(const cargs_option_t *option, size_t indent)
 {
     size_t name_len = 0;
-    
+
     // Print indent
     for (size_t i = 0; i < indent; ++i) {
         printf(" ");
         name_len++;
     }
-    
+
     // Print short option name if available
-    if (option->sname)
-    {
+    if (option->sname) {
         printf("-%c", option->sname);
-        name_len += 2; // "-a"
-        
+        name_len += 2;  // "-a"
+
         if (option->lname) {
             printf(", ");
-            name_len += 2; // ", "
+            name_len += 2;  // ", "
         }
     }
-    
+
     // Print long option name if available
     if (option->lname) {
         printf("--%s", option->lname);
-        name_len += 2 + strlen(option->lname); // "--option"
+        name_len += 2 + strlen(option->lname);  // "--option"
     }
-    
+
     // Print value hint
-    if (option->value_type != VALUE_TYPE_BOOL)
-    {
+    if (option->value_type != VALUE_TYPE_BOOL) {
         _print_value_hint(option);
-        
+
         // Calculate hint length for correct padding
         const char *type_name;
         if (option->hint)
             type_name = option->hint;
         else
             type_name = _get_base_type_name(option->value_type);
-        
+
         // Get the collection format if applicable
         const char *collection_format = _get_collection_format(option->value_type);
-        
+
         // Calculate length based on whether it's a collection or not
         if (collection_format) {
             // Approximate the length for collection format
             // Format is "KEY=%s,..." or "%s,..."
             const char *format_str = _format_collection_hint(collection_format, type_name);
-            name_len += 3 + strlen(format_str); // " <hint_format>"
+            name_len += 3 + strlen(format_str);  // " <hint_format>"
         } else {
-            name_len += 3 + strlen(type_name); // " <hint>"
+            name_len += 3 + strlen(type_name);  // " <hint>"
         }
     }
-    
+
     return name_len;
 }
 
 static void _print_option(const cargs_option_t *option, size_t indent)
 {
     size_t name_width = _print_option_name(option, indent);
-    
+
     // Calculate padding for description alignment
-    size_t padding = (DESCRIPTION_COLUMN > name_width) ? 
-                     (DESCRIPTION_COLUMN - name_width) : 2;
-    
+    size_t padding = (DESCRIPTION_COLUMN > name_width) ? (DESCRIPTION_COLUMN - name_width) : 2;
+
     _print_option_description(option, padding);
 }
 
 static void _print_positional(const cargs_option_t *option, size_t indent)
 {
     size_t name_len = 0;
-    
+
     // Print indent
     for (size_t i = 0; i < indent; ++i) {
         printf(" ");
         name_len++;
     }
-    
+
     // Print name with appropriate brackets based on required status
     if (option->flags & FLAG_REQUIRED) {
         printf("<%s>", option->name);
-        name_len += strlen(option->name) + 2; // < and >
-    }
-    else {
+        name_len += strlen(option->name) + 2;  // < and >
+    } else {
         printf("[%s]", option->name);
-        name_len += strlen(option->name) + 2; // [ and ]
+        name_len += strlen(option->name) + 2;  // [ and ]
     }
-    
+
     // Calculate padding for description alignment
-    size_t padding = (DESCRIPTION_COLUMN > name_len) ? 
-                     (DESCRIPTION_COLUMN - name_len) : 2;
-    
+    size_t padding = (DESCRIPTION_COLUMN > name_len) ? (DESCRIPTION_COLUMN - name_len) : 2;
+
     _print_option_description(option, padding);
 }
 
@@ -601,7 +567,7 @@ static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size
 {
     UNUSED(cargs);
     size_t name_len = 0;
-    
+
     // Print indent
     for (size_t i = 0; i < indent; ++i) {
         printf(" ");
@@ -611,11 +577,10 @@ static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size
     // Print subcommand name
     printf("%s", option->name);
     name_len += strlen(option->name);
-    
+
     // Calculate padding for description alignment
-    size_t padding = (DESCRIPTION_COLUMN > name_len) ? 
-                     (DESCRIPTION_COLUMN - name_len) : 2;
-       
+    size_t padding = (DESCRIPTION_COLUMN > name_len) ? (DESCRIPTION_COLUMN - name_len) : 2;
+
     // Use the common description printing function
     _print_option_description(option, padding);
 }
@@ -651,11 +616,13 @@ static void _print_subcommand_list(cargs_t *cargs, option_entry_t *list, size_t 
     }
 }
 
-static bool _has_entries(option_entry_t *list) {
+static bool _has_entries(option_entry_t *list)
+{
     return list != NULL;
 }
 
-static bool _has_groups(group_info_t *groups){
+static bool _has_groups(group_info_t *groups)
+{
     return groups != NULL;
 }
 
@@ -666,13 +633,11 @@ static void _print_help_sections(cargs_t *cargs, help_data_t *data)
         printf("\nArguments:\n");
         _print_positional_list(data->positionals, OPTION_INDENT);
     }
-    
+
     // Print groups of options
-    if (_has_groups(data->groups))
-    {
+    if (_has_groups(data->groups)) {
         group_info_t *group = data->groups;
-        while (group != NULL)
-        {
+        while (group != NULL) {
             // Only print non-empty groups
             if (group->options != NULL) {
                 printf("\n%s:\n", group->description ? group->description : group->name);
@@ -681,19 +646,18 @@ static void _print_help_sections(cargs_t *cargs, help_data_t *data)
             group = group->next;
         }
     }
-    
+
     // Print ungrouped options
     if (_has_entries(data->ungrouped)) {
         printf("\nOptions:\n");
         _print_option_list(data->ungrouped, OPTION_INDENT);
     }
-    
+
     // Print subcommands
-    if (_has_entries(data->subcommands))
-    {
+    if (_has_entries(data->subcommands)) {
         printf("\nCommands:\n");
         _print_subcommand_list(cargs, data->subcommands, OPTION_INDENT);
-        
+
         printf("\nRun '%s", cargs->program_name);
         for (size_t i = 0; i < cargs->context.subcommand_depth; ++i)
             printf(" %s", cargs->context.subcommand_stack[i]->name);
@@ -709,18 +673,18 @@ void display_help(cargs_t *cargs, const cargs_option_t *options)
 {
     if (options == NULL)
         options = get_active_options(cargs);
-    
+
     // Initialize help data
     help_data_t data = {NULL, NULL, NULL, NULL};
-    
+
     // Organize options into appropriate categories
     _organize_options(options, &data);
-    
+
     // Print the help sections
     _print_help_sections(cargs, &data);
-    
+
     // Clean up
     _free_help_data(&data);
-    
+
     printf("\n");
 }

@@ -3,7 +3,7 @@
  *
  * This header defines custom callback types that can be implemented
  * by users to extend the library's functionality.
- * 
+ *
  * MIT License - Copyright (c) 2024 lucocozz
  */
 

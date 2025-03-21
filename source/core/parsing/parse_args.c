@@ -1,19 +1,17 @@
 #include <string.h>
 
-#include "cargs/types.h"
-#include "cargs/internal/parsing.h"
 #include "cargs/errors.h"
+#include "cargs/internal/parsing.h"
 #include "cargs/internal/utils.h"
-
+#include "cargs/types.h"
 
 int parse_args(cargs_t *cargs, cargs_option_t *options, int argc, char **argv)
 {
-    int     positional_index = 0;
-    bool    only_positional = false;
-    int     status = CARGS_SUCCESS;
+    int  positional_index = 0;
+    bool only_positional  = false;
+    int  status           = CARGS_SUCCESS;
 
-    for (int i = 0; i < argc; ++i)
-    {
+    for (int i = 0; i < argc; ++i) {
         char *arg = argv[i];
 
         if (strcmp(arg, "--") == 0) {

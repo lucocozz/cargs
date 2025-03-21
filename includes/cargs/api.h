@@ -33,21 +33,21 @@ cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int     cargs_parse(cargs_t *cargs, int argc, char **argv);
+int cargs_parse(cargs_t *cargs, int argc, char **argv);
 
 /**
  * cargs_free - Clean up and free resources
  *
  * @param cargs  Cargs context
  */
-void    cargs_free(cargs_t *cargs);
+void cargs_free(cargs_t *cargs);
 
 /**
  * Display functions
  */
-void    cargs_print_help(cargs_t cargs);
-void    cargs_print_usage(cargs_t cargs);
-void    cargs_print_version(cargs_t cargs);
+void cargs_print_help(cargs_t cargs);
+void cargs_print_usage(cargs_t cargs);
+void cargs_print_version(cargs_t cargs);
 
 /**
  * cargs_is_set - Check if an option was set on the command line
@@ -57,7 +57,7 @@ void    cargs_print_version(cargs_t cargs);
  *
  * @return true if the option was set, false otherwise
  */
-bool    cargs_is_set(cargs_t cargs, const char *option_path);
+bool cargs_is_set(cargs_t cargs, const char *option_path);
 
 /**
  * cargs_get - Get the value of an option
@@ -69,7 +69,6 @@ bool    cargs_is_set(cargs_t cargs, const char *option_path);
  */
 value_t cargs_get(cargs_t cargs, const char *option_path);
 
-
 /**
  * cargs_count - Get the number of values for an option
  *
@@ -78,8 +77,7 @@ value_t cargs_get(cargs_t cargs, const char *option_path);
  *
  * @return Number of values for the option
  */
-size_t	cargs_count(cargs_t cargs, const char *option_path);
-
+size_t cargs_count(cargs_t cargs, const char *option_path);
 
 /**
  * cargs_has_command - Check if a subcommand was parsed
@@ -90,7 +88,6 @@ size_t	cargs_count(cargs_t cargs, const char *option_path);
  */
 bool cargs_has_command(cargs_t cargs);
 
-
 /**
  * cargs_exec - Execute the parsed subcommand
  *
@@ -99,7 +96,7 @@ bool cargs_has_command(cargs_t cargs);
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int	cargs_exec(cargs_t *cargs, void *data);
+int cargs_exec(cargs_t *cargs, void *data);
 
 /**
  * cargs_array_get - Get an element from an array option at the specified index
@@ -174,6 +171,5 @@ bool cargs_map_next(cargs_map_it_t *it);
  * @param it  Map iterator to reset
  */
 void cargs_map_reset(cargs_map_it_t *it);
-
 
 #endif /* CARGS_API_H */
