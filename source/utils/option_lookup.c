@@ -67,15 +67,16 @@ const cargs_option_t *get_active_options(cargs_t *cargs)
     return (cargs->options);
 }
 
-static cargs_option_t *__find_from_relative_path(cargs_t cargs, const char *option_name)
+static cargs_option_t *find_from_relative_path(cargs_t cargs, const char *option_name)
 {
     for (int i = cargs.context.subcommand_depth; i >= 0; --i) {
         cargs_option_t *options;
 
-        if (i == 0)
+        if (i == 0) {
             options = cargs.options;
-        else
+        } else {
             options = cargs.context.subcommand_stack[i - 1]->sub_options;
+        }
 
         cargs_option_t *option = find_option_by_name(options, option_name);
         if (option != NULL)
@@ -84,13 +85,14 @@ static cargs_option_t *__find_from_relative_path(cargs_t cargs, const char *opti
     return (NULL);
 }
 
-static size_t __count_components(const char *path)
+static size_t count_components(const char *path)
 {
     size_t count = 0;
 
-    for (const char *c = path; *c; ++c)
+    for (const char *c = path; *c; ++c) {
         if (*c == '.')
             count++;
+    }
     return (count);
 }
 
@@ -101,13 +103,13 @@ cargs_option_t *find_option_by_active_path(cargs_t cargs, const char *option_pat
 
     // Format: "option_name"
     if (strchr(option_path, '.') == NULL)
-        return (__find_from_relative_path(cargs, option_path));
+        return (find_from_relative_path(cargs, option_path));
 
     // Format: ".option_name" (root)
     if (option_path[0] == '.')
         return (find_option_by_name(cargs.options, option_path + 1));
 
-    size_t component_count = __count_components(option_path);
+    size_t component_count = count_components(option_path);
     if (component_count > cargs.context.subcommand_depth)
         return (NULL);
 

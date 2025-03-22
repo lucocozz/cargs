@@ -9,10 +9,11 @@ void free_option_value(cargs_option_t *option)
     if (option->is_allocated == false)
         return;
 
-    if (option->free_handler != NULL)
+    if (option->free_handler != NULL) {
         option->free_handler(option);
-    else
+    } else {
         free(option->value.as_ptr);
+    }
 }
 
 value_t choices_to_value(value_type_t type, value_t choices, int choices_count, int index)
@@ -51,12 +52,13 @@ int cmp_value(value_type_t type, const value_t a, const value_t b)
                 return -1;
             return strcmp(a.as_string, b.as_string);
         case VALUE_TYPE_FLOAT:
-            if (a.as_float == b.as_float)
+            if (a.as_float == b.as_float) {
                 return 0;
-            else if (a.as_float > b.as_float)
+            } else if (a.as_float > b.as_float) {
                 return 1;
-            else
+            } else {
                 return -1;
+            }
         case VALUE_TYPE_BOOL:
             return a.as_bool - b.as_bool;
         default:

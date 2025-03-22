@@ -22,7 +22,7 @@ char *starts_with(const char *prefix, const char *str)
     return (NULL);
 }
 
-static size_t __count_words(const char *str, const char *charset)
+static size_t count_words(const char *str, const char *charset)
 {
     size_t count = 0;
     size_t i     = 0;
@@ -38,7 +38,7 @@ static size_t __count_words(const char *str, const char *charset)
     return (count);
 }
 
-static size_t __word_len(const char *str, const char *charset)
+static size_t word_len(const char *str, const char *charset)
 {
     size_t size = 0;
 
@@ -47,7 +47,7 @@ static size_t __word_len(const char *str, const char *charset)
     return (size);
 }
 
-static int __skip_charset(const char *str, const char *charset)
+static int skip_charset(const char *str, const char *charset)
 {
     int i = 0;
 
@@ -56,7 +56,7 @@ static int __skip_charset(const char *str, const char *charset)
     return (i);
 }
 
-static void __free_split(char **split, size_t nb_words)
+static void cleanup_split(char **split, size_t nb_words)
 {
     for (size_t i = 0; i < nb_words; ++i)
         free(split[i]);
@@ -72,23 +72,23 @@ static void __free_split(char **split, size_t nb_words)
 char **split(const char *str, const char *charset)
 {
     char  *tmp      = (char *)str;
-    size_t nb_words = __count_words(str, charset);
+    size_t nb_words = count_words(str, charset);
     char **result   = malloc(sizeof(char *) * (nb_words + 1));
 
     if (result == NULL)
         return (NULL);
 
     for (size_t i = 0; i < nb_words; ++i) {
-        tmp += __skip_charset(tmp, charset);
+        tmp += skip_charset(tmp, charset);
 
-        size_t word_len = __word_len(tmp, charset);
-        char  *word     = strndup(tmp, word_len);
+        size_t len  = word_len(tmp, charset);
+        char  *word = strndup(tmp, len);
         if (word == NULL) {
-            __free_split(result, i);
+            cleanup_split(result, i);
             return (NULL);
         }
         result[i] = word;
-        tmp += word_len;
+        tmp += len;
     }
     result[nb_words] = NULL;
     return (result);

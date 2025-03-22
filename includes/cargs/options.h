@@ -14,23 +14,23 @@
 #include "cargs/types.h"
 
 /* Forward declaration for handler functions */
-int bool_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int string_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int float_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int help_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int version_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
+int bool_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int string_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int int_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int float_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int help_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int version_handler(cargs_t *cargs, cargs_option_t *option, char *value);
 int default_free(cargs_option_t *option);
 
-int array_string_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int array_float_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
+int array_string_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int array_float_handler(cargs_t *cargs, cargs_option_t *option, char *value);
 int free_array_string_handler(cargs_option_t *option);
 
-int map_string_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int map_int_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int map_float_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
-int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
+int map_string_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int map_int_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int map_float_handler(cargs_t *cargs, cargs_option_t *option, char *value);
+int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *value);
 int free_map_string_handler(cargs_option_t *option);
 int free_map_int_handler(cargs_option_t *option);
 int free_map_float_handler(cargs_option_t *option);
@@ -47,9 +47,9 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 /*
  * Optional option fields macros
  */
-#define _DEFINE_NAME(lname, sname) (lname ? lname : CHAR_TO_STRING(sname))
-#define DEFAULT(val)            .value = (value_t){ .raw = (uintptr_t)val }, \
-                                .default_value = (value_t){ .raw = (uintptr_t)val }, \
+#define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
+#define DEFAULT(val)            .value = (value_t){ .raw = (uintptr_t)(val) }, \
+                                .default_value = (value_t){ .raw = (uintptr_t)(val) }, \
                                 .is_set = true, \
                                 .have_default = true
 #define HANDLER(fn)             .handler = (cargs_handler_t)(fn)
@@ -68,11 +68,11 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
  */
 #define VALIDATOR(fn, data) \
     .validator = (cargs_validator_t)(fn), \
-    .validator_data = (validator_data_t){ .custom = (void*)data }
+    .validator_data = (validator_data_t){ .custom = (void*)(data) }
 
 #define PRE_VALIDATOR(fn, data) \
     .pre_validator = (cargs_pre_validator_t)(fn), \
-    .pre_validator_data = (validator_data_t){ .custom = (void*)data }
+    .pre_validator_data = (validator_data_t){ .custom = (void*)(data) }
 
 #define RANGE(min, max) \
     .validator = (cargs_validator_t)range_validator, \
@@ -80,7 +80,7 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 
 #define REGEX(re) \
     .pre_validator = (cargs_pre_validator_t)regex_validator, \
-    .pre_validator_data = (validator_data_t){ .regex = re }
+    .pre_validator_data = (validator_data_t){ .regex = (re) }
 
 /*
  * Choice macros for different types
@@ -109,7 +109,7 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 
 #define OPTION_BASE(_short, _long, _help, _value_type, ...)                                   \
     (cargs_option_t) {                                                                        \
-        .type = TYPE_OPTION, .name = _DEFINE_NAME(_long, _short),                             \
+        .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                             \
         .sname = _short, .lname = _long, .help = _help, .value_type = _value_type,            \
         .free_handler = default_free, ##__VA_ARGS__                                           \
     }

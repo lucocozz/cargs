@@ -1,5 +1,7 @@
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
+#include <stddef.h>
+#include <string.h>
 
 value_t cargs_get(cargs_t cargs, const char *option_path)
 {

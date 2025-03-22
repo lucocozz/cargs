@@ -76,12 +76,11 @@ void                  cargs_push_error(cargs_t *cargs, cargs_error_t error);
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <string.h>
 
 #define CARGS_OK() ((cargs_error_t){.code = CARGS_SUCCESS})
 
 /* Functions that implement the actual error handling logic */
-static inline void _cargs_collect_error(cargs_t *cargs, int code, const char *fmt, ...)
+static inline void cargs_collect_error(cargs_t *cargs, int code, const char *fmt, ...)
 {
     cargs_error_t error;
     va_list       args;
@@ -96,7 +95,7 @@ static inline void _cargs_collect_error(cargs_t *cargs, int code, const char *fm
     cargs_push_error(cargs, error);
 }
 
-static inline int _cargs_report_error(cargs_t *cargs, int code, const char *fmt, ...)
+static inline int cargs_report_error(cargs_t *cargs, int code, const char *fmt, ...)
 {
     va_list args;
 
@@ -115,12 +114,12 @@ static inline int _cargs_report_error(cargs_t *cargs, int code, const char *fmt,
  * CARGS_COLLECT_ERROR - Collect an error in the error stack
  * This version uses an inline function to handle the variadic arguments correctly
  */
-#define CARGS_COLLECT_ERROR(cargs, code, ...) _cargs_collect_error(cargs, code, __VA_ARGS__)
+#define CARGS_COLLECT_ERROR(cargs, code, ...) cargs_collect_error(cargs, code, __VA_ARGS__)
 
 /**
  * CARGS_REPORT_ERROR - Report an error and return
  * This version uses an inline function to handle the variadic arguments correctly
  */
-#define CARGS_REPORT_ERROR(cargs, code, ...) return _cargs_report_error(cargs, code, __VA_ARGS__)
+#define CARGS_REPORT_ERROR(cargs, code, ...) return cargs_report_error(cargs, code, __VA_ARGS__)
 
 #endif /* CARGS_ERRORS_H */

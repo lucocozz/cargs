@@ -5,6 +5,7 @@
 #include "cargs/errors.h"
 #include "cargs/internal/utils.h"
 #include "cargs/options.h"
+#include "cargs/types.h"
 
 #ifndef MIN
     #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -31,16 +32,14 @@ typedef struct
  * @param value String to parse
  * @return 0 on success, -1 on error
  */
-static int _parse_int_range(int_range_t *range, const char *value)
+static int parse_int_range(int_range_t *range, const char *value)
 {
-    // Try to parse as a range first
-    int items_read = sscanf(value, "%d-%d", &range->start, &range->end);
-
-    if (items_read == 2) {
+    char *minus = strchr(value, '-');
+    if (minus != NULL) {
         // Successfully parsed as a range
         // Normalize range using MIN/MAX
-        int start    = range->start;
-        int end      = range->end;
+        int start    = strtol(value, NULL, 10);
+        int end      = strtol(minus + 1, NULL, 10);
         range->start = MIN(start, end);
         range->end   = MAX(start, end);
         return 0;
@@ -62,7 +61,7 @@ static int _parse_int_range(int_range_t *range, const char *value)
 /**
  * Add a range of integers to the option's value array
  */
-static void _add_range_values(cargs_option_t *option, const int_range_t *range)
+static void add_range_values(cargs_option_t *option, const int_range_t *range)
 {
     for (int i = range->start; i <= range->end; i++) {
         adjust_array_size(option);
@@ -74,15 +73,15 @@ static void _add_range_values(cargs_option_t *option, const int_range_t *range)
 /**
  * Process a single value or range and add it to the option
  */
-static int _set_value(cargs_t *cargs, cargs_option_t *option, char *value)
+static int set_value(cargs_t *cargs, cargs_option_t *option, char *value)
 {
     int_range_t range;
 
-    if (_parse_int_range(&range, value) != 0) {
+    if (parse_int_range(&range, value) != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
                            "Invalid integer or range format: '%s'", value);
     }
-    _add_range_values(option, &range);
+    add_range_values(option, &range);
     return (CARGS_SUCCESS);
 }
 
@@ -102,7 +101,7 @@ int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
         }
 
         for (size_t i = 0; splited_values[i] != NULL; ++i) {
-            int status = _set_value(cargs, option, splited_values[i]);
+            int status = set_value(cargs, option, splited_values[i]);
             if (status != CARGS_SUCCESS) {
                 free_split(splited_values);
                 return status;
@@ -111,7 +110,7 @@ int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
 
         free_split(splited_values);
     } else {
-        int status = _set_value(cargs, option, value);
+        int status = set_value(cargs, option, value);
         if (status != CARGS_SUCCESS)
             return status;
     }

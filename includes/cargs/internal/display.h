@@ -22,18 +22,18 @@
 /**
  * display_help - Display help information
  *
- * @param cargs  Cargs context
- * @param cmd    Specific subcommand to display help for, or NULL for general help
+ * @param cargs  	Cargs context
+ * @param command   Specific subcommand to display help for, or NULL for general help
  */
-void display_help(cargs_t *cargs, const cargs_option_t *cmd);
+void display_help(cargs_t *cargs, const cargs_option_t *command);
 
 /**
  * display_usage - Display short usage information
  *
- * @param cargs  Cargs context
- * @param cmd    Specific subcommand to display usage for, or NULL for general usage
+ * @param cargs  	Cargs context
+ * @param command   Specific subcommand to display usage for, or NULL for general usage
  */
-void display_usage(cargs_t *cargs, const cargs_option_t *cmd);
+void display_usage(cargs_t *cargs, const cargs_option_t *command);
 
 /**
  * display_version - Display version information

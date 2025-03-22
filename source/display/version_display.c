@@ -7,7 +7,6 @@
  */
 
 #include "cargs/internal/display.h"
-#include "cargs/internal/utils.h"
 #include "cargs/types.h"
 #include <stdio.h>
 

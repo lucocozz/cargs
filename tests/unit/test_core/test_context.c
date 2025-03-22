@@ -3,6 +3,7 @@
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
 #include "cargs/options.h"
+#include "cargs/errors.h"
 
 // Mock options for testing
 CARGS_OPTIONS(

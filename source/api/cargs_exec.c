@@ -1,7 +1,7 @@
 #include "cargs/errors.h"
 #include "cargs/internal/context.h"
-#include "cargs/internal/utils.h"
 #include "cargs/types.h"
+#include <stddef.h>
 
 bool cargs_has_command(cargs_t cargs)
 {

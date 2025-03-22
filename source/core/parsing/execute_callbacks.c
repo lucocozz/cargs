@@ -1,8 +1,10 @@
 #include "cargs/errors.h"
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
+#include <stddef.h>
+#include <stdio.h>
 
-static int _validate_choices(cargs_t *cargs, cargs_option_t *option)
+static int validate_choices(cargs_t *cargs, cargs_option_t *option)
 {
     if (option->choices_count > 0) {
         bool valid_choices = false;
@@ -56,7 +58,7 @@ int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
     if (option->value_count == 0)
         option->value_count = 1;
 
-    status = _validate_choices(cargs, option);
+    status = validate_choices(cargs, option);
     if (status != CARGS_SUCCESS)
         return (status);
 

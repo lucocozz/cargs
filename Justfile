@@ -131,10 +131,34 @@ format:
     @find source includes -name "*.c" -o -name "*.h" | xargs clang-format -i -style=file
     @echo "Code formatting complete ✅"
 
+# Static analysis with clang-tidy
 lint:
     @echo "Running static analysis with clang-tidy..."
-    @find source -name "*.c" | xargs clang-tidy -p {{build_dir}} --quiet
+    @find source -name "*.c" | xargs clang-tidy -p {{build_dir}} --config-file=.clang-tidy --quiet
     @echo "Static analysis complete ✅"
+
+# Generate a detailed report of clang-tidy findings
+lint-report:
+    @echo "Generating detailed clang-tidy report..."
+    @mkdir -p reports
+    @find source -name "*.c" | xargs clang-tidy -p {{build_dir}} --config-file=.clang-tidy --export-fixes=reports/clang-tidy-fixes.yml
+    @echo "\033[1;32mReport generated as reports/clang-tidy-fixes.yml ✅\033[0m"
+
+# Apply automated fixes for clang-tidy issues
+fix:
+    @echo "Applying automated fixes with clang-tidy..."
+    @find source -name "*.c" | xargs clang-tidy -p {{build_dir}} --config-file=.clang-tidy --fix
+    @find source includes -name "*.c" -o -name "*.h" | xargs sed -i 's|<cstddef>|<stddef.h>|g'
+    @find source includes -name "*.c" -o -name "*.h" | xargs sed -i 's|<cstdlib>|<stdlib.h>|g'
+    @find source includes -name "*.c" -o -name "*.h" | xargs sed -i 's|<cstring>|<string.h>|g'
+    @echo "\033[1;32mAutomated fixes applied ✅\033[0m"
+    @echo "Note: Some fixes may require manual review."
+
+# Check code quality without making changes
+check: format
+    @echo "Checking code quality..."
+    @find source -name "*.c" | xargs clang-tidy -p {{build_dir}} --config-file=.clang-tidy --quiet --warnings-as-errors="*"
+    @echo "\033[1;32mCode quality check passed ✅\033[0m"
 
 # Installation
 install:

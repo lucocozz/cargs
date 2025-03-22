@@ -5,7 +5,6 @@
 #include "cargs/errors.h"
 #include "cargs/internal/display.h"
 #include "cargs/internal/parsing.h"
-#include "cargs/internal/utils.h"
 #include "cargs/types.h"
 
 void cargs_free(cargs_t *cargs);

@@ -1,14 +1,15 @@
 #include "cargs/errors.h"
 #include "cargs/internal/context.h"
-#include "cargs/internal/utils.h"
 #include "cargs/types.h"
+#include <stddef.h>
+#include <string.h>
 
 int validate_subcommand(cargs_t *cargs, cargs_option_t *option);
 int validate_group(cargs_t *cargs, cargs_option_t *option);
 int validate_option(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option);
 int validate_positional(cargs_t *cargs, cargs_option_t *option);
 
-static int __ensure_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
+static int ensure_validity(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
     switch (option->type) {
         case TYPE_OPTION:
@@ -25,7 +26,7 @@ static int __ensure_validity(cargs_t *cargs, cargs_option_t *options, cargs_opti
     }
 }
 
-static int __is_unique(cargs_t *cargs, cargs_option_t *option, cargs_option_t *other_option)
+static int is_unique(cargs_t *cargs, cargs_option_t *option, cargs_option_t *other_option)
 {
     int status = CARGS_SUCCESS;
 
@@ -60,7 +61,7 @@ int validate_structure(cargs_t *cargs, cargs_option_t *options)
         cargs_option_t *option = &options[i];
         context_set_option(cargs, option);
 
-        int result = __ensure_validity(cargs, options, option);
+        int result = ensure_validity(cargs, options, option);
         if (result != CARGS_SUCCESS)
             status = result;
 
@@ -70,7 +71,7 @@ int validate_structure(cargs_t *cargs, cargs_option_t *options)
             if (option->type != other_option->type)
                 continue;
 
-            int result = __is_unique(cargs, option, other_option);
+            int result = is_unique(cargs, option, other_option);
             if (result != CARGS_SUCCESS)
                 status = result;
         }

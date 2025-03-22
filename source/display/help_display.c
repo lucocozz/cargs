@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cargs/internal/context.h"
 #include "cargs/internal/display.h"
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
@@ -46,7 +45,7 @@ typedef struct help_data_s
  * Memory management functions
  */
 
-static option_entry_t *_create_option_entry(const cargs_option_t *option)
+static option_entry_t *create_option_entry(const cargs_option_t *option)
 {
     option_entry_t *entry = malloc(sizeof(option_entry_t));
     if (!entry)
@@ -57,15 +56,15 @@ static option_entry_t *_create_option_entry(const cargs_option_t *option)
     return entry;
 }
 
-static void _add_option_to_list(option_entry_t **list, const cargs_option_t *option)
+static void add_option_to_list(option_entry_t **list, const cargs_option_t *option)
 {
-    option_entry_t *entry = _create_option_entry(option);
+    option_entry_t *entry = create_option_entry(option);
     if (!entry)
         return;
 
-    if (*list == NULL)
+    if (*list == NULL) {
         *list = entry;
-    else {
+    } else {
         option_entry_t *current = *list;
         while (current->next != NULL)
             current = current->next;
@@ -73,8 +72,8 @@ static void _add_option_to_list(option_entry_t **list, const cargs_option_t *opt
     }
 }
 
-static group_info_t *_find_or_create_group(help_data_t *data, const char *name,
-                                           const char *description)
+static group_info_t *find_or_create_group(help_data_t *data, const char *name,
+                                          const char *description)
 {
     // First, look for existing group
     group_info_t *group = data->groups;
@@ -95,9 +94,9 @@ static group_info_t *_find_or_create_group(help_data_t *data, const char *name,
     group->next        = NULL;
 
     // Add to list
-    if (data->groups == NULL)
+    if (data->groups == NULL) {
         data->groups = group;
-    else {
+    } else {
         group_info_t *current = data->groups;
         while (current->next != NULL)
             current = current->next;
@@ -107,7 +106,7 @@ static group_info_t *_find_or_create_group(help_data_t *data, const char *name,
     return group;
 }
 
-static void _free_help_data(help_data_t *data)
+static void free_help_data(help_data_t *data)
 {
     // Free groups and their options
     group_info_t *group = data->groups;
@@ -153,7 +152,7 @@ static void _free_help_data(help_data_t *data)
  * Option organizing function
  */
 
-static void _organize_options(const cargs_option_t *options, help_data_t *data)
+static void organize_options(const cargs_option_t *options, help_data_t *data)
 {
     const char   *current_group      = NULL;
     const char   *current_group_desc = NULL;
@@ -176,18 +175,18 @@ static void _organize_options(const cargs_option_t *options, help_data_t *data)
                 if (current_group != NULL) {
                     // Ensure group exists
                     if (group == NULL)
-                        group = _find_or_create_group(data, current_group, current_group_desc);
-                    _add_option_to_list(&group->options, option);
+                        group = find_or_create_group(data, current_group, current_group_desc);
+                    add_option_to_list(&group->options, option);
                 } else
-                    _add_option_to_list(&data->ungrouped, option);
+                    add_option_to_list(&data->ungrouped, option);
                 break;
 
             case TYPE_POSITIONAL:
-                _add_option_to_list(&data->positionals, option);
+                add_option_to_list(&data->positionals, option);
                 break;
 
             case TYPE_SUBCOMMAND:
-                _add_option_to_list(&data->subcommands, option);
+                add_option_to_list(&data->subcommands, option);
                 break;
 
             default:
@@ -201,7 +200,7 @@ static void _organize_options(const cargs_option_t *options, help_data_t *data)
  */
 
 // Helper function to get the base type name without collection indicators
-static const char *_get_base_type_name(value_type_t type)
+static const char *get_base_type_name(value_type_t type)
 {
     switch (type) {
         case VALUE_TYPE_INT:
@@ -218,17 +217,18 @@ static const char *_get_base_type_name(value_type_t type)
 }
 
 // Helper function to get the collection format pattern
-static const char *_get_collection_format(value_type_t type)
+static const char *get_collection_format(value_type_t type)
 {
-    if (type & VALUE_TYPE_ARRAY)
+    if (type & VALUE_TYPE_ARRAY) {
         return "%s,...";
-    else if (type & VALUE_TYPE_MAP)
+    }
+    if (type & VALUE_TYPE_MAP)
         return "KEY=%s,...";
     return NULL;
 }
 
 // Helper function to format a collection hint
-static char *_format_collection_hint(const char *format, const char *type_name)
+static char *format_collection_hint(const char *format, const char *type_name)
 {
     static char buffer[64];  // Buffer for the formatted string
 
@@ -236,27 +236,28 @@ static char *_format_collection_hint(const char *format, const char *type_name)
     return buffer;
 }
 
-static void _print_value_hint(const cargs_option_t *option)
+static void print_value_hint(const cargs_option_t *option)
 {
     if (option->value_type == VALUE_TYPE_BOOL)
         return;  // No hint for boolean flags
 
     // Get the base type name or hint
     const char *type_name;
-    if (option->hint)
+    if (option->hint) {
         type_name = option->hint;
-    else
-        type_name = _get_base_type_name(option->value_type);
+    } else {
+        type_name = get_base_type_name(option->value_type);
+    }
 
     // Get the collection format if applicable
-    const char *collection_format = _get_collection_format(option->value_type);
+    const char *collection_format = get_collection_format(option->value_type);
 
     // Print the formatted hint
     printf(" <%s>",
-           collection_format ? _format_collection_hint(collection_format, type_name) : type_name);
+           collection_format ? format_collection_hint(collection_format, type_name) : type_name);
 }
 
-static void _print_wrapped_text(const char *text, size_t indent, size_t line_width)
+static void print_wrapped_text(const char *text, size_t indent, size_t line_width)
 {
     if (!text || !*text)
         return;
@@ -326,7 +327,7 @@ static void _print_wrapped_text(const char *text, size_t indent, size_t line_wid
  * Print functions for different option types
  */
 
-static void _print_option_description(const cargs_option_t *option, size_t padding)
+static void print_option_description(const cargs_option_t *option, size_t padding)
 {
     // Determine where description starts
     size_t description_indent = DESCRIPTION_COLUMN;
@@ -416,11 +417,12 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
                          option->default_value.as_int);
                 break;
             case VALUE_TYPE_STRING:
-                if (option->default_value.as_string)
+                if (option->default_value.as_string) {
                     snprintf(default_buf + default_len, sizeof(default_buf) - default_len,
                              "\"%s\")", option->default_value.as_string);
-                else
+                } else {
                     snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "null)");
+                }
                 break;
             case VALUE_TYPE_FLOAT:
                 snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%.2f)",
@@ -467,13 +469,13 @@ static void _print_option_description(const cargs_option_t *option, size_t paddi
 
     // Print the wrapped description
     if (strlen(description) > 0)
-        _print_wrapped_text(description, description_indent, MAX_LINE_WIDTH);
+        print_wrapped_text(description, description_indent, MAX_LINE_WIDTH);
 
     free(description);
     printf("\n");
 }
 
-static size_t _print_option_name(const cargs_option_t *option, size_t indent)
+static size_t print_option_name(const cargs_option_t *option, size_t indent)
 {
     size_t name_len = 0;
 
@@ -502,23 +504,24 @@ static size_t _print_option_name(const cargs_option_t *option, size_t indent)
 
     // Print value hint
     if (option->value_type != VALUE_TYPE_BOOL) {
-        _print_value_hint(option);
+        print_value_hint(option);
 
         // Calculate hint length for correct padding
         const char *type_name;
-        if (option->hint)
+        if (option->hint) {
             type_name = option->hint;
-        else
-            type_name = _get_base_type_name(option->value_type);
+        } else {
+            type_name = get_base_type_name(option->value_type);
+        }
 
         // Get the collection format if applicable
-        const char *collection_format = _get_collection_format(option->value_type);
+        const char *collection_format = get_collection_format(option->value_type);
 
         // Calculate length based on whether it's a collection or not
         if (collection_format) {
             // Approximate the length for collection format
             // Format is "KEY=%s,..." or "%s,..."
-            const char *format_str = _format_collection_hint(collection_format, type_name);
+            const char *format_str = format_collection_hint(collection_format, type_name);
             name_len += 3 + strlen(format_str);  // " <hint_format>"
         } else {
             name_len += 3 + strlen(type_name);  // " <hint>"
@@ -528,17 +531,17 @@ static size_t _print_option_name(const cargs_option_t *option, size_t indent)
     return name_len;
 }
 
-static void _print_option(const cargs_option_t *option, size_t indent)
+static void print_option(const cargs_option_t *option, size_t indent)
 {
-    size_t name_width = _print_option_name(option, indent);
+    size_t name_width = print_option_name(option, indent);
 
     // Calculate padding for description alignment
     size_t padding = (DESCRIPTION_COLUMN > name_width) ? (DESCRIPTION_COLUMN - name_width) : 2;
 
-    _print_option_description(option, padding);
+    print_option_description(option, padding);
 }
 
-static void _print_positional(const cargs_option_t *option, size_t indent)
+static void print_positional(const cargs_option_t *option, size_t indent)
 {
     size_t name_len = 0;
 
@@ -560,10 +563,10 @@ static void _print_positional(const cargs_option_t *option, size_t indent)
     // Calculate padding for description alignment
     size_t padding = (DESCRIPTION_COLUMN > name_len) ? (DESCRIPTION_COLUMN - name_len) : 2;
 
-    _print_option_description(option, padding);
+    print_option_description(option, padding);
 }
 
-static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size_t indent)
+static void print_subcommand(cargs_t *cargs, const cargs_option_t *option, size_t indent)
 {
     UNUSED(cargs);
     size_t name_len = 0;
@@ -582,81 +585,81 @@ static void _print_subcommand(cargs_t *cargs, const cargs_option_t *option, size
     size_t padding = (DESCRIPTION_COLUMN > name_len) ? (DESCRIPTION_COLUMN - name_len) : 2;
 
     // Use the common description printing function
-    _print_option_description(option, padding);
+    print_option_description(option, padding);
 }
 
 /*
  * List printing functions
  */
 
-static void _print_option_list(option_entry_t *list, size_t indent)
+static void print_option_list(option_entry_t *list, size_t indent)
 {
     option_entry_t *current = list;
     while (current != NULL) {
-        _print_option(current->option, indent);
+        print_option(current->option, indent);
         current = current->next;
     }
 }
 
-static void _print_positional_list(option_entry_t *list, size_t indent)
+static void print_positional_list(option_entry_t *list, size_t indent)
 {
     option_entry_t *current = list;
     while (current != NULL) {
-        _print_positional(current->option, indent);
+        print_positional(current->option, indent);
         current = current->next;
     }
 }
 
-static void _print_subcommand_list(cargs_t *cargs, option_entry_t *list, size_t indent)
+static void print_subcommand_list(cargs_t *cargs, option_entry_t *list, size_t indent)
 {
     option_entry_t *current = list;
     while (current != NULL) {
-        _print_subcommand(cargs, current->option, indent);
+        print_subcommand(cargs, current->option, indent);
         current = current->next;
     }
 }
 
-static bool _has_entries(option_entry_t *list)
+static bool has_entries(option_entry_t *list)
 {
     return list != NULL;
 }
 
-static bool _has_groups(group_info_t *groups)
+static bool has_groups(group_info_t *groups)
 {
     return groups != NULL;
 }
 
-static void _print_help_sections(cargs_t *cargs, help_data_t *data)
+static void print_help_sections(cargs_t *cargs, help_data_t *data)
 {
     // Print positional arguments
-    if (_has_entries(data->positionals)) {
+    if (has_entries(data->positionals)) {
         printf("\nArguments:\n");
-        _print_positional_list(data->positionals, OPTION_INDENT);
+        print_positional_list(data->positionals, OPTION_INDENT);
     }
 
     // Print groups of options
-    if (_has_groups(data->groups)) {
+    if (has_groups(data->groups)) {
         group_info_t *group = data->groups;
         while (group != NULL) {
             // Only print non-empty groups
             if (group->options != NULL) {
                 printf("\n%s:\n", group->description ? group->description : group->name);
-                _print_option_list(group->options, OPTION_INDENT);
+                print_option_list(group->options, OPTION_INDENT);
             }
             group = group->next;
         }
     }
 
     // Print ungrouped options
-    if (_has_entries(data->ungrouped)) {
+    if (has_entries(data->ungrouped)) {
         printf("\nOptions:\n");
-        _print_option_list(data->ungrouped, OPTION_INDENT);
+        print_option_list(data->ungrouped, OPTION_INDENT);
     }
 
     // Print subcommands
-    if (_has_entries(data->subcommands)) {
+    if (has_entries(data->subcommands)) {
         printf("\nCommands:\n");
-        _print_subcommand_list(cargs, data->subcommands, OPTION_INDENT);
+        print_subcommand_list(cargs, data->subcommands, OPTION_INDENT);
 
         printf("\nRun '%s", cargs->program_name);
         for (size_t i = 0; i < cargs->context.subcommand_depth; ++i)
@@ -669,22 +672,22 @@ static void _print_help_sections(cargs_t *cargs, help_data_t *data)
  * Main help display function
  */
 
-void display_help(cargs_t *cargs, const cargs_option_t *options)
+void display_help(cargs_t *cargs, const cargs_option_t *command)
 {
-    if (options == NULL)
-        options = get_active_options(cargs);
+    if (command == NULL)
+        command = get_active_options(cargs);
 
     // Initialize help data
     help_data_t data = {NULL, NULL, NULL, NULL};
 
     // Organize options into appropriate categories
-    _organize_options(options, &data);
+    organize_options(command, &data);
 
     // Print the help sections
-    _print_help_sections(cargs, &data);
+    print_help_sections(cargs, &data);
 
     // Clean up
-    _free_help_data(&data);
+    free_help_data(&data);
 
     printf("\n");
 }

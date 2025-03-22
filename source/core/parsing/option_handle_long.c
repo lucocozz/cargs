@@ -26,9 +26,9 @@ int handle_long_option(cargs_t *cargs, cargs_option_t *options, char *arg, char 
 
     char *value = NULL;
     if (option->value_type != VALUE_TYPE_BOOL) {
-        if (equal_pos != NULL)  // Format "--option=value"
+        if (equal_pos != NULL) {  // Format "--option=value"
             value = equal_pos + 1;
-        else if (*current_index + 1 < argc) {  // Format ["--option", "value"]
+        } else if (*current_index + 1 < argc) {  // Format ["--option", "value"]
             *current_index += 1;
             value = argv[*current_index];
         } else {

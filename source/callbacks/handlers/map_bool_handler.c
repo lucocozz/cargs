@@ -5,6 +5,7 @@
 #include "cargs/errors.h"
 #include "cargs/internal/utils.h"
 #include "cargs/options.h"
+#include "cargs/types.h"
 
 /**
  * Convert a string to a boolean value
@@ -17,7 +18,7 @@
  * @param result Pointer to store the result
  * @return 0 on success, -1 on error
  */
-static int _str_to_bool(const char *value, bool *result)
+static int str_to_bool(const char *value, bool *result)
 {
     char *lowercase = strdup(value);
     if (!lowercase)
@@ -53,7 +54,7 @@ static int _str_to_bool(const char *value, bool *result)
 /**
  * Set or update a key-value pair in the map
  */
-static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
+static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
 {
     // Find the separator '='
     char *separator = strchr(pair, '=');
@@ -64,26 +65,28 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
 
     // Split the string at the separator
     char *key = strndup(pair, separator - pair);
-    if (key == NULL)
+    if (key == NULL) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
                            key);
+    }
     char *value = separator + 1;
 
     // Convert the string value to boolean
     bool bool_value;
-    if (_str_to_bool(value, &bool_value) != 0)
+    if (str_to_bool(value, &bool_value) != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                            "Invalid boolean value for key '%s': '%s' (expected true/false, yes/no, "
                            "1/0, on/off, y/n)",
                            key, value);
+    }
 
     // Check if the key already exists
     int key_index = map_find_key(option, key);
 
     // Key exists, update value
-    if (key_index >= 0)
+    if (key_index >= 0) {
         option->value.as_map[key_index].value.as_bool = bool_value;
-    else {
+    } else {
         // Key doesn't exist, add new entry
         adjust_map_size(option);
 
@@ -111,7 +114,7 @@ int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *value)
         }
 
         for (size_t i = 0; pairs[i] != NULL; ++i) {
-            int status = _set_kv_pair(cargs, option, pairs[i]);
+            int status = set_kv_pair(cargs, option, pairs[i]);
             if (status != CARGS_SUCCESS) {
                 free_split(pairs);
                 return status;
@@ -121,7 +124,7 @@ int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *value)
         free_split(pairs);
     } else {
         // Single key-value pair
-        int status = _set_kv_pair(cargs, option, value);
+        int status = set_kv_pair(cargs, option, value);
         if (status != CARGS_SUCCESS)
             return status;
     }

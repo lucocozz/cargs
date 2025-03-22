@@ -5,7 +5,6 @@
 
 #include "cargs/errors.h"
 #include "cargs/internal/parsing.h"
-#include "cargs/internal/utils.h"
 #include "cargs/types.h"
 
 /**
@@ -16,7 +15,7 @@
  *
  * @return Environment variable name or NULL if none
  */
-static const char *_get_env_var_name(cargs_t *cargs, cargs_option_t *option)
+static const char *get_env_var_name(cargs_t *cargs, cargs_option_t *option)
 {
     static char full_name[128];
     const char *prefix           = cargs->env_prefix ? cargs->env_prefix : "";
@@ -30,22 +29,24 @@ static const char *_get_env_var_name(cargs_t *cargs, cargs_option_t *option)
         if (cargs->env_prefix && strncmp(option->env_name, cargs->env_prefix, prefix_len) == 0)
             return (option->env_name);
 
-        if (needs_underscore)
+        if (needs_underscore) {
             snprintf(full_name, sizeof(full_name), "%s_%s", prefix, option->env_name);
-        else
+        } else {
             snprintf(full_name, sizeof(full_name), "%s%s", prefix, option->env_name);
+        }
         return (full_name);
     }
 
     if (option->flags & FLAG_AUTO_ENV) {
         const char *name = option->name ? option->name : (option->lname ? option->lname : "");
 
-        if (option->flags & FLAG_NO_ENV_PREFIX)
+        if (option->flags & FLAG_NO_ENV_PREFIX) {
             snprintf(full_name, sizeof(full_name), "%s", name);
-        else if (needs_underscore)
+        } else if (needs_underscore) {
             snprintf(full_name, sizeof(full_name), "%s_%s", prefix, name);
-        else
+        } else {
             snprintf(full_name, sizeof(full_name), "%s%s", prefix, name);
+        }
 
         for (char *p = full_name; *p; ++p)
             *p = *p == '-' ? '_' : toupper(*p);
@@ -55,7 +56,7 @@ static const char *_get_env_var_name(cargs_t *cargs, cargs_option_t *option)
     return (NULL);
 }
 
-static int _load_env_vars(cargs_t *cargs, cargs_option_t *options)
+static int load_env(cargs_t *cargs, cargs_option_t *options)
 {
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         cargs_option_t *option = &options[i];
@@ -66,7 +67,7 @@ static int _load_env_vars(cargs_t *cargs, cargs_option_t *options)
         if (option->is_set && !(option->flags & FLAG_ENV_OVERRIDE))
             continue;
 
-        const char *env_name = _get_env_var_name(cargs, option);
+        const char *env_name = get_env_var_name(cargs, option);
         if (!env_name)
             continue;
 
@@ -100,14 +101,14 @@ static int _load_env_vars(cargs_t *cargs, cargs_option_t *options)
  */
 int load_env_vars(cargs_t *cargs)
 {
-    int status = _load_env_vars(cargs, cargs->options);
+    int status = load_env(cargs, cargs->options);
     if (status != CARGS_SUCCESS)
         return (status);
 
     for (size_t i = 0; i < cargs->context.subcommand_depth; ++i) {
         const cargs_option_t *subcommand = cargs->context.subcommand_stack[i];
         if (subcommand && subcommand->sub_options) {
-            int status = _load_env_vars(cargs, subcommand->sub_options);
+            int status = load_env(cargs, subcommand->sub_options);
             if (status != CARGS_SUCCESS)
                 return (status);
         }

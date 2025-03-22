@@ -40,9 +40,4 @@ void context_unset_option(cargs_t *cargs);
 void context_set_group(cargs_t *cargs, cargs_option_t *group);
 void context_unset_group(cargs_t *cargs);
 
-/**
- * Error context retrieval
- */
-cargs_error_context_t get_error_context(cargs_t *cargs);
-
 #endif /* CARGS_INTERNAL_CONTEXT_H */

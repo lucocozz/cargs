@@ -7,6 +7,7 @@
  */
 
 #include "cargs/internal/utils.h"
+#include "cargs/types.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +16,7 @@
  * Comparison functions for qsort
  */
 
-static int _compare_int_values(const void *a, const void *b)
+static int compare_int_values(const void *a, const void *b)
 {
     const value_t *va = (const value_t *)a;
     const value_t *vb = (const value_t *)b;
@@ -27,7 +28,7 @@ static int _compare_int_values(const void *a, const void *b)
     return 0;
 }
 
-static int _compare_string_values(const void *a, const void *b)
+static int compare_string_values(const void *a, const void *b)
 {
     const value_t *va = (const value_t *)a;
     const value_t *vb = (const value_t *)b;
@@ -40,7 +41,7 @@ static int _compare_string_values(const void *a, const void *b)
     return strcmp(va->as_string, vb->as_string);
 }
 
-static int _compare_float_values(const void *a, const void *b)
+static int compare_float_values(const void *a, const void *b)
 {
     const value_t *va = (const value_t *)a;
     const value_t *vb = (const value_t *)b;
@@ -52,7 +53,7 @@ static int _compare_float_values(const void *a, const void *b)
     return 0;
 }
 
-static int _compare_map_keys(const void *a, const void *b)
+static int compare_map_keys(const void *a, const void *b)
 {
     const cargs_pair_t *pa = (const cargs_pair_t *)a;
     const cargs_pair_t *pb = (const cargs_pair_t *)b;
@@ -65,7 +66,7 @@ static int _compare_map_keys(const void *a, const void *b)
     return strcmp(pa->key, pb->key);
 }
 
-static int _compare_map_int_values(const void *a, const void *b)
+static int compare_map_int_values(const void *a, const void *b)
 {
     const cargs_pair_t *pa = (const cargs_pair_t *)a;
     const cargs_pair_t *pb = (const cargs_pair_t *)b;
@@ -77,7 +78,7 @@ static int _compare_map_int_values(const void *a, const void *b)
     return 0;
 }
 
-static int _compare_map_string_values(const void *a, const void *b)
+static int compare_map_string_values(const void *a, const void *b)
 {
     const cargs_pair_t *pa = (const cargs_pair_t *)a;
     const cargs_pair_t *pb = (const cargs_pair_t *)b;
@@ -90,7 +91,7 @@ static int _compare_map_string_values(const void *a, const void *b)
     return strcmp(pa->value.as_string, pb->value.as_string);
 }
 
-static int _compare_map_float_values(const void *a, const void *b)
+static int compare_map_float_values(const void *a, const void *b)
 {
     const cargs_pair_t *pa = (const cargs_pair_t *)a;
     const cargs_pair_t *pb = (const cargs_pair_t *)b;
@@ -102,7 +103,7 @@ static int _compare_map_float_values(const void *a, const void *b)
     return 0;
 }
 
-static int _compare_map_bool_values(const void *a, const void *b)
+static int compare_map_bool_values(const void *a, const void *b)
 {
     const cargs_pair_t *pa = (const cargs_pair_t *)a;
     const cargs_pair_t *pb = (const cargs_pair_t *)b;
@@ -118,21 +119,21 @@ void sort_int_array(value_t *array, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(array, count, sizeof(value_t), _compare_int_values);
+    qsort(array, count, sizeof(value_t), compare_int_values);
 }
 
 void sort_string_array(value_t *array, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(array, count, sizeof(value_t), _compare_string_values);
+    qsort(array, count, sizeof(value_t), compare_string_values);
 }
 
 void sort_float_array(value_t *array, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(array, count, sizeof(value_t), _compare_float_values);
+    qsort(array, count, sizeof(value_t), compare_float_values);
 }
 
 /*
@@ -224,35 +225,35 @@ void sort_map_by_keys(cargs_pair_t *map, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(map, count, sizeof(cargs_pair_t), _compare_map_keys);
+    qsort(map, count, sizeof(cargs_pair_t), compare_map_keys);
 }
 
 void sort_map_by_int_values(cargs_pair_t *map, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(map, count, sizeof(cargs_pair_t), _compare_map_int_values);
+    qsort(map, count, sizeof(cargs_pair_t), compare_map_int_values);
 }
 
 void sort_map_by_string_values(cargs_pair_t *map, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(map, count, sizeof(cargs_pair_t), _compare_map_string_values);
+    qsort(map, count, sizeof(cargs_pair_t), compare_map_string_values);
 }
 
 void sort_map_by_float_values(cargs_pair_t *map, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(map, count, sizeof(cargs_pair_t), _compare_map_float_values);
+    qsort(map, count, sizeof(cargs_pair_t), compare_map_float_values);
 }
 
 void sort_map_by_bool_values(cargs_pair_t *map, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(map, count, sizeof(cargs_pair_t), _compare_map_bool_values);
+    qsort(map, count, sizeof(cargs_pair_t), compare_map_bool_values);
 }
 
 /*
@@ -290,9 +291,10 @@ size_t make_map_values_unique(cargs_pair_t *map, size_t count, value_type_t type
 
                 case VALUE_TYPE_STRING:
                 case VALUE_TYPE_MAP_STRING:
-                    if (map[i].value.as_string && map[j].value.as_string)
+                    if (map[i].value.as_string && map[j].value.as_string) {
                         is_duplicate =
                             (strcmp(map[i].value.as_string, map[j].value.as_string) == 0);
+                    }
                     break;
 
                 case VALUE_TYPE_FLOAT:
@@ -408,10 +410,10 @@ void apply_map_flags(cargs_option_t *option)
     }
 
     // Sort by key if needed
-    if (option->flags & FLAG_SORTED_KEY)
+    if (option->flags & FLAG_SORTED_KEY) {
         sort_map_by_keys(option->value.as_map, option->value_count);
-    // Sort by value if needed (and not already sorted by key)
-    else if (option->flags & FLAG_SORTED_VALUE) {
+        // Sort by value if needed (and not already sorted by key)
+    } else if (option->flags & FLAG_SORTED_VALUE) {
         switch (option->value_type) {
             case VALUE_TYPE_MAP_INT:
                 sort_map_by_int_values(option->value.as_map, option->value_count);
@@ -439,11 +441,15 @@ void adjust_array_size(cargs_option_t *option)
 {
     if (option->value.as_array == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_array = malloc(option->value_capacity * sizeof(value_t *));
+        option->value.as_array = malloc(option->value_capacity * sizeof(value_t));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
-        option->value.as_array =
-            realloc(option->value.as_array, option->value_capacity * sizeof(value_t *));
+        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(value_t));
+        if (new == NULL) {
+            option->value_capacity /= 2;
+            return;
+        }
+        option->value.as_array = new;
     }
 }
 
@@ -451,11 +457,15 @@ void adjust_map_size(cargs_option_t *option)
 {
     if (option->value.as_map == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_map   = malloc(option->value_capacity * sizeof(cargs_pair_t *));
+        option->value.as_map   = malloc(option->value_capacity * sizeof(cargs_pair_t));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
-        option->value.as_map =
-            realloc(option->value.as_map, option->value_capacity * sizeof(cargs_pair_t *));
+        void *new = realloc(option->value.as_map, option->value_capacity * sizeof(cargs_pair_t));
+        if (new == NULL) {
+            option->value_capacity /= 2;
+            return;
+        }
+        option->value.as_map = new;
     }
 }
 
@@ -463,7 +473,7 @@ int map_find_key(cargs_option_t *option, const char *key)
 {
     for (size_t i = 0; i < option->value_count; ++i) {
         if (option->value.as_map[i].key && strcmp(option->value.as_map[i].key, key) == 0)
-            return (i);
+            return ((int)i);
     }
     return (-1);
 }

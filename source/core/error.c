@@ -91,9 +91,10 @@ void cargs_print_error_stack(const cargs_t *cargs)
             fprintf(stderr, COLOR(ANSI_ITALIC, "%s\n"), error->message);
         }
     }
-    if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK)
+    if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK) {
         printf(COLOR(ANSI_ITALIC ANSI_RED, "(Too many errors, only the first %d are displayed)\n"),
                CARGS_MAX_ERRORS_STACK);
+    }
 }
 
 void cargs_clear_errors(cargs_t *cargs)

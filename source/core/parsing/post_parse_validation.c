@@ -6,7 +6,7 @@
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
 
-static int __validate_required_positional(cargs_t *cargs, cargs_option_t *options)
+static int validate_required_positional(cargs_t *cargs, cargs_option_t *options)
 {
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         cargs_option_t *option = &options[i];
@@ -19,7 +19,7 @@ static int __validate_required_positional(cargs_t *cargs, cargs_option_t *option
     return (CARGS_SUCCESS);
 }
 
-static int __validate_requires(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
+static int validate_requires(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
     if (!option->requires || !option->is_set)
         return (CARGS_SUCCESS);
@@ -41,7 +41,7 @@ static int __validate_requires(cargs_t *cargs, cargs_option_t *options, cargs_op
     return (CARGS_SUCCESS);
 }
 
-static int __validate_conflicts(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
+static int validate_conflicts(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
     if (!option->conflicts || !option->is_set)
         return (CARGS_SUCCESS);
@@ -56,7 +56,7 @@ static int __validate_conflicts(cargs_t *cargs, cargs_option_t *options, cargs_o
     return (CARGS_SUCCESS);
 }
 
-static int __validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
+static int validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
 {
     bool        current_group_is_exclusive = false;
     const char *first_set_option_name      = NULL;
@@ -75,9 +75,9 @@ static int __validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
             continue;
 
         if (current_group_is_exclusive) {
-            if (!first_set_option_name)
+            if (!first_set_option_name) {
                 first_set_option_name = option->name;
-            else {
+            } else {
                 CARGS_REPORT_ERROR(cargs, CARGS_ERROR_EXCLUSIVE_GROUP,
                                    "Exclusive options group '%s' conflict: '%s' and '%s'",
                                    cargs->context.group, first_set_option_name, option->name);
@@ -87,15 +87,15 @@ static int __validate_exclusive_groups(cargs_t *cargs, cargs_option_t *options)
     return (CARGS_SUCCESS);
 }
 
-static int __validate_options_set(cargs_t *cargs, cargs_option_t *options)
+static int validate_options_set(cargs_t *cargs, cargs_option_t *options)
 {
     int status = CARGS_SUCCESS;
 
-    status = __validate_exclusive_groups(cargs, options);
+    status = validate_exclusive_groups(cargs, options);
     if (status != CARGS_SUCCESS)
         return (status);
 
-    status = __validate_required_positional(cargs, options);
+    status = validate_required_positional(cargs, options);
     if (status != CARGS_SUCCESS)
         return (status);
 
@@ -105,11 +105,11 @@ static int __validate_options_set(cargs_t *cargs, cargs_option_t *options)
         if (option->type == TYPE_GROUP || !option->is_set)
             continue;
 
-        status = __validate_requires(cargs, options, option);
+        status = validate_requires(cargs, options, option);
         if (status != CARGS_SUCCESS)
             return (status);
 
-        status = __validate_conflicts(cargs, options, option);
+        status = validate_conflicts(cargs, options, option);
         if (status != CARGS_SUCCESS)
             return (status);
     }
@@ -120,7 +120,7 @@ int post_parse_validation(cargs_t *cargs)
 {
     int status = CARGS_SUCCESS;
 
-    status = __validate_options_set(cargs, cargs->options);
+    status = validate_options_set(cargs, cargs->options);
     if (status != CARGS_SUCCESS)
         return (status);
 
@@ -129,7 +129,7 @@ int post_parse_validation(cargs_t *cargs)
         if (!subcommand || !subcommand->sub_options)
             continue;
 
-        status = __validate_options_set(cargs, subcommand->sub_options);
+        status = validate_options_set(cargs, subcommand->sub_options);
         if (status != CARGS_SUCCESS)
             return (status);
     }

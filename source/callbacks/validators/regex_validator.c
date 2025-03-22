@@ -1,6 +1,6 @@
+#include <stddef.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include "cargs/errors.h"
-#include "cargs/internal/utils.h"
 #include "cargs/types.h"
 #include <pcre2.h>
 

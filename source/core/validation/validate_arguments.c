@@ -1,8 +1,10 @@
 #include "cargs/errors.h"
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
+#include <stddef.h>
+#include <string.h>
 
-static int __validate_basics(cargs_t *cargs, cargs_option_t *option)
+static int validate_basics(cargs_t *cargs, cargs_option_t *option)
 {
     int status = CARGS_SUCCESS;
 
@@ -28,7 +30,7 @@ static int __validate_basics(cargs_t *cargs, cargs_option_t *option)
     return (status);
 }
 
-static int __validate_default_value(cargs_t *cargs, cargs_option_t *option)
+static int validate_default_value(cargs_t *cargs, cargs_option_t *option)
 {
     int status = CARGS_SUCCESS;
 
@@ -50,7 +52,7 @@ static int __validate_default_value(cargs_t *cargs, cargs_option_t *option)
     return (status);
 }
 
-static int __validate_dependencies(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
+static int validate_dependencies(cargs_t *cargs, cargs_option_t *options, cargs_option_t *option)
 {
     int status = CARGS_SUCCESS;
 
@@ -99,15 +101,15 @@ int validate_option(cargs_t *cargs, cargs_option_t *options, cargs_option_t *opt
 {
     int status = CARGS_SUCCESS;
 
-    status = __validate_basics(cargs, option);
+    status = validate_basics(cargs, option);
     if (status != CARGS_SUCCESS)
         return (status);
 
-    status = __validate_default_value(cargs, option);
+    status = validate_default_value(cargs, option);
     if (status != CARGS_SUCCESS)
         return (status);
 
-    status = __validate_dependencies(cargs, options, option);
+    status = validate_dependencies(cargs, options, option);
     return (status);
 }
 

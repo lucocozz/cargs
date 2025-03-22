@@ -4,11 +4,12 @@
 #include "cargs/errors.h"
 #include "cargs/internal/utils.h"
 #include "cargs/options.h"
+#include "cargs/types.h"
 
 /**
  * Set or update a key-value pair in the map
  */
-static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
+static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
 {
     // Find the separator '='
     char *separator = strchr(pair, '=');
@@ -19,9 +20,10 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
 
     // Split the string at the separator
     char *key = strndup(pair, separator - pair);
-    if (key == NULL)
+    if (key == NULL) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
                            key);
+    }
     char *value = strdup(separator + 1);
     if (value == NULL) {
         free(key);
@@ -65,7 +67,7 @@ int map_string_handler(cargs_t *cargs, cargs_option_t *option, char *value)
         }
 
         for (size_t i = 0; pairs[i] != NULL; ++i) {
-            int status = _set_kv_pair(cargs, option, pairs[i]);
+            int status = set_kv_pair(cargs, option, pairs[i]);
             if (status != CARGS_SUCCESS) {
                 free_split(pairs);
                 return status;
@@ -75,7 +77,7 @@ int map_string_handler(cargs_t *cargs, cargs_option_t *option, char *value)
         free_split(pairs);
     } else {
         // Single key-value pair
-        int status = _set_kv_pair(cargs, option, value);
+        int status = set_kv_pair(cargs, option, value);
         if (status != CARGS_SUCCESS)
             return status;
     }

@@ -46,7 +46,7 @@
 /**
  * Utility macros
  */
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #define EXPAND(x)       x
 #define UNUSED(x)       (void)(x)
 
@@ -70,7 +70,7 @@ void apply_map_flags(cargs_option_t *option);
 /**
  * Value manipulation functions
  */
-int     cmp_value(value_type_t type, const value_t a, const value_t b);
+int     cmp_value(value_type_t type, value_t a, value_t b);
 value_t choices_to_value(value_type_t type, value_t choices, size_t choices_count, int index);
 void    free_option_value(cargs_option_t *option);
 void    print_value(FILE *stream, value_type_t type, value_t value);
