@@ -18,8 +18,10 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     }
 
     // Split the string at the separator
-    *separator  = '\0';
-    char *key   = pair;
+    char *key = strndup(pair, separator - pair);
+    if (key == NULL)
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
+                           key);
     char *value = separator + 1;
 
     // Convert the string value to float
@@ -27,12 +29,9 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     double float_value = strtod(value, &endptr);
 
     // Check if conversion was successful
-    if (*value == '\0' || *endptr != '\0') {
-        // Restore the separator for error reporting purposes
-        *separator = '=';
+    if (*value == '\0' || *endptr != '\0')
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                            "Invalid float value for key '%s': '%s'", key, value);
-    }
 
     // Check if the key already exists
     int key_index = map_find_key(option, key);
@@ -44,22 +43,10 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
         // Key doesn't exist, add new entry
         adjust_map_size(option);
 
-        // Allocate and store key
-        option->value.as_map[option->value_count].key = strdup(key);
-        if (option->value.as_map[option->value_count].key == NULL) {
-            // Restore the separator for error reporting
-            *separator = '=';
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
-                               key);
-        }
-
-        // Store float value
+        option->value.as_map[option->value_count].key            = key;
         option->value.as_map[option->value_count].value.as_float = float_value;
         option->value_count++;
     }
-
-    // Restore the separator for error reporting purposes
-    *separator = '=';
 
     return CARGS_SUCCESS;
 }

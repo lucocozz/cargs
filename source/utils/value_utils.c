@@ -47,9 +47,16 @@ int cmp_value(value_type_t type, const value_t a, const value_t b)
         case VALUE_TYPE_INT:
             return a.as_int - b.as_int;
         case VALUE_TYPE_STRING:
+            if (a.as_string == NULL || b.as_string == NULL)
+                return -1;
             return strcmp(a.as_string, b.as_string);
         case VALUE_TYPE_FLOAT:
-            return a.as_float - b.as_float;
+            if (a.as_float == b.as_float)
+                return 0;
+            else if (a.as_float > b.as_float)
+                return 1;
+            else
+                return -1;
         case VALUE_TYPE_BOOL:
             return a.as_bool - b.as_bool;
         default:

@@ -1,5 +1,6 @@
 # Functional tests
 functional_tests = [
+  ['api', 'test_api.c'],
   ['basic_usage', 'test_basic_usage.c'],
   ['multi_values', 'test_multi_values.c'],
   ['environments', 'test_env.c'],

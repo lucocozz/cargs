@@ -53,6 +53,8 @@ int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
     }
 
     option->is_set = true;
+    if (option->value_count == 0)
+        option->value_count = 1;
 
     status = _validate_choices(cargs, option);
     if (status != CARGS_SUCCESS)

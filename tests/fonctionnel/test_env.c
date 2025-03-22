@@ -1,28 +1,23 @@
-// tests/fonctionnel/test_environments.c
 #include <criterion/criterion.h>
+#include "cargs.h"
+#include "cargs/internal/parsing.h"
+#include "cargs/internal/utils.h"
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include "cargs.h"
 
-// Define options with environment variables
+// Test options
 CARGS_OPTIONS(
-    test_options,
+    env_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('H', "host", "Server hostname",
-                ENV_VAR("HOST")),
-    OPTION_INT('p', "port", "Server port", 
-                FLAGS(FLAG_AUTO_ENV)),
+    OPTION_STRING('H', "host", "Server hostname", ENV_VAR("HOST")),
+    OPTION_INT('p', "port", "Server port", FLAGS(FLAG_AUTO_ENV)),
     OPTION_STRING('d', "database", "Database connection string",
-                ENV_VAR("DATABASE_URL"),
-                FLAGS(FLAG_NO_ENV_PREFIX)),
+                ENV_VAR("DATABASE_URL"), FLAGS(FLAG_NO_ENV_PREFIX)),
     OPTION_INT('t', "timeout", "Connection timeout in seconds",
-            	DEFAULT(30),
-            	ENV_VAR("FORCE_TIMEOUT"),
-            	FLAGS(FLAG_ENV_OVERRIDE))
+                DEFAULT(30), ENV_VAR("FORCE_TIMEOUT"), FLAGS(FLAG_ENV_OVERRIDE))
 )
 
-// Setup function to set environment variables
+// Helper function to setup and cleanup environment
 void setup_env(void)
 {
     setenv("TEST_HOST", "env-server.example.com", 1);
@@ -31,51 +26,145 @@ void setup_env(void)
     setenv("TEST_FORCE_TIMEOUT", "60", 1);
 }
 
-// Teardown function to clear environment variables
 void teardown_env(void)
 {
     unsetenv("TEST_HOST");
     unsetenv("TEST_PORT");
     unsetenv("DATABASE_URL");
-    unsetenv("FORCE_TIMEOUT");
+    unsetenv("TEST_FORCE_TIMEOUT");
 }
 
-// Test basic environment variable loading
-Test(environments, basic_env, .init = setup_env, .fini = teardown_env)
+// Test load_env_vars function
+Test(env_vars, load_env_vars, .init = setup_env, .fini = teardown_env)
 {
-    char *argv[] = {"test"};
-    int argc = sizeof(argv) / sizeof(char*);
-
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
     cargs.env_prefix = "TEST";
-    int status = cargs_parse(&cargs, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should parse successfully");
-    cr_assert_str_eq(cargs_get(cargs, "host").as_string, "env-server.example.com", "Host should be from environment");
-    cr_assert_eq(cargs_get(cargs, "port").as_int, 9000, "Port should be from environment");
-    cr_assert_str_eq(cargs_get(cargs, "database").as_string, "postgres://user:pass@localhost/db", "Database URL should be from environment");
-
+    // Options should not be set initially
+    cargs_option_t *host_option = find_option_by_name(env_options, "host");
+    cargs_option_t *port_option = find_option_by_name(env_options, "port");
+    cargs_option_t *db_option = find_option_by_name(env_options, "database");
+    cargs_option_t *timeout_option = find_option_by_name(env_options, "timeout");
+    
+    cr_assert_eq(host_option->is_set, false, "Host option should not be set initially");
+    cr_assert_eq(port_option->is_set, false, "Port option should not be set initially");
+    cr_assert_eq(db_option->is_set, false, "Database option should not be set initially");
+    cr_assert_eq(timeout_option->is_set, true, "Timeout option should be set due to default");
+    cr_assert_eq(timeout_option->value.as_int, 30, "Timeout should have default value initially");
+    
+    // Load environment variables
+    int status = load_env_vars(&cargs);
+    
+    // Check that env vars were loaded successfully
+    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should load successfully");
+    
+    // Check that options were set from environment variables
+    cr_assert_eq(host_option->is_set, true, "Host option should be set from env var");
+    cr_assert_str_eq(host_option->value.as_string, "env-server.example.com", "Host value should be from env var");
+    
+    cr_assert_eq(port_option->is_set, true, "Port option should be set from env var");
+    cr_assert_eq(port_option->value.as_int, 9000, "Port value should be from env var");
+    
+    cr_assert_eq(db_option->is_set, true, "Database option should be set from env var");
+    cr_assert_str_eq(db_option->value.as_string, "postgres://user:pass@localhost/db", "Database value should be from env var");
+    
+    cr_assert_eq(timeout_option->is_set, true, "Timeout option should be set from env var");
+    cr_assert_eq(timeout_option->value.as_int, 60, "Timeout value should be from env var");
+    
+    // Clean up
     cargs_free(&cargs);
 }
 
-// Test command line overriding environment variables
-Test(environments, cmd_override, .init = setup_env, .fini = teardown_env)
+// Test FLAG_ENV_OVERRIDE behavior
+Test(env_vars, env_override_flag, .init = setup_env, .fini = teardown_env)
 {
-    char *argv[] = {"test", "--host=cli-server.example.com", "--port=8888", "--database=mysql://localhost/db"};
-    int argc = sizeof(argv) / sizeof(char*);
-
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    // Prepare command line arguments that set all options
+    char *argv[] = {
+        "test_program", 
+        "--host=cli-server.example.com", 
+        "--port=8080", 
+        "--database=mysql://localhost/db",
+        "--timeout=45"
+    };
+    int argc = sizeof(argv) / sizeof(char *);
+    
+    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
     cargs.env_prefix = "TEST";
+    
+    // Parse command line arguments
     int status = cargs_parse(&cargs, argc, argv);
     
+    // Check that parsing succeeded
     cr_assert_eq(status, CARGS_SUCCESS, "Command line arguments should parse successfully");
-    cr_assert_str_eq(cargs_get(cargs, "host").as_string, "cli-server.example.com", "Host should be from command line");
-    cr_assert_eq(cargs_get(cargs, "port").as_int, 8888, "Port should be from command line");
-    cr_assert_str_eq(cargs_get(cargs, "database").as_string, "mysql://localhost/db", "Database should be from command line");
     
-    // Timeout has FLAG_ENV_OVERRIDE, so it should still be from environment
-	fprintf(stderr, "timeout: %d\n", cargs_get(cargs, "timeout").as_int);
-    cr_assert_eq(cargs_get(cargs, "timeout").as_int, 60, "Timeout with FLAG_ENV_OVERRIDE should be from environment");
+    // Check option values
+    cr_assert_str_eq(cargs_get(cargs, "host").as_string, "cli-server.example.com", 
+                     "Host should be from command line");
     
+    cr_assert_eq(cargs_get(cargs, "port").as_int, 8080, 
+                 "Port should be from command line");
+    
+    cr_assert_str_eq(cargs_get(cargs, "database").as_string, "mysql://localhost/db", 
+                     "Database should be from command line");
+    
+    // Check that FLAG_ENV_OVERRIDE made env var override command line
+    cr_assert_eq(cargs_get(cargs, "timeout").as_int, 60, 
+                 "Timeout should be from env var despite command line value");
+    
+    // Clean up
+    cargs_free(&cargs);
+}
+
+// Test FLAG_AUTO_ENV behavior
+Test(env_vars, auto_env_flag, .init = setup_env, .fini = teardown_env)
+{
+    // Test with a custom prefix
+    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
+    cargs.env_prefix = "CUSTOM";
+    
+    // Manually set up the environment with the custom prefix
+    setenv("CUSTOM_PORT", "7777", 1);
+    
+    // Load environment variables
+    int status = load_env_vars(&cargs);
+    
+    // Check that env vars were loaded successfully
+    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should load successfully");
+    
+    // Check that auto-env option got the value from the custom prefix
+    cargs_option_t *port_option = find_option_by_name(env_options, "port");
+    cr_assert_eq(port_option->is_set, true, "Port option should be set from auto-env");
+    cr_assert_eq(port_option->value.as_int, 7777, "Port value should be from CUSTOM_PORT env var");
+    
+    // Clean up
+    unsetenv("CUSTOM_PORT");
+    cargs_free(&cargs);
+}
+
+// Test FLAG_NO_ENV_PREFIX behavior
+Test(env_vars, no_env_prefix_flag, .init = setup_env, .fini = teardown_env)
+{
+    // Test with a non-prefixed variable
+    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
+    cargs.env_prefix = "TEST";
+    
+    // Manually set up the environment with and without prefix
+    setenv("DATABASE_URL", "sqlite:///data.db", 1);  // No prefix
+    setenv("TEST_DATABASE_URL", "mysql://wrong/db", 1);  // With prefix - should be ignored
+    
+    // Load environment variables
+    int status = load_env_vars(&cargs);
+    
+    // Check that env vars were loaded successfully
+    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should load successfully");
+    
+    // Check that NO_ENV_PREFIX option got the value from the unprefixed variable
+    cargs_option_t *db_option = find_option_by_name(env_options, "database");
+    cr_assert_eq(db_option->is_set, true, "Database option should be set from env var");
+    cr_assert_str_eq(db_option->value.as_string, "sqlite:///data.db", 
+                     "Database value should be from unprefixed env var");
+    
+    // Clean up
+    unsetenv("TEST_DATABASE_URL");
     cargs_free(&cargs);
 }

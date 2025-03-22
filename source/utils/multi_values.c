@@ -451,11 +451,11 @@ void adjust_map_size(cargs_option_t *option)
 {
     if (option->value.as_map == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_map   = malloc(option->value_capacity * sizeof(value_t *));
+        option->value.as_map   = malloc(option->value_capacity * sizeof(cargs_pair_t *));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
         option->value.as_map =
-            realloc(option->value.as_map, option->value_capacity * sizeof(value_t *));
+            realloc(option->value.as_map, option->value_capacity * sizeof(cargs_pair_t *));
     }
 }
 

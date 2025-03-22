@@ -18,9 +18,16 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     }
 
     // Split the string at the separator
-    *separator  = '\0';
-    char *key   = pair;
-    char *value = separator + 1;
+    char *key = strndup(pair, separator - pair);
+    if (key == NULL)
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
+                           key);
+    char *value = strdup(separator + 1);
+    if (value == NULL) {
+        free(key);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for value '%s'",
+                           value);
+    }
 
     // Check if the key already exists
     int key_index = map_find_key(option, key);
@@ -28,35 +35,16 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     if (key_index >= 0) {
         // Key exists, update value
         free(option->value.as_map[key_index].value.as_string);
-        option->value.as_map[key_index].value.as_string = strdup(value);
-        if (option->value.as_map[key_index].value.as_string == NULL) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY,
-                               "Failed to allocate memory for value '%s'", value);
-        }
+        option->value.as_map[key_index].value.as_string = value;
     } else {
         // Key doesn't exist, add new entry
+
         adjust_map_size(option);
 
-        // Allocate and store key
-        option->value.as_map[option->value_count].key = strdup(key);
-        if (option->value.as_map[option->value_count].key == NULL) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
-                               key);
-        }
-
-        // Allocate and store value
-        option->value.as_map[option->value_count].value.as_string = strdup(value);
-        if (option->value.as_map[option->value_count].value.as_string == NULL) {
-            free((void *)option->value.as_map[option->value_count].key);
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY,
-                               "Failed to allocate memory for value '%s'", value);
-        }
-
+        option->value.as_map[option->value_count].key             = key;
+        option->value.as_map[option->value_count].value.as_string = value;
         option->value_count++;
     }
-
-    // Restore the separator for error reporting purposes
-    *separator = '=';
 
     return CARGS_SUCCESS;
 }
@@ -64,6 +52,7 @@ static int _set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
 /**
  * Handler for string map options
  * Format: "key1=value1,key2=value2,..."
+ * Format: "key1=value1" "key2=value2" ...
  * If key exists, replaces the value, otherwise creates a new entry
  */
 int map_string_handler(cargs_t *cargs, cargs_option_t *option, char *value)

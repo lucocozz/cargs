@@ -109,18 +109,15 @@ cargs_map_it_t cargs_map_it(cargs_t cargs, const char *option_path)
     return it;
 }
 
-bool cargs_map_next(cargs_map_it_t *it, const char **key, value_t *value)
+bool cargs_map_next(cargs_map_it_t *it)
 {
     if (it == NULL || it->_position >= it->_count)
         return false;
 
     cargs_pair_t pair = it->_map[it->_position++];
 
-    if (key != NULL)
-        it->key = pair.key;
-
-    if (value != NULL)
-        it->value = pair.value;
+    it->key   = pair.key;
+    it->value = pair.value;
 
     return (true);
 }

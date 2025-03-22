@@ -1,8 +1,10 @@
 # Integration tests
 integration_tests = [
-  ['option_parsing', 'test_option_parsing.c'],
+  ['parsing', 'test_parsing.c'],
   ['subcommands', 'test_subcommands.c'],
   ['validators', 'test_validators.c'],
+  ['post_validation', 'test_post_validation.c'],
+  ['validation', 'test_validation.c'],
 ]
 
 foreach test : integration_tests

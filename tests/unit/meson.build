@@ -1,12 +1,12 @@
 # Unit tests
 unit_tests = [
-  # ['context', 'test_core/test_context.c'],
-  # ['parsing', 'test_core/test_parsing.c'],
-  # ['validation', 'test_core/test_validation.c'],
+  ['context', 'test_core/test_context.c'],
+  ['error', 'test_core/test_error.c'],
   ['strings', 'test_utils/test_strings.c'],
   ['value_utils', 'test_utils/test_value_utils.c'],
   ['option_lookup', 'test_utils/test_option_lookup.c'],
-  # ['handlers', 'test_callbacks/test_handlers.c'],
+  ['multi_values', 'test_utils/test_multi_values.c'],
+  ['handlers', 'test_callbacks/test_handlers.c'],
   ['validators', 'test_callbacks/test_validators.c'],
 ]
 

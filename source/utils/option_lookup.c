@@ -7,6 +7,8 @@
 
 cargs_option_t *find_option_by_lname(cargs_option_t *options, const char *lname)
 {
+    if (lname == NULL)
+        return (NULL);
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_OPTION && options[i].lname &&
             strcmp(options[i].lname, lname) == 0)

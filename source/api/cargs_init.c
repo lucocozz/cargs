@@ -7,7 +7,7 @@
 #include "cargs/internal/utils.h"
 #include "cargs/types.h"
 
-cargs_error_t validate_structure(cargs_t *cargs, cargs_option_t *options);
+int validate_structure(cargs_t *cargs, cargs_option_t *options);
 
 cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version)
 {
@@ -21,8 +21,7 @@ cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char
     };
     context_init(&cargs);
 
-    validate_structure(&cargs, options);
-    if (cargs.error_stack.count > 0) {
+    if (validate_structure(&cargs, options) != CARGS_SUCCESS) {
         fprintf(stderr, "Error while initializing cargs:\n\n");
         cargs_print_error_stack(&cargs);
         exit(EXIT_FAILURE);
