@@ -1,0 +1,144 @@
+# Quick Start
+
+This guide will help you quickly create a simple application using cargs to process command-line arguments.
+
+## Minimal Example
+
+Here's a minimal example of using cargs:
+
+```c
+#include "cargs.h"
+#include <stdio.h>
+
+// Option definition
+CARGS_OPTIONS(
+    options,
+    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    OPTION_FLAG('v', "verbose", "Enable verbose mode")
+)
+
+int main(int argc, char **argv)
+{
+    // Initialize cargs
+    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+    
+    // Parse arguments
+    int status = cargs_parse(&cargs, argc, argv);
+    if (status != CARGS_SUCCESS) {
+        return status;
+    }
+    
+    // Access parsed values
+    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    
+    // Application logic
+    if (verbose) {
+        printf("Verbose mode enabled\n");
+    }
+    
+    // Free resources
+    cargs_free(&cargs);
+    return 0;
+}
+```
+
+## Basic Steps
+
+1. **Include the header**: Start by including the `cargs.h` header.
+
+2. **Define options**: Use the `CARGS_OPTIONS` macro to define the options accepted by your program.
+
+3. **Initialize cargs**: Call `cargs_init()` to initialize the cargs context.
+
+4. **Parse arguments**: Use `cargs_parse()` to parse command-line arguments.
+
+5. **Access values**: Use `cargs_get()`, `cargs_is_set()` and other functions to access option values.
+
+6. **Free resources**: Call `cargs_free()` before exiting to free allocated resources.
+
+## Complete Example
+
+Here's a more complete example including different types of options:
+
+```c
+#include "cargs.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+CARGS_OPTIONS(
+    options,
+    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    OPTION_FLAG('v', "verbose", "Enable verbose mode"),
+    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
+    OPTION_INT('c', "count", "Number of iterations", RANGE(1, 100), DEFAULT(10)),
+    OPTION_FLOAT('f', "factor", "Scale factor", DEFAULT(1.0)),
+    POSITIONAL_STRING("input", "Input file")
+)
+
+int main(int argc, char **argv)
+{
+    // Initialize cargs
+    cargs_t cargs = cargs_init(options, "complete_example", "1.0.0");
+    cargs.description = "Complete cargs example";
+    
+    // Parse arguments
+    int status = cargs_parse(&cargs, argc, argv);
+    if (status != CARGS_SUCCESS) {
+        return status;
+    }
+    
+    // Access parsed values
+    const char *input = cargs_get(cargs, "input").as_string;
+    const char *output = cargs_get(cargs, "output").as_string;
+    int count = cargs_get(cargs, "count").as_int;
+    double factor = cargs_get(cargs, "factor").as_float;
+    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    
+    // Display configuration
+    printf("Configuration:\n");
+    printf("  Input: %s\n", input);
+    printf("  Output: %s\n", output);
+    printf("  Count: %d\n", count);
+    printf("  Factor: %.2f\n", factor);
+    printf("  Verbose: %s\n", verbose ? "yes" : "no");
+    
+    // Free resources
+    cargs_free(&cargs);
+    return 0;
+}
+```
+
+## Automatically Generated Help
+
+With the `HELP_OPTION` and `VERSION_OPTION` options, cargs automatically generates formatted help and version information when the user specifies `--help` or `--version`.
+
+Example of generated help:
+
+```
+complete_example v1.0.0
+
+Complete cargs example
+
+Usage: complete_example [OPTIONS] <input>
+
+Arguments:
+  <input>                - Input file
+
+Options:
+  -h, --help             - Display this help message (exit)
+  -V, --version          - Display version information (exit)
+  -v, --verbose          - Enable verbose mode
+  -o, --output <STR>     - Output file (default: "output.txt")
+  -c, --count <NUM>      - Number of iterations [1-100] (default: 10)
+  -f, --factor <FLOAT>   - Scale factor (default: 1.00)
+```
+
+## Next Steps
+
+Now that you've created a basic application with cargs, you can explore more advanced features:
+
+- [Basic Options](basic-options.md) - Learn more about different option types
+- [Subcommands](subcommands.md) - Create applications with subcommands like Git or Docker
+- [Validation](validation.md) - Validate user input with built-in or custom validators
