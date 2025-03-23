@@ -1,0 +1,165 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format clang-tidy
+      
+      - name: Check code formatting
+        run: |
+          # Find all .c and .h files and check their formatting
+          find source includes -name "*.c" -o -name "*.h" | xargs clang-format -i -style=file
+          # Check if there are any changes after formatting
+          git diff --exit-code || {
+            echo "❌ Code formatting check failed. Please run 'just format' locally and commit the changes.";
+            exit 1;
+          }
+      
+      - name: Setup build for clang-tidy
+        run: |
+          sudo apt-get install -y meson ninja-build libpcre2-dev
+          meson setup .build
+      
+      - name: Run static analysis
+        run: |
+          find source -name "*.c" | xargs clang-tidy -p .build --config-file=.clang-tidy
+    
+  build:
+    name: Build
+    needs: code-quality
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gcc, clang]
+        build_type: [debugoptimized, release]
+        exclude:
+          # Exclude some combinations for efficiency
+          - os: macos-latest
+            compiler: gcc
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build libpcre2-dev libcriterion-dev
+          
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install meson ninja pcre2 criterion
+      
+      - name: Configure
+        run: meson setup -Dtests=true -Dexamples=true -Dbuildtype=${{ matrix.build_type }} .build
+        env:
+          CC: ${{ matrix.compiler }}
+      
+      - name: Compile
+        run: meson compile -C .build
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: |
+            .build/lib*.so
+            .build/lib*.a
+          retention-days: 1
+  
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build libpcre2-dev libcriterion-dev
+      
+      - name: Configure
+        run: meson setup -Dtests=true -Dexamples=true .build
+      
+      - name: Compile
+        run: meson compile -C .build
+      
+      - name: Run unit tests
+        run: meson test -C .build --suite unit -v
+      
+      - name: Run integration tests
+        run: meson test -C .build --suite integration -v
+      
+      - name: Run functional tests
+        run: meson test -C .build --suite functional -v
+      
+      - name: Generate test coverage report
+        run: |
+          sudo apt-get install -y gcovr
+          meson configure -Db_coverage=true .build
+          ninja -C .build coverage
+      
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: .build/meson-logs/coverage/
+          retention-days: 5
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build libpcre2-dev
+      
+      - name: Build release
+        run: |
+          meson setup -Dbuildtype=release .build
+          meson compile -C .build
+      
+      - name: Create release archive
+        run: |
+          mkdir -p release/include release/lib
+          cp -r includes/cargs* release/include/
+          cp includes/cargs.h release/include/
+          cp .build/libcargs.a release/lib/
+          cp .build/libcargs.so release/lib/
+          tar -czf cargs-${{ github.ref_name }}.tar.gz release/
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: cargs-${{ github.ref_name }}.tar.gz
+          draft: false
+          prerelease: false
+          generate_release_notes: true
