@@ -3,24 +3,26 @@
 
 Test(strings, starts_with_valid)
 {
+    char *test_str = "prefix";
     // Test basic prefix matching
-    cr_assert_not_null(starts_with("pre", "prefix"));
+    cr_assert_not_null(starts_with("pre", test_str));
     
     // Test the returned pointer position
-    char *result = starts_with("pre", "prefix");
-    cr_assert_eq(result, "prefix" + 3);
+    char *result = starts_with("pre", test_str);
+    cr_assert_eq(result, test_str + 3);
     cr_assert_str_eq(result, "fix");
     
     // Test with empty prefix
     cr_assert_not_null(starts_with("", "text"));
-    cr_assert_eq(starts_with("", "text"), "text");
+    char *result2 = starts_with("", "text");
+    cr_assert_str_eq(result2, "text");
     
     // Additional tests: starting with single character
     cr_assert_not_null(starts_with("a", "abc"));
     cr_assert_str_eq(starts_with("a", "abc"), "bc");
     
     // Test case sensitivity
-    cr_assert_null(starts_with("Pre", "prefix"));
+    cr_assert_null(starts_with("Pre", test_str));
     cr_assert_not_null(starts_with("Pre", "Prefix"));
 }
 

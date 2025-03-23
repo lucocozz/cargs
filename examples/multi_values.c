@@ -287,7 +287,7 @@ void process_maps_iterator(cargs_t cargs)
         cargs_map_it_t it = cargs_map_it(cargs, "env");
 
         printf("Environment variables (%zu items):\n", it._count);
-        for (int i = 0; cargs_map_next(&it); i++)
+        while (cargs_map_next(&it))
             printf("  '%s' => '%s'\n", it.key, it.value.as_string);
         printf("\n");
     }
@@ -298,7 +298,7 @@ void process_maps_iterator(cargs_t cargs)
         cargs_map_it_t it = cargs_map_it(cargs, "ports");
 
         printf("Port mappings (%zu items):\n", it._count);
-        for (int i = 0; cargs_map_next(&it); i++)
+        while (cargs_map_next(&it))
             printf("  '%s' => %d\n", it.key, it.value.as_int);
         printf("\n");
     }
@@ -309,7 +309,7 @@ void process_maps_iterator(cargs_t cargs)
         cargs_map_it_t it = cargs_map_it(cargs, "scales");
 
         printf("Scaling factors (%zu items):\n", it._count);
-        for (int i = 0; cargs_map_next(&it); i++)
+        while (cargs_map_next(&it))
             printf("  '%s' => %.3f\n", it.key, it.value.as_float);
         printf("\n");
     }
@@ -320,7 +320,7 @@ void process_maps_iterator(cargs_t cargs)
         cargs_map_it_t it = cargs_map_it(cargs, "flags");
 
         printf("Feature flags (%zu items):\n", it._count);
-        for (int i = 0; cargs_map_next(&it); i++)
+        while (cargs_map_next(&it))
             printf("  '%s' => %s\n", it.key, it.value.as_bool ? "enabled" : "disabled");
         printf("\n");
     }
@@ -331,13 +331,13 @@ void process_maps_iterator(cargs_t cargs)
         cargs_map_it_t it = cargs_map_it(cargs, "flags");
 
         printf("Enabled features only:\n");
-        for (int i = 0; cargs_map_next(&it); i++)
+        while (cargs_map_next(&it))
             if (it.value.as_bool)
                 printf("  '%s'\n", it.key);
 
         printf("\nDisabled features only:\n");
         cargs_map_reset(&it);  // Reset the iterator for second pass
-        for (int i = 0; cargs_map_next(&it); i++)
+        while (cargs_map_next(&it))
             if (!it.value.as_bool)
                 printf("  '%s'\n", it.key);
         printf("\n");

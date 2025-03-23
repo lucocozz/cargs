@@ -1,3 +1,5 @@
+#define _GNU_SOURCE  // NOLINT
+
 #include <stdlib.h>
 #include <string.h>
 

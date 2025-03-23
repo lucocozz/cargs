@@ -1,3 +1,5 @@
+#define _GNU_SOURCE // NOLINT
+
 #include <criterion/criterion.h>
 #include "cargs/types.h"
 #include "cargs/errors.h"

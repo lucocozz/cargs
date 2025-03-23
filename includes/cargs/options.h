@@ -56,8 +56,8 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 #define ACTION(fn)              .action = (cargs_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (cargs_free_handler_t)(fn)
 #define HINT(_hint)             .hint = _hint
-#define REQUIRES(values...)     .requires = (const char*[]){values, NULL}
-#define CONFLICTS(values...)    .conflicts = (const char*[]){values, NULL}
+#define REQUIRES(...)           .requires = (const char*[]){__VA_ARGS__, NULL}
+#define CONFLICTS(...)          .conflicts = (const char*[]){__VA_ARGS__, NULL}
 #define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
@@ -85,17 +85,17 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 /*
  * Choice macros for different types
  */
-#define CHOICES_INT(values...) \
-    .choices = (value_t){ .as_array_int = (int64_t[]){ values } }, \
-    .choices_count = sizeof((int64_t[]){ values }) / sizeof(int64_t)
+#define CHOICES_INT(...) \
+    .choices = (value_t){ .as_array_int = (long long[]){ __VA_ARGS__ } }, \
+    .choices_count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long)
 
-#define CHOICES_STRING(values...) \
-    .choices = (value_t){ .as_array_string = (char*[]){ values } }, \
-    .choices_count = sizeof((char*[]){ values }) / sizeof(char*)
+#define CHOICES_STRING(...) \
+    .choices = (value_t){ .as_array_string = (char*[]){ __VA_ARGS__ } }, \
+    .choices_count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*)
 
-#define CHOICES_FLOAT(values...) \
-    .choices = (value_t){ .as_float_array = (double[]){ values } }, \
-    .choices_count = sizeof((double[]){ values }) / sizeof(double)
+#define CHOICES_FLOAT(...) \
+    .choices = (value_t){ .as_float_array = (double[]){ __VA_ARGS__ } }, \
+    .choices_count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double)
 
 /*
  * Base option definition macros
@@ -205,9 +205,11 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
  * @param ...: Option definitions
  */
 #define CARGS_OPTIONS(name, ...)                                                                   \
-    PRAGMA_DISABLE_PEDANTIC()                                                                      \
+    PRAGMA_DISABLE_VARIADIC_MACROS()                                                               \
     PRAGMA_DISABLE_OVERRIDE()                                                                      \
+    PRAGMA_DISABLE_PEDANTIC()                                                                      \
     cargs_option_t name[] = {__VA_ARGS__, OPTION_END()};                                           \
+    PRAGMA_RESTORE()                                                                               \
     PRAGMA_RESTORE()                                                                               \
     PRAGMA_RESTORE()
 

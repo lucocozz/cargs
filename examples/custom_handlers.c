@@ -3,6 +3,7 @@
  * 
  * Demonstrates custom handlers for specialized option types
  */
+#define _GNU_SOURCE // NOLINT
 
 #include "cargs.h"
 #include <stdio.h>

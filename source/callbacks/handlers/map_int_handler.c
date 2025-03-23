@@ -1,3 +1,5 @@
+#define _GNU_SOURCE  // NOLINT
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,8 +30,8 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     char *value = separator + 1;
 
     // Convert the string value to integer
-    char   *endptr;
-    int64_t int_value = strtoll(value, &endptr, 10);
+    char     *endptr;
+    long long int_value = strtoll(value, &endptr, 10);
 
     // Check if conversion was successful
     if (*value == '\0' || *endptr != '\0') {

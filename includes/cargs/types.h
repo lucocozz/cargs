@@ -11,6 +11,8 @@
 #ifndef CARGS_TYPES_H
 #define CARGS_TYPES_H
 
+#define _GNU_SOURCE  // NOLINT
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -115,17 +117,17 @@ union value_u {
     char  as_char;
     char *as_string;
 
-    int     as_int;
-    int8_t  as_int8;
-    int16_t as_int16;
-    int32_t as_int32;
-    int64_t as_int64;
+    int       as_int;
+    int8_t    as_int8;
+    int16_t   as_int16;
+    int32_t   as_int32;
+    long long as_int64;
 
     double as_float;
     bool   as_bool;
 
     char        **as_array_string;
-    int64_t      *as_array_int;
+    long long    *as_array_int;
     double       *as_array_float;
     value_t      *as_array; /* Generic array */
     cargs_pair_t *as_map;
@@ -165,8 +167,8 @@ typedef struct cargs_map_iterator_s
  */
 typedef struct range_s
 {
-    int64_t min;
-    int64_t max;
+    long long min;
+    long long max;
 } range_t;
 
 /**

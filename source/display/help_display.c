@@ -6,6 +6,8 @@
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
+#define _GNU_SOURCE  // NOLINT
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -378,7 +380,7 @@ static void print_option_description(const cargs_option_t *option, size_t paddin
 
             switch (option->value_type) {
                 case VALUE_TYPE_INT:
-                    snprintf(item, sizeof(item), "%ld", option->choices.as_array_int[i]);
+                    snprintf(item, sizeof(item), "%lld", option->choices.as_array_int[i]);
                     break;
                 case VALUE_TYPE_STRING:
                     snprintf(item, sizeof(item), "%s", option->choices.as_array_string[i]);
