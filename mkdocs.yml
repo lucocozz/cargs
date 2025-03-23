@@ -10,20 +10,22 @@ copyright: Copyright &copy; 2024 lucocozz
 
 theme:
   name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      primary: purple
+      accent: purple
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: deep purple
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
@@ -46,8 +48,8 @@ theme:
 
 plugins:
   - search
-  - minify:
-      minify_html: true
+  # - minify:
+      # minify_html: true
 
 markdown_extensions:
   - pymdownx.highlight:

@@ -56,3 +56,4 @@ dkms.conf
 a.out
 .idea/
 reports/
+.venv/
