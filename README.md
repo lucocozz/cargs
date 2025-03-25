@@ -14,13 +14,20 @@
 
 ## ✨ Features
 
-- 🚀 **Elegant design**: define options with concise, expressive macros
-- 🌳 **Subcommands**: Git/Docker-style nested command support
-- 🔍 **Built-in validation**: range, regex, custom validators
-- 🔄 **Typed options**: booleans, integers, strings, floats, arrays, maps
-- 🌐 **Environment variables**: automatic ENV configuration
 - 📋 **Help generation**: automatic formatted help and usage display
-- ⚡ **High performance**: optimized for speed and low memory footprint
+- 🔄 **Typed options**: booleans, integers, strings, floats, arrays, maps
+- 🎨 **Flexible format parsing**: supports multiple option formats (--option=value, --option value, -ovalue, etc.)
+- 🌳 **Subcommands**: Git/Docker-style nested command support
+- ⚠️ **Clear error reporting**: detailed and user-friendly error messages for invalid options or values
+- ✨ **Elegant design**: define options with concise, expressive macros
+- 🔍 **Built-in validators**: built-in range, choices, regex patterns with comprehensive predefined sets
+- 📦 **Organized option grouping**: visually group related options in help displays
+- 🔗 **Option relationships**: define dependencies and conflicts between options
+- 🔧 **Structure validation**: comprehensive option structure checking during initialization to prevent runtime errors
+- 🌐 **Environment variables**: automatic ENV configuration
+- 🚀 **Memory efficiency**: minimizes heap allocations for better performance and reliability
+- 🧰 **Easy option customization**: create your own option types and handlers
+- 🛡️ **Custom validation pipeline**: design your own validators with flexible pre/post processing
 
 ## 📦 Installation
 
@@ -216,12 +223,14 @@ Future planned features:
 - 📄 **Configuration files support**: Parse options from JSON, YAML, or other config file formats
 - 🪶 **Lightweight version**: Reduced footprint version for constrained systems 
 - 🎨 **Themed help output**: Customizable colored help display with theme support
-- ✅ **Advanced validators**: 
+- ✅ **Advanced validators**:
   - Date/time format validation
   - File existence and type checking
   - String length and array size constraints
   - Semantic versioning validation
   - Contextual validation (based on other option values)
+- 📦 **Packaging**: Official packages for various distributions
+- Shell completion scripts generation
 
 ## 👥 Contributing
 

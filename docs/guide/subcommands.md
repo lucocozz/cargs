@@ -1,30 +1,43 @@
 # Subcommands
 
-cargs supports Git/Docker-style subcommands, allowing you to create complex and hierarchical command-line interfaces.
+cargs supports Git/Docker-style subcommands, allowing you to create command-line interfaces with distinct commands.
 
-## Basic Concepts
+!!! abstract "Overview"
+    Subcommands let you organize your program's functionality into separate commands, each with its own options and behavior. Examples include:
+    
+    - `git commit`, `git push`, `git pull`
+    - `docker run`, `docker build`, `docker pull`
+    
+    This guide covers the basics of implementing subcommands in cargs. For advanced usage including nested subcommands, see the [Nested Commands](../advanced/nested-commands.md) guide.
 
-Subcommands allow you to organize program functionality into distinct commands, each with its own options. Common examples:
+## Basic Concept
 
-- `git commit`, `git push`, `git pull`
-- `docker run`, `docker build`, `docker pull`
+Subcommands transform your program from a simple utility into a multi-purpose tool with specialized commands:
 
-## Defining Subcommands
+```
+my_program [global options] command [command options] [arguments]
+```
 
-To create an application with subcommands, you need to:
+Each command can have its own set of options and behavior while sharing common global options.
+
+## Implementing Subcommands
+
+To implement subcommands in cargs, you need to:
 
 1. Define options for each subcommand
-2. Define an action for each subcommand
-3. Reference the subcommands in the main options
+2. Define actions for each subcommand
+3. Reference the subcommands in your main options
 
 ### 1. Define Subcommand Options
+
+First, define the options for each of your subcommands:
 
 ```c
 // Options for the "add" subcommand
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Force addition"),
+    OPTION_FLAG('f', "force", "Force add operation"),
     POSITIONAL_STRING("file", "File to add")
 )
 
@@ -32,32 +45,34 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", "Recursive removal"),
+    OPTION_FLAG('r', "recursive", "Recursively remove directories"),
     POSITIONAL_STRING("file", "File to remove")
 )
 ```
 
 ### 2. Define Action Functions
 
+Next, define action functions that will be called when each subcommand is executed:
+
 ```c
 // Action for the "add" subcommand
-int add_action(cargs_t *cargs, void *data)
+int add_command(cargs_t *cargs, void *data)
 {
     // Access subcommand options
-    const char *file = cargs_get(*cargs, "add.file").as_string;
+    const char* file = cargs_get(*cargs, "add.file").as_string;
     bool force = cargs_get(*cargs, "add.force").as_bool;
     
     printf("Adding file: %s\n", file);
-    if (force) printf("  with force\n");
+    if (force) printf("  with force option\n");
     
     return 0;
 }
 
 // Action for the "remove" subcommand
-int remove_action(cargs_t *cargs, void *data)
+int remove_command(cargs_t *cargs, void *data)
 {
     // Access subcommand options
-    const char *file = cargs_get(*cargs, "remove.file").as_string;
+    const char* file = cargs_get(*cargs, "remove.file").as_string;
     bool recursive = cargs_get(*cargs, "remove.recursive").as_bool;
     
     printf("Removing file: %s\n", file);
@@ -67,7 +82,9 @@ int remove_action(cargs_t *cargs, void *data)
 }
 ```
 
-### 3. Reference Subcommands in Main Options
+### 3. Define Main Options with Subcommands
+
+Finally, define your main options and include the subcommands:
 
 ```c
 // Main options with subcommands
@@ -76,29 +93,29 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
-    // Global options
-    OPTION_FLAG('v', "verbose", "Verbose mode"),
+    // Global option applicable to all subcommands
+    OPTION_FLAG('v', "verbose", "Enable verbose output"),
     
-    // Subcommands
+    // Define subcommands
     SUBCOMMAND("add", add_options, 
-               HELP("Add files"), 
-               ACTION(add_action)),
+               HELP("Add files to the index"), 
+               ACTION(add_command)),
     
-    SUBCOMMAND("remove", remove_options, 
-               HELP("Remove files"), 
-               ACTION(remove_action))
+    SUBCOMMAND("rm", remove_options, 
+               HELP("Remove files from the index"), 
+               ACTION(remove_command))
 )
 ```
 
 ## Processing Subcommands
 
-The main code for handling subcommands looks like this:
+In your main function, you need to check if a subcommand was specified and execute its action:
 
 ```c
 int main(int argc, char **argv)
 {
     cargs_t cargs = cargs_init(options, "subcommands_example", "1.0.0");
-    cargs.description = "Example of using subcommands";
+    cargs.description = "Example of subcommands";
 
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {
@@ -118,103 +135,192 @@ int main(int argc, char **argv)
 }
 ```
 
-## Accessing Subcommand Options
+## Accessing Options
 
-There are several ways to access subcommand options:
+### Accessing Subcommand Options
 
-### 1. Absolute Path (from anywhere)
+Within a subcommand action function, you can access options in two ways:
 
-```c
-// Access with complete path
-const char *file = cargs_get(cargs, "add.file").as_string;
-bool force = cargs_get(cargs, "add.force").as_bool;
-```
+=== "Using Absolute Path"
+    ```c
+    // Access with full path 
+    const char* file = cargs_get(*cargs, "add.file").as_string;
+    bool force = cargs_get(*cargs, "add.force").as_bool;
+    ```
 
-### 2. Relative Path (from a subcommand handler)
-
-In a subcommand action function, you can access options by their name without a prefix:
-
-```c
-int add_action(cargs_t *cargs, void *data)
-{
-    // Simplified access (relative)
-    const char *file = cargs_get(*cargs, "file").as_string;
+=== "Using Relative Path"
+    ```c
+    // Within the add_command function, you can use relative paths
+    const char* file = cargs_get(*cargs, "file").as_string;
     bool force = cargs_get(*cargs, "force").as_bool;
-    
-    // ...
-}
-```
+    ```
 
-### 3. Accessing Global Options
+### Accessing Global Options
 
-Options defined at the root level are accessible from subcommand handlers using a dot prefix `.`:
+Global options are accessible from within subcommand actions:
 
 ```c
-int add_action(cargs_t *cargs, void *data)
-{
-    // Access to global options with a dot prefix
-    bool verbose = cargs_get(*cargs, ".verbose").as_bool;
-    
-    // ...
-}
+// Access global options
+bool verbose = cargs_get(*cargs, ".verbose").as_bool;
 ```
 
-## Nested Subcommands
+The leading dot (`.`) indicates the option is defined at the root level.
 
-cargs also supports nested subcommands (like `git remote add`):
+## Help Integration
 
-```c
-// Options for "remote add"
-CARGS_OPTIONS(
-    remote_add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("name", "Name of the remote repository"),
-    POSITIONAL_STRING("url", "URL of the remote repository")
-)
+cargs automatically integrates subcommands into the help display:
 
-// Options for "remote"
-CARGS_OPTIONS(
-    remote_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    SUBCOMMAND("add", remote_add_options, 
-               HELP("Add a remote repository"), 
-               ACTION(remote_add_action))
-)
+```
+subcommands_example v1.0.0
 
-// Main options
-CARGS_OPTIONS(
-    options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    SUBCOMMAND("remote", remote_options, 
-               HELP("Manage remote repositories"))
-)
+Example of subcommands
+
+Usage: subcommands_example [OPTIONS] COMMAND
+
+Options:
+  -h, --help             - Display this help message (exit)
+  -V, --version          - Display version information (exit)
+  -v, --verbose          - Enable verbose output
+
+Commands:
+  add                    - Add files to the index
+  rm                     - Remove files from the index
+
+Run 'subcommands_example COMMAND --help' for more information on a command.
 ```
 
-Access to nested options is done using dot notation:
+Each subcommand also has its own help:
 
-```c
-const char *name = cargs_get(cargs, "remote.add.name").as_string;
-const char *url = cargs_get(cargs, "remote.add.url").as_string;
 ```
+subcommands_example v1.0.0
 
-## Navigating Between Subcommands
+Usage: subcommands_example add [OPTIONS] <file>
 
-In an interactive CLI, you might need to check which subcommand was used:
+Add files to the index
 
-```c
-if (cargs_is_set(cargs, "add")) {
-    // The "add" subcommand was used
-} else if (cargs_is_set(cargs, "remove")) {
-    // The "remove" subcommand was used
-}
+Arguments:
+  <file>                 - File to add
 
-// For nested subcommands
-if (cargs_is_set(cargs, "remote.add")) {
-    // The "remote add" subcommand was used
-}
+Options:
+  -h, --help             - Display this help message (exit)
+  -f, --force            - Force add operation
 ```
 
 ## Complete Example
 
-You can find a complete example in the `examples/subcommands.c` file of the cargs project.
+Here's a complete example of implementing basic subcommands:
+
+```c
+#include "cargs.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+// Subcommand action handlers
+int add_command(cargs_t *cargs, void *data);
+int remove_command(cargs_t *cargs, void *data);
+
+// Define options for "add" subcommand
+CARGS_OPTIONS(
+    add_options,
+    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    OPTION_FLAG('f', "force", "Force add operation"),
+    POSITIONAL_STRING("file", "File to add")
+)
+
+// Define options for "remove" subcommand
+CARGS_OPTIONS(
+    remove_options,
+    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    OPTION_FLAG('r', "recursive", "Recursively remove directories"),
+    POSITIONAL_STRING("file", "File to remove")
+)
+
+// Define main options with subcommands
+CARGS_OPTIONS(
+    options,
+    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    
+    // Global option applicable to all subcommands
+    OPTION_FLAG('v', "verbose", "Enable verbose output"),
+    
+    // Define subcommands
+    SUBCOMMAND("add", add_options, 
+               HELP("Add files to the index"), 
+               ACTION(add_command)),
+    
+    SUBCOMMAND("rm", remove_options, 
+               HELP("Remove files from the index"), 
+               ACTION(remove_command))
+)
+
+// Implementation of the "add" command
+int add_command(cargs_t *cargs, void *data)
+{
+    (void)data; // Unused parameter
+    
+    // Get the global option
+    bool verbose = cargs_get(*cargs, ".verbose").as_bool;
+    
+    // Get command-specific options
+    const char* file = cargs_get(*cargs, "file").as_string;
+    bool force = cargs_get(*cargs, "force").as_bool;
+
+    printf("Adding file: %s\n", file);
+    if (verbose) printf("  verbose mode enabled\n");
+    if (force) printf("  with force option\n");
+
+    return 0;
+}
+
+// Implementation of the "remove" command
+int remove_command(cargs_t *cargs, void *data)
+{
+    (void)data; // Unused parameter
+    
+    // Get the global option
+    bool verbose = cargs_get(*cargs, ".verbose").as_bool;
+    
+    // Get command-specific options
+    const char* file = cargs_get(*cargs, "file").as_string;
+    bool recursive = cargs_get(*cargs, "recursive").as_bool;
+
+    printf("Removing file: %s\n", file);
+    if (verbose) printf("  verbose mode enabled\n");
+    if (recursive) printf("  recursively\n");
+
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    cargs_t cargs = cargs_init(options, "subcommands_example", "1.0.0");
+    cargs.description = "Example of subcommands";
+
+    int status = cargs_parse(&cargs, argc, argv);
+    if (status != CARGS_SUCCESS) {
+        return status;
+    }
+
+    if (cargs_has_command(cargs)) {
+        // Execute the subcommand handler
+        status = cargs_exec(&cargs, NULL);
+    } else {
+        printf("No command specified. Use --help to see available commands.\n");
+    }
+
+    cargs_free(&cargs);
+    return 0;
+}
+```
+
+## Next Steps
+
+For more advanced subcommand features, such as:
+
+- Nested subcommands (commands within commands)
+- Command name abbreviations
+- Alternative positional argument placements
+- Custom command handling
+
+See the [Nested Commands](../advanced/nested-commands.md) guide.

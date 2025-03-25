@@ -4,109 +4,169 @@ cargs supports different types of options to meet various needs. This page prese
 
 ## Main Option Types
 
-There are four main types of inputs:
+cargs supports four fundamental types of command-line elements:
 
-1. **Options** - Options with dash prefix (`-o` or `--option`)
-2. **Positionals** - Arguments without prefix placed in a specific order
-3. **Groups** - Logical groupings of options
-4. **Subcommands** - Hierarchical commands with their own options
+* **Options** - Elements with dash prefix
+    * With values (`-o value`, `--option=value`)
+    * Flags/Boolean (`-v`, `--verbose`)
+* **Positionals** - Arguments without prefix
+    * Required (must be provided)
+    * Optional (can be omitted)
+* **Groups** - Logical organization of options
+    * Regular groups (visual grouping)
+    * Exclusive groups (only one can be selected)
+* **Subcommands** - Hierarchical commands
+    * Simple commands
+    * Nested commands
 
 ## Options with Values
 
 ### String Option
 
-```c
-OPTION_STRING('o', "output", "Output file", 
-              DEFAULT("output.txt"),   // Default value
-              HINT("FILE"))            // Hint displayed in help
-```
+=== "Definition"
+    ```c
+    OPTION_STRING('o', "output", "Output file", 
+                  DEFAULT("output.txt"),   // Default value
+                  HINT("FILE"))            // Hint displayed in help
+    ```
 
-- User format: `--output=file.txt` or `-o file.txt`
+=== "Usage"
+    ```bash
+    $ ./my_program --output=file.txt
+    $ ./my_program -o file.txt
+    ```
+
+=== "Accessing"
+    ```c
+    const char* output = cargs_get(cargs, "output").as_string;
+    ```
 
 ### Integer Option
 
-```c
-OPTION_INT('p', "port", "Port number", 
-           RANGE(1, 65535),   // Range validation
-           DEFAULT(8080))     // Default value
-```
+=== "Definition"
+    ```c
+    OPTION_INT('p', "port", "Port number", 
+               RANGE(1, 65535),   // Range validation
+               DEFAULT(8080))     // Default value
+    ```
 
-- User format: `--port=8080` or `-p 8080`
+=== "Usage"
+    ```bash
+    $ ./my_program --port=8080
+    $ ./my_program -p 8080
+    ```
+
+=== "Accessing"
+    ```c
+    int port = cargs_get(cargs, "port").as_int;
+    ```
 
 ### Float Option
 
-```c
-OPTION_FLOAT('s', "scale", "Scale factor", 
-             DEFAULT(1.0))    // Default value
-```
+=== "Definition"
+    ```c
+    OPTION_FLOAT('s', "scale", "Scale factor", 
+                 DEFAULT(1.0))    // Default value
+    ```
 
-- User format: `--scale=2.5` or `-s 2.5`
+=== "Usage"
+    ```bash
+    $ ./my_program --scale=2.5
+    $ ./my_program -s 2.5
+    ```
+
+=== "Accessing"
+    ```c
+    float scale = cargs_get(cargs, "scale").as_float;
+    ```
 
 ## Boolean Options (flags)
 
-```c
-OPTION_FLAG('v', "verbose", "Enable verbose mode")
-```
+=== "Definition"
+    ```c
+    OPTION_FLAG('v', "verbose", "Enable verbose mode")
+    ```
 
-- User format: `--verbose` or `-v`
-- No value required, the presence of the option activates the flag
+=== "Usage"
+    ```bash
+    $ ./my_program --verbose
+    $ ./my_program -v
+    ```
+
+=== "Accessing"
+    ```c
+    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    ```
+
+!!! info
+    No value is required for boolean options; the presence of the option activates the flag.
 
 ## Standard Options
 
-### Help Option
+!!! note "Help Option"
+    ```c
+    HELP_OPTION(FLAGS(FLAG_EXIT))
+    ```
+    Creates a `-h, --help` option that automatically displays a help message and exits the program.
 
-```c
-HELP_OPTION(FLAGS(FLAG_EXIT))
-```
-
-Creates a `-h, --help` option that automatically displays a help message and exits the program.
-
-### Version Option
-
-```c
-VERSION_OPTION(FLAGS(FLAG_EXIT))
-```
-
-Creates a `-V, --version` option that displays the program version and exits.
+!!! tip "Version Option"
+    ```c
+    VERSION_OPTION(FLAGS(FLAG_EXIT))
+    ```
+    Creates a `-V, --version` option that displays the program version and exits.
 
 ## Positional Arguments
 
 Positional arguments are ordered and not preceded by dashes.
 
+=== "Required Positional"
+    ```c
+    POSITIONAL_STRING("input", "Input file")
+    ```
+
+=== "Optional Positional"
+    ```c
+    POSITIONAL_STRING("output", "Output file", 
+                      FLAGS(FLAG_OPTIONAL),   // Optional argument
+                      DEFAULT("output.txt"))  // Default value
+    ```
+
+=== "Usage"
+    ```bash
+    $ ./my_program input.txt [output.txt]
+    ```
+
+!!! warning "Important"
+    Required positional arguments must always be defined before optional ones in your `CARGS_OPTIONS` definition. This ordering requirement is validated by cargs during initialization, and failure to follow this rule will result in an error.
+
+For example, this is the correct order:
+
 ```c
-POSITIONAL_STRING("input", "Input file")
+CARGS_OPTIONS(
+    options,
+    // Required positional arguments first
+    POSITIONAL_STRING("input", "Input file"),                       // Required
+    POSITIONAL_STRING("output", "Output file"),                     // Required
+    
+    // Optional positional arguments after
+    POSITIONAL_INT("buffer_size", "Buffer size", 
+                   FLAGS(FLAG_OPTIONAL), DEFAULT(4096)),            // Optional
+    POSITIONAL_STRING("log_file", "Log file", FLAGS(FLAG_OPTIONAL)) // Optional
+)
 ```
-
-- User format: `my_program file.txt`
-
-You can define optional positional arguments:
-
-```c
-POSITIONAL_STRING("output", "Output file", 
-                  FLAGS(FLAG_OPTIONAL),   // Optional argument
-                  DEFAULT("output.txt"))  // Default value
-```
-
-Required positional arguments must always be defined before optional ones.
 
 ## Options with Short or Long Name Only
 
-### Option with Short Name Only
+| Type | Definition | User Format | Access Code |
+|------|------------|-------------|-------------|
+| Short Name Only | `OPTION_INT('p', NULL, "Port number")` | `-p 8080` | `cargs_get(cargs, "p").as_int` |
+| Long Name Only | `OPTION_FLAG('\0', "dry-run", "Run without changes")` | `--dry-run` | `cargs_get(cargs, "dry-run").as_bool` |
 
-```c
-OPTION_INT('p', NULL, "Port number", 
-           DEFAULT(8080))
-```
-
-- User format: `-p 8080`
-
-### Option with Long Name Only
-
-```c
-OPTION_FLAG('\0', "dry-run", "Run without applying changes")
-```
-
-- User format: `--dry-run`
+!!! tip "Accessing Options"
+    When accessing option values with functions like `cargs_get()`, cargs uses a specific rule:
+    
+    - By default, cargs uses the **long name** as the identifier
+    - If the long name is not set (NULL), it uses the **short name** as the identifier
 
 ## Option Groups
 
@@ -162,17 +222,21 @@ With an exclusive group, the user can specify only one of the options in the gro
 
 Options can have various flags that modify their behavior:
 
+| Flag | Description | Example |
+|------|-------------|---------|
+| `FLAG_REQUIRED` | Option must be specified | `FLAGS(FLAG_REQUIRED)` |
+| `FLAG_HIDDEN` | Option is hidden in help | `FLAGS(FLAG_HIDDEN)` |
+| `FLAG_EXIT` | Program terminates after processing | `FLAGS(FLAG_EXIT)` |
+| `FLAG_ADVANCED` | Option is marked as advanced | `FLAGS(FLAG_ADVANCED)` |
+| `FLAG_DEPRECATED` | Option is marked as deprecated | `FLAGS(FLAG_DEPRECATED)` |
+| `FLAG_EXPERIMENTAL` | Option is marked as experimental | `FLAGS(FLAG_EXPERIMENTAL)` |
+
+Multiple flags can be combined using the bitwise OR operator:
+
 ```c
-OPTION_STRING('o', "output", "Output file",
-              FLAGS(FLAG_REQUIRED))  // Required option
+OPTION_STRING('t', "temp-dir", "Temporary directory",
+              FLAGS(FLAG_ADVANCED | FLAG_EXPERIMENTAL))
 ```
-
-Common flags:
-
-- `FLAG_REQUIRED` - The option must be specified
-- `FLAG_HIDDEN` - The option is hidden in help
-- `FLAG_EXIT` - The program terminates after processing the option
-- `FLAG_ADVANCED` - The option is marked as advanced
 
 ## Accessing Option Values
 
@@ -186,7 +250,7 @@ const char *output = cargs_get(cargs, "output").as_string;
 int port = cargs_get(cargs, "port").as_int;
 
 // Get a float value
-double scale = cargs_get(cargs, "scale").as_float;
+float scale = cargs_get(cargs, "scale").as_float;
 
 // Check if a flag is enabled
 bool verbose = cargs_get(cargs, "verbose").as_bool;
@@ -269,7 +333,7 @@ int main(int argc, char **argv)
     const char *input = cargs_get(cargs, "input").as_string;
     const char *output = cargs_get(cargs, "output").as_string;
     int port = cargs_get(cargs, "port").as_int;
-    double scale = cargs_get(cargs, "scale").as_float;
+    float scale = cargs_get(cargs, "scale").as_float;
     bool verbose = cargs_get(cargs, "verbose").as_bool;
     
     // Check exclusive options
@@ -289,3 +353,5 @@ int main(int argc, char **argv)
     return 0;
 }
 ```
+
+When run with `--help`, this example will generate a well-formatted help display with all the options properly organized.

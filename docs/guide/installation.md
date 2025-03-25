@@ -4,69 +4,124 @@ This page explains how to install the cargs library in different environments.
 
 ## Prerequisites
 
-cargs has a single external dependency:
+cargs has only one external dependency:
 
-- **PCRE2**: Required for regular expression validation support
-  - Ubuntu/Debian: `apt install libpcre2-dev`
-  - Fedora/CentOS: `dnf install pcre2-devel`
-  - macOS: `brew install pcre2`
+!!! info "PCRE2 Dependency"
+    **PCRE2**: Required for regex validation support
+    
+    === "Ubuntu/Debian"
+        ```bash
+        apt install libpcre2-dev
+        ```
+    
+    === "Fedora/CentOS"
+        ```bash
+        dnf install pcre2-devel
+        ```
+    
+    === "macOS"
+        ```bash
+        brew install pcre2
+        ```
 
-## Installation from Source
+## Installation from source
 
 ### With Meson
 
-```bash
-# Clone the repository
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+=== "Clone and build"
+    ```bash
+    # Clone the repository
+    git clone https://github.com/lucocozz/cargs.git
+    cd cargs
 
-# Build
-meson setup builddir
-meson compile -C builddir
+    # Build
+    meson setup .build
+    meson compile -C .build
+    ```
 
-# Installation (requires permissions)
-meson install -C builddir
-```
+=== "Installation"
+    ```bash
+    # Installation (requires permissions)
+    meson install -C .build
+    ```
 
 ### With Just (recommended for development)
 
+!!! tip "Just"
+    [Just](https://github.com/casey/just) is a handy command-line tool for running project-specific commands.
+
+=== "Installation and build"
+    ```bash
+    # Clone the repository
+    git clone https://github.com/lucocozz/cargs.git
+    cd cargs
+
+    # Build static and shared libraries
+    just build
+    ```
+
+=== "Result"
+    The libraries are now available:
+    
+    - `libcargs.so` (shared library)
+    - `libcargs.a` (static library)
+
+=== "Installation"
+    ```bash
+    just install
+    ```
+
+## Using as a static library
+
+If you prefer not to install the library at the system level, you can:
+
+1. Build the project as shown above
+2. Copy `libcargs.a` to your project
+3. Copy the `includes/` directory to your project
+4. Link with the static library:
+
 ```bash
-# Clone the repository
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
-
-# Install Just if you don't have it
-# https://github.com/casey/just
-
-# Build static and shared libraries
-just build
-
-# Libraries are now available:
-# - libcargs.so (shared library)
-# - libcargs.a (static library)
-
-# Installation
-just install
+gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs -lpcre2-8
 ```
 
-## Using as a Static Library
-
-If you prefer not to install the library system-wide, you can:
-
-1. Build the project as indicated above
-2. Copy `libcargs.a` into your project
-3. Copy the `includes/` directory into your project
-4. Link with the static library:
-   ```bash
-   gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs -lpcre2-8
-   ```
-
-## As a Dependency in a Meson Project
+## As a dependency in a Meson project
 
 ```meson
 cargs_dep = dependency('cargs', fallback: ['cargs', 'cargs_dep'])
 ```
 
+## Alternative installation methods
+
+| Method | Command | Advantages | Disadvantages |
+|---------|----------|-----------|---------------|
+| **Direct build** | `meson compile -C .build` | Simple, only requires meson/ninja | No system integration |
+| **System installation** | `meson install -C .build` | Available for all projects | Requires root permissions |
+| **Just** | `just build` | Convenient scripts, simple | Requires just |
+| **Local library** | Copy files | Project isolation | Code duplication |
+
 ## Packaging
 
-> **Note:** Official packages for various distributions are planned for future releases.
+!!! note "Official packages"
+    Official packages for various distributions are planned for future releases.
+
+## Verifying installation
+
+After installation, you can verify that everything works correctly:
+
+=== "Check files"
+    ```bash
+    # Check shared library
+    ls -la /usr/local/lib/libcargs.so*
+    
+    # Check headers
+    ls -la /usr/local/include/cargs*
+    ```
+
+=== "Compile an example"
+    ```bash
+    # Compile an example program
+    gcc -o test_cargs test.c -lcargs -lpcre2-8
+    
+    # Run the program
+    ./test_cargs --help
+    ```

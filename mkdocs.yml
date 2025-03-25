@@ -19,7 +19,7 @@ theme:
       primary: purple
       accent: purple
       toggle:
-        icon: material/weather-night
+        icon: material/lightbulb
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
@@ -27,7 +27,7 @@ theme:
       primary: deep purple
       accent: deep purple
       toggle:
-        icon: material/weather-sunny
+        icon: material/lightbulb-outline
         name: Switch to light mode
   features:
     - navigation.instant
@@ -69,6 +69,11 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
   - Home: index.md
@@ -76,14 +81,17 @@ nav:
     - Installation: guide/installation.md
     - Quick Start: guide/quickstart.md
     - Basic Options: guide/basic-options.md
+    - Multi Values Options: guide/multi-values.md
+    - Option Formats: guide/option-formats.md
     - Subcommands: guide/subcommands.md
     - Validation: guide/validation.md
     - Environment Variables: guide/environment.md
   - API Reference:
     - Overview: api/overview.md
-    - Types: api/types.md
-    - Macros: api/macros.md
     - Functions: api/functions.md
+    - Macros: api/macros.md
+    - Types: api/types.md
+    - Regex Patterns: api/regex_patterns.md
   - Examples:
     - Basic Usage: examples/basic.md
     - Subcommands: examples/subcommands.md
@@ -92,8 +100,10 @@ nav:
     - Validations: examples/validators.md
   - Advanced:
     - Custom Handlers: advanced/custom-handlers.md
+    - Custom Validators: advanced/custom-validators.md
     - Regular Expressions: advanced/regex.md
     - Nested Commands: advanced/nested-commands.md
+    - Multi-Values: advanced/multi-values.md
   - Contributing: contributing.md
   - License: license.md
 

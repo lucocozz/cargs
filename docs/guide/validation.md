@@ -1,97 +1,143 @@
-# Input Validation
+# Validation
 
-cargs offers several validation mechanisms to ensure that user inputs are correct and meet expectations.
+cargs offers robust validation capabilities to ensure that command-line inputs meet your application's requirements.
+
+!!! abstract "Overview"
+    Validation in cargs is organized into several categories:
+    
+    - **Built-in Validators** - Simple validation with `RANGE` and `CHOICES`
+    - **Regular Expression Validation** - String pattern validation with PCRE2
+    - **Custom Validators** - Create your own validation logic
+    
+    This guide covers the basics of each approach. For advanced usage, see the specialized guides linked throughout.
 
 ## Built-in Validators
 
-### Range Validation (RANGE)
+cargs provides several built-in validators to simplify common validation scenarios. These can be applied directly to option definitions.
 
-The `RANGE` validator checks that a numeric value falls within a specified range.
+### Range Validation
 
-```c
-OPTION_INT('p', "port", "Port number",
-           RANGE(1, 65535),  // Port between 1 and 65535
-           DEFAULT(8080))
-```
+The `RANGE` validator ensures numeric values fall within a specified range:
 
-### Regular Expression Validation (REGEX)
+=== "Definition"
+    ```c
+    OPTION_INT('p', "port", "Port number",
+               RANGE(1, 65535),  // Must be between 1 and 65535
+               DEFAULT(8080))
+    ```
 
-The `REGEX` validator checks that a string matches a regular expression pattern.
+=== "Usage Example"
+    ```bash
+    $ ./my_program --port=9000  # Valid
+    $ ./my_program --port=100000  # Error: Value 100000 is out of range [1, 65535]
+    ```
 
-```c
-OPTION_STRING('e', "email", "Email address",
-              REGEX(CARGS_RE_EMAIL))  // Using a predefined pattern
-```
+### Choices Validation
 
-cargs provides many predefined patterns in `cargs/regex.h`:
+The `CHOICES` validator ensures the value is one of a specific set:
 
-- `CARGS_RE_EMAIL` - Email addresses
-- `CARGS_RE_IPV4` - IPv4 addresses
-- `CARGS_RE_MAC` - MAC addresses
-- `CARGS_RE_URL` - URLs
-- `CARGS_RE_ISO_DATE` - ISO format dates (YYYY-MM-DD)
-- `CARGS_RE_SEMVER` - Semantic versions
+=== "String Choices"
+    ```c
+    OPTION_STRING('l', "level", "Log level",
+                  CHOICES_STRING("debug", "info", "warning", "error"),
+                  DEFAULT("info"))
+    ```
 
-You can also define your own patterns:
+=== "Integer Choices"
+    ```c
+    OPTION_INT('m', "mode", "Operating mode",
+               CHOICES_INT(1, 2, 3),
+               DEFAULT(1))
+    ```
 
-```c
-OPTION_STRING('i', "id", "Identifier",
-              REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000")))
-```
+=== "Float Choices"
+    ```c
+    OPTION_FLOAT('s', "scale", "Scale factor",
+                CHOICES_FLOAT(0.5, 1.0, 2.0),
+                DEFAULT(1.0))
+    ```
 
-### Choice Validation (CHOICES)
+## Regular Expression Validation
 
-The `CHOICES` validator checks that a value is one of the specified options.
+cargs uses PCRE2 for powerful regular expression validation:
 
-```c
-OPTION_STRING('l', "level", "Logging level",
-              CHOICES_STRING("debug", "info", "warning", "error"),
-              DEFAULT("info"))
-```
+=== "Basic Usage"
+    ```c
+    OPTION_STRING('e', "email", "Email address",
+                  REGEX(CARGS_RE_EMAIL))  // Must be a valid email
+    ```
 
-For different types:
+=== "Custom Pattern"
+    ```c
+    OPTION_STRING('i', "id", "Product ID",
+                  REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000")))
+    ```
 
-```c
-// Integer choices
-OPTION_INT('m', "mode", "Mode",
-           CHOICES_INT(1, 2, 3),
-           DEFAULT(1))
-
-// Float choices
-OPTION_FLOAT('s', "scale", "Scale",
-             CHOICES_FLOAT(0.5, 1.0, 2.0),
-             DEFAULT(1.0))
-```
+!!! tip "Predefined Patterns"
+    cargs includes many predefined patterns in `cargs/regex.h`:
+    
+    | Constant | Validates | Example |
+    |----------|-----------|---------|
+    | `CARGS_RE_EMAIL` | Email addresses | user@example.com |
+    | `CARGS_RE_IPV4` | IPv4 addresses | 192.168.1.1 |
+    | `CARGS_RE_URL` | URLs | https://example.com |
+    | `CARGS_RE_ISO_DATE` | ISO format dates | 2023-01-31 |
+    
+    For a complete list, see the [Regular Expressions API reference](../api/regex.md).
+    
+    For advanced regex usage, see the [Regular Expressions guide](../advanced/regex.md).
 
 ## Custom Validators
 
-You can create custom validators for more complex validation logic.
+For more complex validation logic, you can create your own validators:
 
-### Defining a Custom Validator
-
-```c
-// Validator for even numbers
-int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
-{
-    if (value.as_int % 2 != 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                         "Value must be an even number");
+=== "Simple Validator"
+    ```c
+    int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+    {
+        if (value.as_int % 2 != 0) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                             "Value must be an even number");
+        }
+        return CARGS_SUCCESS;
     }
-    return CARGS_SUCCESS;
-}
-```
+    
+    // Usage
+    OPTION_INT('n', "number", "An even number", 
+              VALIDATOR(even_validator, NULL))
+    ```
 
-### Using a Custom Validator
+=== "Basic Pre-Validator"
+    ```c
+    int length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
+    {
+        size_t min_length = *(size_t *)data.custom;
+        
+        if (strlen(value) < min_length) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                              "String must be at least %zu characters long", min_length);
+        }
+        return CARGS_SUCCESS;
+    }
+    
+    // Usage
+    size_t min_length = 8;
+    OPTION_STRING('p', "password", "Password",
+                 PRE_VALIDATOR(length_pre_validator, &min_length))
+    ```
 
-```c
-OPTION_BASE('n', "number", "Even number", VALUE_TYPE_INT,
-            HANDLER(int_handler),
-            VALIDATOR(even_validator, NULL))
-```
+!!! info "Validator Types"
+    cargs supports two types of custom validators:
+    
+    1. **Validators** - Validate the **processed** value after conversion to its final type
+    2. **Pre-Validators** - Validate the **raw string** before any processing
+    
+    For a detailed exploration of custom validators, including examples and best practices, 
+    see the [Custom Validators guide](../advanced/custom-validators.md).
 
 ## Combining Validators
 
-You can combine multiple validators for an option:
+You can apply multiple validators to a single option for more comprehensive validation:
 
 ```c
 OPTION_INT('p', "port", "Port number", 
@@ -100,70 +146,36 @@ OPTION_INT('p', "port", "Port number",
           DEFAULT(8080))
 ```
 
-## Pre-validators
+## Error Reporting
 
-Pre-validators are executed before the option is converted to its final type, operating on the raw string.
-
-```c
-// Pre-validator to check string length
-int length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
-{
-    size_t min_length = *((size_t *)data.custom);
-    
-    if (strlen(value) < min_length) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "String must be at least %zu characters long", min_length);
-    }
-    return CARGS_SUCCESS;
-}
-
-// Usage
-size_t min_length = 8;
-OPTION_STRING('p', "password", "Password",
-             PRE_VALIDATOR(length_pre_validator, &min_length))
-```
-
-## Validation Error Handling
-
-When a validator fails, cargs:
-
-1. Displays an explanatory error message
-2. Returns a non-zero error code from `cargs_parse()`
-3. Does not set the option with the invalid value
-
-Example error message:
-
-```
-my_program: Value '70000' is outside the range [1, 65535] for option 'port'
-```
-
-## Validation with REGEX and Predefined Patterns
-
-cargs uses PCRE2 for powerful regular expression validation.
+Validators should use `CARGS_REPORT_ERROR` to provide clear error messages:
 
 ```c
-#include "cargs/regex.h"
-
-CARGS_OPTIONS(
-    options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    
-    // Standard email validation
-    OPTION_STRING('e', "email", "Email address",
-                REGEX(CARGS_RE_EMAIL)),
-    
-    // Strict email validation
-    OPTION_STRING('E', "strict-email", "Email address (strict validation)",
-                REGEX(CARGS_RE_EMAIL_STRICT)),
-    
-    // IP address validation
-    OPTION_STRING('i', "ip", "IP address",
-                REGEX(CARGS_RE_IPV4)),
-    
-    // URL validation
-    OPTION_STRING('u', "url", "URL",
-                REGEX(CARGS_RE_URL))
-)
+CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
 ```
 
-See [`includes/cargs/regex.h`](https://github.com/lucocozz/cargs/blob/main/includes/cargs/regex.h) for the complete list of predefined patterns.
+!!! example "Error Message Example"
+    ```
+    my_program: Value '70000' is outside the range [1, 65535] for option 'port'
+    ```
+
+Common error codes include:
+- `CARGS_ERROR_INVALID_VALUE`: Value doesn't meet requirements
+- `CARGS_ERROR_INVALID_RANGE`: Value outside allowed range
+- `CARGS_ERROR_INVALID_FORMAT`: Value has incorrect format
+
+## Complete Examples
+
+For complete working examples of validation techniques:
+
+!!! tip "Example Files"
+    - `examples/validators.c` - Demonstrates all validation techniques
+    - `examples/regex.c` - Focused on regular expression validation
+
+## Additional Resources
+
+For more in-depth coverage of validation topics, refer to these advanced guides:
+
+- [Custom Validators](../advanced/custom-validators.md) - Creating custom validators with specialized logic
+- [Regular Expressions](../advanced/regex.md) - Detailed guide to regex pattern validation
+- [Predefined Regex Patterns](../api/regex_patterns.md) - List of predefined regex patterns in cargs
