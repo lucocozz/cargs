@@ -1,0 +1,40 @@
+name: PR Issue Check
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-for-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR references an issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            // Check for issue references in format "Fixes #123", "Closes #123", etc.
+            const issueRefs = body.match(/(close[sd]?|fix(e[sd])?|resolve[sd]?)\s+#\d+/gi);
+            
+            if (!issueRefs) {
+              core.setFailed("This PR doesn't reference an issue. Please create an issue first and reference it in your PR description with 'Fixes #ISSUE_NUMBER'.");
+              
+              // Add a comment to the PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: "⚠️ Your PR doesn't reference any issue.\n\nPlease create an issue first to discuss the changes you want to make, then reference it in your PR description with `Fixes #ISSUE_NUMBER`.\n\nSee our [contribution guidelines](../../CONTRIBUTING.md) for more information."
+              });
+              
+              // Add 'needs-issue' label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['needs-issue']
+              });
+            }
