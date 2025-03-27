@@ -6,6 +6,7 @@ shared_lib := "lib" + name + ".so"
 # Default values for variables
 tests := "false"
 examples := "true"
+benchmarks := "false"
 build_type := "debugoptimized"
 
 # Set default recipe to run when just is called without arguments
@@ -15,12 +16,12 @@ default: build compile
 build: configure compile
 
 configure:
-    @meson setup -Dtests={{tests}} -Dexamples={{examples}} -Dbuildtype={{build_type}} {{build_dir}}
+    @meson setup -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} {{build_dir}}
     @ln -sf {{build_dir}}/{{static_lib}} {{static_lib}} 2>/dev/null || true
     @ln -sf {{build_dir}}/{{shared_lib}} {{shared_lib}} 2>/dev/null || true
 
 reconfigure:
-    @meson setup --reconfigure -Dtests={{tests}} -Dexamples={{examples}} -Dbuildtype={{build_type}} {{build_dir}}
+    @meson setup --reconfigure -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} {{build_dir}}
 
 compile:
     @meson compile -C {{build_dir}}
@@ -93,6 +94,24 @@ test-list:
     @echo "\033[1;33mHow to run a specific test:\033[0m"
     @echo "  \033[1;37mjust test-one unit_strings\033[0m"
     @echo "\033[1;34m═════════════════════════════════════════════════\033[0m"
+
+# =====================
+# Benchmark commands
+# =====================
+
+# Build and run benchmarks
+benchmark:
+    @just benchmarks="true" reconfigure compile
+    @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
+    @echo "\033[1;33m         CARGS_RELEASE PERFORMANCE BENCHMARK\033[0m"
+    @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m"
+    @echo "\n\033[1;36m⏱️  Running benchmarks with validation enabled (normal mode):\033[0m\n"
+    @{{build_dir}}/benchmarks/benchmark_release_mode 0
+    @echo "\n\033[1;36m⏱️  Running benchmarks with validation disabled (CARGS_RELEASE mode):\033[0m\n"
+    @{{build_dir}}/benchmarks/benchmark_release_mode 1
+    @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
+    @echo "\033[1;32m                 BENCHMARK COMPLETE ✅\033[0m"
+    @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m\n"
 
 # Build and list examples
 examples:

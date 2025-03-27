@@ -68,3 +68,8 @@ endif
 if get_option('examples')
     subdir('examples')
 endif
+
+# Benchmarks if enabled
+if get_option('benchmarks')
+    subdir('benchmarks')
+endif
