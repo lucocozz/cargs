@@ -310,6 +310,22 @@ In most cases, you'll only need to include the main header:
 #include "cargs.h"
 ```
 
+## Performance Considerations
+
+### Development vs. Release Mode
+
+cargs offers a release mode for optimal performance in production. This mode skips the comprehensive validation of option structures during initialization.
+
+```c
+// In development mode (default): full validation
+cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+
+// In release mode: faster initialization
+// (enabled by compiling with -DCARGS_RELEASE)
+cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+```
+To enable release mode, compile with the `-DCARGS_RELEASE` flag or use the `release_mode=true` option with Meson.
+
 ## Example Code
 
 Here's a complete example demonstrating key features of cargs:

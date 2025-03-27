@@ -310,6 +310,23 @@ Dans la plupart des cas, vous n'aurez besoin d'inclure que l'en-tête principal 
 #include "cargs.h"
 ```
 
+## Considérations de performance
+
+### Mode développement vs mode release
+
+cargs propose un mode release pour des performances optimales en production. Ce mode ignore la validation complète de la structure des options pendant l'initialisation.
+
+```c
+// En mode développement (par défaut) : validation complète
+cargs_t cargs = cargs_init(options, "mon_programme", "1.0.0");
+
+// En mode release : initialisation plus rapide
+// (activé en compilant avec -DCARGS_RELEASE)
+cargs_t cargs = cargs_init(options, "mon_programme", "1.0.0");
+```
+
+Pour activer le mode release, compilez avec le flag `-DCARGS_RELEASE` ou utilisez l'option `release_mode=true` avec Meson.
+
 ## Exemple de code
 
 Voici un exemple complet démontrant les fonctionnalités clés de cargs :
