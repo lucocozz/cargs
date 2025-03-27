@@ -1,0 +1,181 @@
+# Validation
+
+cargs offre de solides capacités de validation pour garantir que les entrées de ligne de commande répondent aux exigences de votre application.
+
+!!! abstract "Aperçu"
+    La validation dans cargs est organisée en plusieurs catégories :
+    
+    - **Validateurs intégrés** - Validation simple avec `RANGE` et `CHOICES`
+    - **Validation par expression régulière** - Validation de motifs de chaînes avec PCRE2
+    - **Validateurs personnalisés** - Créez votre propre logique de validation
+    
+    Ce guide couvre les bases de chaque approche. Pour une utilisation avancée, consultez les guides spécialisés référencés tout au long du document.
+
+## Validateurs intégrés
+
+cargs fournit plusieurs validateurs intégrés pour simplifier les scénarios de validation courants. Ceux-ci peuvent être appliqués directement aux définitions d'options.
+
+### Validation de plage
+
+Le validateur `RANGE` garantit que les valeurs numériques se situent dans une plage spécifiée :
+
+=== "Définition"
+    ```c
+    OPTION_INT('p', "port", "Numéro de port",
+               RANGE(1, 65535),  // Doit être entre 1 et 65535
+               DEFAULT(8080))
+    ```
+
+=== "Exemple d'utilisation"
+    ```bash
+    $ ./my_program --port=9000  # Valide
+    $ ./my_program --port=100000  # Erreur : La valeur 100000 est hors de la plage [1, 65535]
+    ```
+
+### Validation de choix
+
+Le validateur `CHOICES` garantit que la valeur est l'une d'un ensemble spécifique :
+
+=== "Choix de chaînes"
+    ```c
+    OPTION_STRING('l', "level", "Niveau de journalisation",
+                  CHOICES_STRING("debug", "info", "warning", "error"),
+                  DEFAULT("info"))
+    ```
+
+=== "Choix d'entiers"
+    ```c
+    OPTION_INT('m', "mode", "Mode de fonctionnement",
+               CHOICES_INT(1, 2, 3),
+               DEFAULT(1))
+    ```
+
+=== "Choix de flottants"
+    ```c
+    OPTION_FLOAT('s', "scale", "Facteur d'échelle",
+                CHOICES_FLOAT(0.5, 1.0, 2.0),
+                DEFAULT(1.0))
+    ```
+
+## Validation par expression régulière
+
+cargs utilise PCRE2 pour une validation puissante par expression régulière :
+
+=== "Utilisation de base"
+    ```c
+    OPTION_STRING('e', "email", "Adresse email",
+                  REGEX(CARGS_RE_EMAIL))  // Doit être un email valide
+    ```
+
+=== "Motif personnalisé"
+    ```c
+    OPTION_STRING('i', "id", "ID de produit",
+                  REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format : XX0000")))
+    ```
+
+!!! tip "Motifs prédéfinis"
+    cargs inclut de nombreux motifs prédéfinis dans `cargs/regex.h` :
+    
+    | Constante | Valide | Exemple |
+    |----------|-----------|---------|
+    | `CARGS_RE_EMAIL` | Adresses email | user@example.com |
+    | `CARGS_RE_IPV4` | Adresses IPv4 | 192.168.1.1 |
+    | `CARGS_RE_URL` | URLs | https://example.com |
+    | `CARGS_RE_ISO_DATE` | Dates au format ISO | 2023-01-31 |
+    
+    Pour une liste complète, consultez la [référence API des expressions régulières](../api/regex.md).
+    
+    Pour une utilisation avancée des regex, consultez le [guide des expressions régulières](../advanced/regex.md).
+
+## Validateurs personnalisés
+
+Pour une logique de validation plus complexe, vous pouvez créer vos propres validateurs :
+
+=== "Validateur simple"
+    ```c
+    int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+    {
+        if (value.as_int % 2 != 0) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                             "La valeur doit être un nombre pair");
+        }
+        return CARGS_SUCCESS;
+    }
+    
+    // Utilisation
+    OPTION_INT('n', "number", "Un nombre pair", 
+              VALIDATOR(even_validator, NULL))
+    ```
+
+=== "Pré-validateur de base"
+    ```c
+    int length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
+    {
+        size_t min_length = *(size_t *)data.custom;
+        
+        if (strlen(value) < min_length) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                              "La chaîne doit comporter au moins %zu caractères", min_length);
+        }
+        return CARGS_SUCCESS;
+    }
+    
+    // Utilisation
+    size_t min_length = 8;
+    OPTION_STRING('p', "password", "Mot de passe",
+                 PRE_VALIDATOR(length_pre_validator, &min_length))
+    ```
+
+!!! info "Types de validateurs"
+    cargs prend en charge deux types de validateurs personnalisés :
+    
+    1. **Validateurs** - Valident la valeur **traitée** après conversion vers son type final
+    2. **Pré-validateurs** - Valident la **chaîne brute** avant tout traitement
+    
+    Pour une exploration détaillée des validateurs personnalisés, y compris des exemples et des bonnes pratiques, 
+    consultez le [guide des validateurs personnalisés](../advanced/custom-validators.md).
+
+## Combinaison de validateurs
+
+Vous pouvez appliquer plusieurs validateurs à une seule option pour une validation plus complète :
+
+```c
+OPTION_INT('p', "port", "Numéro de port", 
+          RANGE(1, 65535),                   // Validateur de plage
+          VALIDATOR(even_validator, NULL),   // Validateur personnalisé
+          DEFAULT(8080))
+```
+
+## Rapport d'erreurs
+
+Les validateurs doivent utiliser `CARGS_REPORT_ERROR` pour fournir des messages d'erreur clairs :
+
+```c
+CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
+```
+
+!!! example "Exemple de message d'erreur"
+    ```
+    my_program : La valeur '70000' est en dehors de la plage [1, 65535] pour l'option 'port'
+    ```
+
+Les codes d'erreur courants incluent :
+- `CARGS_ERROR_INVALID_VALUE` : La valeur ne répond pas aux exigences
+- `CARGS_ERROR_INVALID_RANGE` : Valeur hors de la plage autorisée
+- `CARGS_ERROR_INVALID_FORMAT` : La valeur a un format incorrect
+
+## Exemples complets
+
+Pour des exemples fonctionnels complets de techniques de validation :
+
+!!! tip "Fichiers d'exemple"
+    - `examples/validators.c` - Démontre toutes les techniques de validation
+    - `examples/regex.c` - Axé sur la validation par expression régulière
+
+## Ressources supplémentaires
+
+Pour une couverture plus approfondie des sujets de validation, consultez ces guides avancés :
+
+- [Validateurs personnalisés](../advanced/custom-validators.md) - Création de validateurs personnalisés avec une logique spécialisée
+- [Expressions régulières](../advanced/regex.md) - Guide détaillé de la validation par motifs regex
+- [Motifs regex prédéfinis](../api/regex_patterns.md) - Liste des motifs d'expressions régulières prédéfinis dans cargs
