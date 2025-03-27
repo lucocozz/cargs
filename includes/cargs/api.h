@@ -12,6 +12,10 @@
 
 #include "cargs/types.h"
 
+cargs_t cargs_init_mode(cargs_option_t *options, const char *program_name, const char *version,
+                        bool release_mode);
+
+#ifdef CARGS_RELEASE
 /**
  * cargs_init - Initialize the cargs context
  *
@@ -21,8 +25,45 @@
  * @param description  Program description
  *
  * @return Initialized cargs_t context
+ *
+ * @note
+ * Define `CARGS_RELEASE` when compiling your application to skip
+ * options structure validation and improve performance.
+ *
+ * Example: `gcc -DCARGS_RELEASE my_program.c -o my_program -lcargs`
+ *
+ * Note: Only use this in production. During development, leave validation
+ * enabled to catch configuration errors early.
  */
-cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version);
+cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version)
+{
+    return cargs_init_mode(options, program_name, version, true);
+}
+#else
+/**
+ * cargs_init - Initialize the cargs context
+ *
+ * @param options      Array of command-line options
+ * @param program_name Name of the program
+ * @param version      Version string
+ * @param description  Program description
+ *
+ * @return Initialized cargs_t context
+ *
+ * @note
+ * Define `CARGS_RELEASE` when compiling your application to skip
+ * options structure validation and improve performance.
+ *
+ * Example: `gcc -DCARGS_RELEASE my_program.c -o my_program -lcargs`
+ *
+ * Note: Only use this in production. During development, leave validation
+ * enabled to catch configuration errors early.
+ */
+cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version)
+{
+    return cargs_init_mode(options, program_name, version, false);
+}
+#endif
 
 /**
  * cargs_parse - Parse command-line arguments

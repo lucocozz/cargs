@@ -26,3 +26,38 @@ foreach test : unit_tests
     timeout: 30
   )
 endforeach
+
+# Special test for release mode
+release_mode_test_sources = files('test_core/test_release_mode.c')
+
+# Build and run the test in normal mode (validation enabled)
+test_release_normal = executable(
+  'test_release_mode_normal',
+  release_mode_test_sources,
+  dependencies: [criterion_dep, cargs_dep],
+  include_directories: test_includes,
+  c_args: test_args
+)
+
+test(
+  'unit_release_mode_normal',
+  test_release_normal,
+  env: test_env,
+  timeout: 30
+)
+
+# Build and run the test in release mode (validation disabled)
+test_release_optimized = executable(
+  'test_release_mode_optimized',
+  release_mode_test_sources,
+  dependencies: [criterion_dep, cargs_dep],
+  include_directories: test_includes,
+  c_args: test_args + ['-DCARGS_RELEASE'],
+)
+
+test(
+  'unit_release_mode_optimized',
+  test_release_optimized,
+  env: test_env,
+  timeout: 30
+)

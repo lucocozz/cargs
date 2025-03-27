@@ -19,7 +19,7 @@
 - 🔍 **Validateurs intégrés** : validateurs de plage, de choix et d'expressions régulières avec des ensembles prédéfinis complets
 - 📦 **Regroupement organisé des options** : regroupement visuel des options associées dans l'affichage d'aide
 - 🔗 **Relations entre options** : définition de dépendances et de conflits entre options
-- 🔧 **Validation de structure** : vérification complète de la structure des options lors de l'initialisation pour éviter les erreurs d'exécution
+- 🚦 **Validation intelligente** : vérification complète de la structure des options pendant le développement pour prévenir les erreurs d'exécution, avec un mode release pour des performances optimales en production
 - 🌐 **Variables d'environnement** : configuration ENV automatique
 - 🚀 **Efficacité mémoire** : minimise les allocations sur le tas pour de meilleures performances et fiabilité
 - 🧰 **Personnalisation facile des options** : créez vos propres types d'options et gestionnaires

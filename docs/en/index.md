@@ -19,7 +19,7 @@
 - 🔍 **Built-in validators**: built-in range, choices, regex patterns with comprehensive predefined sets
 - 📦 **Organized option grouping**: visually group related options in help displays
 - 🔗 **Option relationships**: define dependencies and conflicts between options
-- 🔧 **Structure validation**: comprehensive option structure checking during initialization to prevent runtime errors
+- 🚦 **Smart validation**: comprehensive option structure checking during development to prevent runtime errors, with a release mode for optimal performance in production
 - 🌐 **Environment variables**: automatic ENV configuration
 - 🚀 **Memory efficiency**: minimizes heap allocations for better performance and reliability
 - 🧰 **Easy option customization**: create your own option types and handlers

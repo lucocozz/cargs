@@ -71,6 +71,42 @@ cargs n'a qu'une seule dépendance externe :
     just install
     ```
 
+## Optimisation des performances
+
+cargs propose un mode release pour optimiser les performances dans les environnements de production.
+
+### Mode développement vs mode release
+
+Par défaut, cargs effectue une validation complète de la structure de vos options lors de l'initialisation pour détecter les erreurs de configuration au plus tôt. Cette fonctionnalité est précieuse pendant le développement mais ajoute une certaine surcharge.
+
+Pour les déploiements en production, vous pouvez activer le mode release pour ignorer ces validations et améliorer les performances :
+
+=== "Avec Meson"
+    ```bash
+    # Activer le mode release lors de la compilation
+    meson setup .build -Drelease_mode=true
+    meson compile -C .build
+    ```
+
+=== "Compilation manuelle"
+    ```bash
+    # Ajouter le flag -DCARGS_RELEASE à votre compilation
+    gcc votre_programme.c -o votre_programme -DCARGS_RELEASE -lcargs -lpcre2-8
+    ```
+
+=== "Dans un projet Meson"
+    ```meson
+    # Dans votre fichier meson.build
+    if get_option('optimize_cargs')
+      add_project_arguments('-DCARGS_RELEASE', language: 'c')
+    endif
+    ```
+
+!!! tip "Quand utiliser le mode release"
+    - **Développement** : Gardez la validation activée pour détecter rapidement les erreurs de configuration des options
+    - **Production** : Activez le mode release pour des performances optimales dans les applications déployées
+    - **Tests** : Gardez la validation activée pour vous assurer que la structure de vos options reste valide
+
 ## Utilisation comme bibliothèque statique
 
 Si vous préférez ne pas installer la bibliothèque au niveau du système, vous pouvez :
