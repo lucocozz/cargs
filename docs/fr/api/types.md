@@ -152,19 +152,20 @@ typedef enum value_type_e {
     VALUE_TYPE_STRING = 1 << 1,  // Chaîne
     VALUE_TYPE_FLOAT  = 1 << 2,  // Flottant
     VALUE_TYPE_BOOL   = 1 << 3,  // Booléen
+    VALUE_TYPE_FLAG   = 1 << 4,  // Drapeau (booléen sans valeur)
     
     // Types de tableau
-    VALUE_TYPE_ARRAY_STRING = 1 << 4,  // Tableau de chaînes
-    VALUE_TYPE_ARRAY_INT    = 1 << 5,  // Tableau d'entiers
-    VALUE_TYPE_ARRAY_FLOAT  = 1 << 6,  // Tableau de flottants
+    VALUE_TYPE_ARRAY_STRING = 1 << 5,  // Tableau de chaînes
+    VALUE_TYPE_ARRAY_INT    = 1 << 6,  // Tableau d'entiers
+    VALUE_TYPE_ARRAY_FLOAT  = 1 << 7,  // Tableau de flottants
     
     // Types de map
-    VALUE_TYPE_MAP_STRING = 1 << 7,    // Map de chaînes
-    VALUE_TYPE_MAP_INT    = 1 << 8,    // Map d'entiers
-    VALUE_TYPE_MAP_FLOAT  = 1 << 9,    // Map de flottants
-    VALUE_TYPE_MAP_BOOL   = 1 << 10,   // Map de booléens
+    VALUE_TYPE_MAP_STRING = 1 << 8,    // Map de chaînes
+    VALUE_TYPE_MAP_INT    = 1 << 9,    // Map d'entiers
+    VALUE_TYPE_MAP_FLOAT  = 1 << 10,    // Map de flottants
+    VALUE_TYPE_MAP_BOOL   = 1 << 11,   // Map de booléens
     
-    VALUE_TYPE_CUSTOM = 1 << 11,       // Type personnalisé
+    VALUE_TYPE_CUSTOM = 1 << 12,       // Type personnalisé
 } value_type_t;
 ```
 

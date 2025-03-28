@@ -80,7 +80,23 @@ cargs supports four fundamental types of command-line elements:
     float scale = cargs_get(cargs, "scale").as_float;
     ```
 
-## Boolean Options (flags)
+### Boolean Options
+=== "Definition"
+    ```c
+    OPTION_BOOL('f', "force", "Force operation",
+                 DEFAULT(false))  // Default value
+    ```
+=== "Usage"
+    ```bash
+    $ ./my_program --force=true
+    $ ./my_program -f false
+    ```
+=== "Accessing"
+    ```c
+    bool force = cargs_get(cargs, "force").as_bool;
+    ```
+
+## Flag Options (no value)
 
 === "Definition"
     ```c

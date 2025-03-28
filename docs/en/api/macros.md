@@ -94,6 +94,19 @@ OPTION_FLOAT('f', "factor", "Scaling factor",
              DEFAULT(1.0))
 ```
 
+#### OPTION_BOOL
+Defines a boolean option:
+
+```c
+OPTION_BOOL(short_name, long_name, help, ...)
+```
+**Parameters:** Same as `OPTION_STRING`
+**Example:**
+```c
+OPTION_BOOL('d', "debug", "Enable debug mode", 
+            DEFAULT(false))
+```
+
 #### OPTION_FLAG
 
 Defines a boolean option (flag) that doesn't take a value:

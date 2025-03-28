@@ -213,6 +213,8 @@ static const char *get_base_type_name(value_type_t type)
             return "FLOAT";
         case VALUE_TYPE_BOOL:
             return "BOOL";
+        case VALUE_TYPE_FLAG:
+            return "FLAG";
         default:
             return "VALUE";
     }
@@ -240,7 +242,7 @@ static char *format_collection_hint(const char *format, const char *type_name)
 
 static void print_value_hint(const cargs_option_t *option)
 {
-    if (option->value_type == VALUE_TYPE_BOOL)
+    if (option->value_type == VALUE_TYPE_FLAG)
         return;  // No hint for boolean flags
 
     // Get the base type name or hint
@@ -408,7 +410,7 @@ static void print_option_description(const cargs_option_t *option, size_t paddin
     }
 
     // Append default value if any
-    if (option->have_default && option->value_type != VALUE_TYPE_BOOL) {
+    if (option->have_default && option->value_type != VALUE_TYPE_FLAG) {
         char default_buf[128] = {0};
         snprintf(default_buf, sizeof(default_buf), " (default: ");
         size_t default_len = strlen(default_buf);
@@ -429,6 +431,10 @@ static void print_option_description(const cargs_option_t *option, size_t paddin
             case VALUE_TYPE_FLOAT:
                 snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%.2f)",
                          option->default_value.as_float);
+                break;
+            case VALUE_TYPE_BOOL:
+                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%s)",
+                         option->default_value.as_bool ? "true" : "false");
                 break;
             default:
                 strcat(default_buf, ")");
@@ -505,7 +511,7 @@ static size_t print_option_name(const cargs_option_t *option, size_t indent)
     }
 
     // Print value hint
-    if (option->value_type != VALUE_TYPE_BOOL) {
+    if (option->value_type != VALUE_TYPE_FLAG) {
         print_value_hint(option);
 
         // Calculate hint length for correct padding

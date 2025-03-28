@@ -45,6 +45,8 @@ int cmp_value(value_type_t type, const value_t a, const value_t b)
         return 0;
 
     switch (type) {
+        case VALUE_TYPE_FLAG:
+            return a.as_bool - b.as_bool;
         case VALUE_TYPE_INT:
             return a.as_int - b.as_int;
         case VALUE_TYPE_STRING:
@@ -69,6 +71,9 @@ int cmp_value(value_type_t type, const value_t a, const value_t b)
 void print_value(FILE *stream, value_type_t type, value_t value)
 {
     switch (type) {
+        case VALUE_TYPE_FLAG:
+            fprintf(stream, "%s", value.as_bool ? "true" : "false");
+            break;
         case VALUE_TYPE_INT:
             fprintf(stream, "%d", value.as_int);
             break;

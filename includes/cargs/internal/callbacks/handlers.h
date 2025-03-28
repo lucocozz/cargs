@@ -18,6 +18,7 @@
 int string_handler(cargs_t *cargs, cargs_option_t *options, char *arg);
 int int_handler(cargs_t *cargs, cargs_option_t *options, char *arg);
 int bool_handler(cargs_t *cargs, cargs_option_t *options, char *arg);
+int flag_handler(cargs_t *cargs, cargs_option_t *options, char *arg);
 int float_handler(cargs_t *cargs, cargs_option_t *options, char *arg);
 
 int array_string_handler(cargs_t *cargs, cargs_option_t *options, char *arg);

@@ -26,15 +26,15 @@ void setup_handler(void)
     test_option.is_allocated = false;
 }
 
-// Test for bool_handler
-Test(handlers, bool_handler, .init = setup_handler)
+// Test for FLAG_handler
+Test(handlers, flag_handler, .init = setup_handler)
 {
     // Configure option as boolean
-    test_option.value_type = VALUE_TYPE_BOOL;
+    test_option.value_type = VALUE_TYPE_FLAG;
     test_option.value.as_bool = false;
     
     // Call boolean handler which should toggle the value
-    int result = bool_handler(&test_cargs, &test_option, NULL);
+    int result = flag_handler(&test_cargs, &test_option, NULL);
     
     // Verify handler succeeded
     cr_assert_eq(result, CARGS_SUCCESS, "Bool handler should return success");
@@ -43,11 +43,61 @@ Test(handlers, bool_handler, .init = setup_handler)
     cr_assert_eq(test_option.value.as_bool, true, "Bool value should be inverted to true");
     
     // Call handler again
-    result = bool_handler(&test_cargs, &test_option, NULL);
+    result = flag_handler(&test_cargs, &test_option, NULL);
     
     // Verify value was toggled again
     cr_assert_eq(test_option.value.as_bool, false, "Bool value should be inverted back to false");
 }
+
+
+// Test for bool_handler
+Test(handlers, bool_handler, .init = setup_handler)
+{
+    int result;
+
+    // Configure option as boolean
+    test_option.value_type = VALUE_TYPE_BOOL;
+    
+    // Create test value
+    char *true_value[] = {"true", "1", "yes", "on"};
+
+    for (int i = 0; i < 4; i++) {
+        // Call boolean handler
+        result = bool_handler(&test_cargs, &test_option, true_value[i]);
+        
+        // Verify handler succeeded
+        cr_assert_eq(result, CARGS_SUCCESS, "Bool handler should return success");
+        
+        // Verify value was set correctly
+        cr_assert_eq(test_option.value.as_bool, true, "Bool value should be set correctly");
+    }
+
+
+    char *false_value[] = {"false", "0", "no", "off"};
+    for (int i = 0; i < 4; i++) {
+        // Call boolean handler
+        result = bool_handler(&test_cargs, &test_option, false_value[i]);
+        
+        // Verify handler succeeded
+        cr_assert_eq(result, CARGS_SUCCESS, "Bool handler should return success");
+        
+        // Verify value was set correctly
+        cr_assert_eq(test_option.value.as_bool, false, "Bool value should be set correctly");
+    }
+
+    // Test with invalid value
+    char invalid_value[] = "invalid";
+    result = bool_handler(&test_cargs, &test_option, invalid_value);
+    cr_assert_eq(result, CARGS_ERROR_INVALID_ARGUMENT, "Bool handler should return error for invalid value");
+    cr_assert_eq(test_option.value.as_bool, false, "Bool value should not be set for invalid input");
+ 
+    // Test with NULL value
+    result = bool_handler(&test_cargs, &test_option, NULL);
+    cr_assert_eq(result, CARGS_ERROR_INVALID_ARGUMENT, "Bool handler should return error for NULL value");
+    cr_assert_eq(test_option.value.as_bool, false, "Bool value should not be set for NULL input");
+
+}
+
 
 // Test for string_handler
 Test(handlers, string_handler, .init = setup_handler)

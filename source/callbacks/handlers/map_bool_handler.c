@@ -16,41 +16,34 @@
  * True: "true", "yes", "1", "on", "y" (case-insensitive)
  * False: "false", "no", "0", "off", "n" (case-insensitive)
  *
- * @param value String to convert
- * @param result Pointer to store the result
- * @return 0 on success, -1 on error
+ * @param arg String to convert
+ * @return 1 for true, 0 for false, -1 for invalid value
  */
-static int str_to_bool(const char *value, bool *result)
+static int string_to_bool(const char *arg)
 {
-    char *lowercase = strdup(value);
-    if (!lowercase)
+    char  value[6]       = {0};
+    char *false_values[] = {"0", "false", "no", "n", "off", "0x0", "0b0"};
+    char *true_values[]  = {"1", "true", "yes", "y", "on", "0x1", "0b1"};
+
+    if (strlen(arg) > sizeof(value) - 1)
         return -1;
 
-    // Convert to lowercase for case-insensitive comparison
-    for (char *p = lowercase; *p; p++)
-        *p = tolower(*p);
+    size_t arg_len = strlen(arg);
+    for (size_t i = 0; i < arg_len && i < sizeof(value) - 1; ++i)
+        value[i] = tolower(arg[i]);
+    value[arg_len] = '\0';
 
-    // Check for true values
-    if (strcmp(lowercase, "true") == 0 || strcmp(lowercase, "yes") == 0 ||
-        strcmp(lowercase, "1") == 0 || strcmp(lowercase, "on") == 0 ||
-        strcmp(lowercase, "y") == 0) {
-        *result = true;
-        free(lowercase);
-        return 0;
+    for (size_t i = 0; i < ARRAY_SIZE(true_values); ++i) {
+        if (strcmp(value, true_values[i]) == 0)
+            return true;
     }
 
-    // Check for false values
-    if (strcmp(lowercase, "false") == 0 || strcmp(lowercase, "no") == 0 ||
-        strcmp(lowercase, "0") == 0 || strcmp(lowercase, "off") == 0 ||
-        strcmp(lowercase, "n") == 0) {
-        *result = false;
-        free(lowercase);
-        return 0;
+    for (size_t i = 0; i < ARRAY_SIZE(false_values); ++i) {
+        if (strcmp(value, false_values[i]) == 0)
+            return false;
     }
 
-    // Not a recognized boolean value
-    free(lowercase);
-    return -1;
+    return -1;  // Invalid boolean value
 }
 
 /**
@@ -74,8 +67,8 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     char *value = separator + 1;
 
     // Convert the string value to boolean
-    bool bool_value;
-    if (str_to_bool(value, &bool_value) != 0) {
+    int bool_value = string_to_bool(value);
+    if (bool_value == -1) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                            "Invalid boolean value for key '%s': '%s' (expected true/false, yes/no, "
                            "1/0, on/off, y/n)",
@@ -87,13 +80,13 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
 
     // Key exists, update value
     if (key_index >= 0) {
-        option->value.as_map[key_index].value.as_bool = bool_value;
+        option->value.as_map[key_index].value.as_bool = (bool)bool_value;
     } else {
         // Key doesn't exist, add new entry
         adjust_map_size(option);
 
         option->value.as_map[option->value_count].key           = key;
-        option->value.as_map[option->value_count].value.as_bool = bool_value;
+        option->value.as_map[option->value_count].value.as_bool = (bool)bool_value;
         option->value_count++;
     }
 

@@ -35,19 +35,21 @@ typedef enum value_type_e
     VALUE_TYPE_STRING = 1 << 1,
     VALUE_TYPE_FLOAT  = 1 << 2,
     VALUE_TYPE_BOOL   = 1 << 3,
+    VALUE_TYPE_FLAG   = 1 << 4,
 
-    VALUE_TYPE_ARRAY_STRING = 1 << 4,
-    VALUE_TYPE_ARRAY_INT    = 1 << 5,
-    VALUE_TYPE_ARRAY_FLOAT  = 1 << 6,
+    VALUE_TYPE_ARRAY_STRING = 1 << 5,
+    VALUE_TYPE_ARRAY_INT    = 1 << 6,
+    VALUE_TYPE_ARRAY_FLOAT  = 1 << 7,
 
-    VALUE_TYPE_MAP_STRING = 1 << 7,
-    VALUE_TYPE_MAP_INT    = 1 << 8,
-    VALUE_TYPE_MAP_FLOAT  = 1 << 9,
-    VALUE_TYPE_MAP_BOOL   = 1 << 10,
+    VALUE_TYPE_MAP_STRING = 1 << 8,
+    VALUE_TYPE_MAP_INT    = 1 << 9,
+    VALUE_TYPE_MAP_FLOAT  = 1 << 10,
+    VALUE_TYPE_MAP_BOOL   = 1 << 11,
 
-    VALUE_TYPE_CUSTOM = 1 << 11,
+    VALUE_TYPE_CUSTOM = 1 << 12,
 } value_type_t;
 
+#define VALUE_TYPE_ANY_BOOL (VALUE_TYPE_BOOL | VALUE_TYPE_FLAG)
 #define VALUE_TYPE_PRIMITIVE                                                                       \
     (VALUE_TYPE_INT | VALUE_TYPE_STRING | VALUE_TYPE_FLOAT | VALUE_TYPE_BOOL)
 #define VALUE_TYPE_ARRAY (VALUE_TYPE_ARRAY_STRING | VALUE_TYPE_ARRAY_INT | VALUE_TYPE_ARRAY_FLOAT)
