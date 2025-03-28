@@ -6,6 +6,7 @@ shared_lib := "lib" + name + ".so"
 # Default values for variables
 tests := "false"
 examples := "true"
+benchmarks := "false"
 build_type := "debugoptimized"
 
 # Set default recipe to run when just is called without arguments
@@ -15,12 +16,12 @@ default: build compile
 build: configure compile
 
 configure:
-    @meson setup -Dtests={{tests}} -Dexamples={{examples}} -Dbuildtype={{build_type}} {{build_dir}}
+    @meson setup -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} {{build_dir}}
     @ln -sf {{build_dir}}/{{static_lib}} {{static_lib}} 2>/dev/null || true
     @ln -sf {{build_dir}}/{{shared_lib}} {{shared_lib}} 2>/dev/null || true
 
 reconfigure:
-    @meson setup --reconfigure -Dtests={{tests}} -Dexamples={{examples}} -Dbuildtype={{build_type}} {{build_dir}}
+    @meson setup --reconfigure -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} {{build_dir}}
 
 compile:
     @meson compile -C {{build_dir}}
@@ -93,6 +94,61 @@ test-list:
     @echo "\033[1;33mHow to run a specific test:\033[0m"
     @echo "  \033[1;37mjust test-one unit_strings\033[0m"
     @echo "\033[1;34m═════════════════════════════════════════════════\033[0m"
+
+# =====================
+# Benchmark commands
+# =====================
+
+# Build and run benchmarks
+benchmark:
+    @just benchmarks="true" reconfigure compile
+    @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
+    @echo "\033[1;33m          CARGS PERFORMANCE BENCHMARKS\033[0m"
+    @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m"
+    
+    @bash -c '\
+        benchmark_exes=$(find {{build_dir}}/benchmarks -type f -executable -not -path "*.p/*"); \
+        if [ -z "$benchmark_exes" ]; then \
+            echo "No benchmark executables found! ❌"; \
+            exit 1; \
+        fi; \
+        for bench in $benchmark_exes; do \
+            name=$(basename $bench); \
+            echo "⏱️  Running benchmark: $name"; \
+            echo "    Mode comparison (both normal and release):"; \
+            $bench 2; \
+            echo ""; \
+        done \
+    '
+    
+    @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
+    @echo "\033[1;32m                 BENCHMARKS COMPLETE ✅\033[0m"
+    @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m\n"
+
+# Run specific benchmark modes
+benchmark-normal:
+    @just benchmarks="true" reconfigure compile
+    @bash -c '\
+        for bench in $(find {{build_dir}}/benchmarks -type f -executable -not -path "*.p/*"); do \
+            name=$(basename $bench); \
+            echo "\n\033[1;36m⏱️  Running benchmark in normal mode: $name\033[0m\n"; \
+            $bench 0; \
+        done \
+    '
+
+benchmark-release:
+    @just benchmarks="true" reconfigure compile
+    @bash -c '\
+        for bench in $(find {{build_dir}}/benchmarks -type f -executable -not -path "*.p/*"); do \
+            name=$(basename $bench); \
+            echo "\n\033[1;36m⏱️  Running benchmark in release mode: $name\033[0m\n"; \
+            $bench 1; \
+        done \
+    '
+
+# =====================
+# Example commands
+# =====================
 
 # Build and list examples
 examples:

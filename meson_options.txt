@@ -1,4 +1,3 @@
 option('tests', type: 'boolean', value: false, description: 'Enable tests')
 option('examples', type: 'boolean', value: false, description: 'Build example programs')
-option('release_mode', type: 'boolean', value: false, 
-       description: 'Enable release mode (skips validation for better performance)')
+option('benchmarks', type: 'boolean', value: false, description: 'Build benchmark programs')
