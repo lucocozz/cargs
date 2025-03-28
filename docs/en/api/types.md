@@ -152,19 +152,20 @@ typedef enum value_type_e {
     VALUE_TYPE_STRING = 1 << 1,  // String
     VALUE_TYPE_FLOAT  = 1 << 2,  // Floating-point
     VALUE_TYPE_BOOL   = 1 << 3,  // Boolean
+    VALUE_TYPE_FLAG   = 1 << 4,  // Flag (boolean with no value)
     
     // Array types
-    VALUE_TYPE_ARRAY_STRING = 1 << 4,  // String array
-    VALUE_TYPE_ARRAY_INT    = 1 << 5,  // Integer array
-    VALUE_TYPE_ARRAY_FLOAT  = 1 << 6,  // Float array
+    VALUE_TYPE_ARRAY_STRING = 1 << 5,  // String array
+    VALUE_TYPE_ARRAY_INT    = 1 << 6,  // Integer array
+    VALUE_TYPE_ARRAY_FLOAT  = 1 << 7,  // Float array
     
     // Map types
-    VALUE_TYPE_MAP_STRING = 1 << 7,    // String map
-    VALUE_TYPE_MAP_INT    = 1 << 8,    // Integer map
-    VALUE_TYPE_MAP_FLOAT  = 1 << 9,    // Float map
-    VALUE_TYPE_MAP_BOOL   = 1 << 10,   // Boolean map
+    VALUE_TYPE_MAP_STRING = 1 << 8,    // String map
+    VALUE_TYPE_MAP_INT    = 1 << 9,    // Integer map
+    VALUE_TYPE_MAP_FLOAT  = 1 << 10,    // Float map
+    VALUE_TYPE_MAP_BOOL   = 1 << 11,   // Boolean map
     
-    VALUE_TYPE_CUSTOM = 1 << 11,       // Custom type
+    VALUE_TYPE_CUSTOM = 1 << 12,       // Custom type
 } value_type_t;
 ```
 

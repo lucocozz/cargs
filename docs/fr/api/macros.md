@@ -94,6 +94,19 @@ OPTION_FLOAT('f', "factor", "Facteur d'échelle",
              DEFAULT(1.0))
 ```
 
+#### OPTION_BOOL
+Définit une option de type booléen :
+
+```c
+OPTION_BOOL(nom_court, nom_long, aide, ...)
+```
+**Paramètres :** Identiques à `OPTION_STRING`
+**Exemple :**
+```c
+OPTION_BOOL('d', "debug", "Activer le mode débogage", 
+            DEFAULT(false))
+```
+
 #### OPTION_FLAG
 
 Définit une option booléenne (drapeau) qui ne prend pas de valeur :
