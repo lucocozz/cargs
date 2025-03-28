@@ -27,12 +27,6 @@ subdir('source')
 
 pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
 
-# Release mode configuration
-if get_option('release_mode')
-    add_project_arguments('-DCARGS_RELEASE', language: 'c')
-    message('Release mode enabled: validation skipped for better performance')
-endif
-
 # Create both static and shared libraries from sources
 cargs_lib = both_libraries(
     'cargs',

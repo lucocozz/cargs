@@ -325,7 +325,7 @@ cargs_t cargs = cargs_init(options, "mon_programme", "1.0.0");
 cargs_t cargs = cargs_init(options, "mon_programme", "1.0.0");
 ```
 
-Pour activer le mode release, compilez avec le flag `-DCARGS_RELEASE` ou utilisez l'option `release_mode=true` avec Meson.
+Pour activer le mode release, compilez avec le flag `-DCARGS_RELEASE`.
 
 ## Exemple de code
 

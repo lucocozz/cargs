@@ -85,6 +85,13 @@ double measure_init_time(cargs_option_t *options, const char *program_name,
     return total_time / iterations;
 }
 
+// Global variables to store timing results for comparison
+double release_simple_time = 0.0;
+double release_complex_time = 0.0;
+double release_invalid_time = 0.0;
+double normal_simple_time = 0.0;
+double normal_complex_time = 0.0;
+
 void run_benchmark(bool release_mode) 
 {
     const int warmup_iterations = 100;
@@ -108,18 +115,41 @@ void run_benchmark(bool release_mode)
     }
     
     // Print results
-    printf("Simple options structure (%d iterations):\n", measurement_iterations);
-    printf("  Average time: %.9f seconds per initialization\n", time_simple);
-    
-    printf("\nComplex options structure (%d iterations):\n", measurement_iterations);
-    printf("  Average time: %.9f seconds per initialization\n", time_complex);
-    printf("  Ratio to simple: %.2fx slower\n", time_complex / time_simple);
+    printf("%s Mode - Simple options structure (%d iterations): %.9f seconds\n", 
+           release_mode ? "Release" : "Normal", measurement_iterations, time_simple);
+    printf("%s Mode - Complex options structure (%d iterations): %.9f seconds\n", 
+           release_mode ? "Release" : "Normal", measurement_iterations, time_complex);
     
     if (release_mode) {
-        printf("\nInvalid options structure (%d iterations):\n", measurement_iterations);
-        printf("  Average time: %.9f seconds per initialization\n", time_invalid);
-        printf("  Ratio to simple: %.2fx\n", time_invalid / time_simple);
+        printf("%s Mode - Invalid options structure (%d iterations): %.9f seconds\n", 
+               release_mode ? "Release" : "Normal", measurement_iterations, time_invalid);
     }
+    
+    // Store results for comparison
+    if (release_mode) {
+        release_simple_time = time_simple;
+        release_complex_time = time_complex;
+        release_invalid_time = time_invalid;
+    } else {
+        normal_simple_time = time_simple;
+        normal_complex_time = time_complex;
+    }
+}
+
+// Function to display comparison between modes
+void display_mode_comparison() {
+    printf("\n===== PERFORMANCE COMPARISON: NORMAL vs RELEASE MODE =====\n");
+    printf("%-20s | %-12s | %-12s | %-12s\n", "Test Case", "Normal (s)", "Release (s)", "Speedup");
+    printf("------------------------------------------------------\n");
+    printf("%-20s | %-12.9f | %-12.9f | %.2fx\n", 
+           "Simple Options", normal_simple_time, release_simple_time, 
+           normal_simple_time / release_simple_time);
+    printf("%-20s | %-12.9f | %-12.9f | %.2fx\n", 
+           "Complex Options", normal_complex_time, release_complex_time, 
+           normal_complex_time / release_complex_time);
+    printf("%-20s | %-12s | %-12.9f | %s\n", 
+           "Invalid Options", "N/A", release_invalid_time, "N/A");
+    printf("======================================================\n");
 }
 
 int main(int argc, char **argv) 
@@ -131,20 +161,34 @@ int main(int argc, char **argv)
     
     bool release_mode_only = false;
     bool debug_mode_only = false;
+    bool compare_modes = true;
     
     if (argc > 1) {
         int mode = atoi(argv[1]);
         release_mode_only = (mode == 1);
         debug_mode_only = (mode == 0);
+        compare_modes = !(release_mode_only || debug_mode_only);
     }
     
-    // Run appropriate mode(s)
+    printf("=== CARGS PERFORMANCE BENCHMARK ===\n\n");
+    
+    // Run normal mode (debug mode)
     if (!release_mode_only) {
-        run_benchmark(false);  // Debug mode (validation enabled)
+        printf("Running benchmarks in NORMAL mode (validation enabled)...\n");
+        run_benchmark(false);  // Normal mode (validation enabled)
+        printf("\n");
     }
     
+    // Run release mode
     if (!debug_mode_only) {
+        printf("Running benchmarks in RELEASE mode (validation disabled)...\n");
         run_benchmark(true);   // Release mode (validation disabled)
+        printf("\n");
+    }
+    
+    // Display comparison if both modes were run
+    if (compare_modes) {
+        display_mode_comparison();
     }
     
     return 0;

@@ -81,13 +81,6 @@ Par défaut, cargs effectue une validation complète de la structure de vos opti
 
 Pour les déploiements en production, vous pouvez activer le mode release pour ignorer ces validations et améliorer les performances :
 
-=== "Avec Meson"
-    ```bash
-    # Activer le mode release lors de la compilation
-    meson setup .build -Drelease_mode=true
-    meson compile -C .build
-    ```
-
 === "Compilation manuelle"
     ```bash
     # Ajouter le flag -DCARGS_RELEASE à votre compilation
@@ -97,7 +90,7 @@ Pour les déploiements en production, vous pouvez activer le mode release pour i
 === "Dans un projet Meson"
     ```meson
     # Dans votre fichier meson.build
-    if get_option('optimize_cargs')
+    if get_option('cargs_release')
       add_project_arguments('-DCARGS_RELEASE', language: 'c')
     endif
     ```

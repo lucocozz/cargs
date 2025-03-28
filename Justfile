@@ -103,15 +103,52 @@ test-list:
 benchmark:
     @just benchmarks="true" reconfigure compile
     @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
-    @echo "\033[1;33m         CARGS_RELEASE PERFORMANCE BENCHMARK\033[0m"
+    @echo "\033[1;33m          CARGS PERFORMANCE BENCHMARKS\033[0m"
     @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m"
-    @echo "\n\033[1;36m⏱️  Running benchmarks with validation enabled (normal mode):\033[0m\n"
-    @{{build_dir}}/benchmarks/benchmark_release_mode 0
-    @echo "\n\033[1;36m⏱️  Running benchmarks with validation disabled (CARGS_RELEASE mode):\033[0m\n"
-    @{{build_dir}}/benchmarks/benchmark_release_mode 1
+    
+    @bash -c '\
+        benchmark_exes=$(find {{build_dir}}/benchmarks -type f -executable -not -path "*.p/*"); \
+        if [ -z "$benchmark_exes" ]; then \
+            echo "No benchmark executables found! ❌"; \
+            exit 1; \
+        fi; \
+        for bench in $benchmark_exes; do \
+            name=$(basename $bench); \
+            echo "⏱️  Running benchmark: $name"; \
+            echo "    Mode comparison (both normal and release):"; \
+            $bench 2; \
+            echo ""; \
+        done \
+    '
+    
     @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
-    @echo "\033[1;32m                 BENCHMARK COMPLETE ✅\033[0m"
+    @echo "\033[1;32m                 BENCHMARKS COMPLETE ✅\033[0m"
     @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m\n"
+
+# Run specific benchmark modes
+benchmark-normal:
+    @just benchmarks="true" reconfigure compile
+    @bash -c '\
+        for bench in $(find {{build_dir}}/benchmarks -type f -executable -not -path "*.p/*"); do \
+            name=$(basename $bench); \
+            echo "\n\033[1;36m⏱️  Running benchmark in normal mode: $name\033[0m\n"; \
+            $bench 0; \
+        done \
+    '
+
+benchmark-release:
+    @just benchmarks="true" reconfigure compile
+    @bash -c '\
+        for bench in $(find {{build_dir}}/benchmarks -type f -executable -not -path "*.p/*"); do \
+            name=$(basename $bench); \
+            echo "\n\033[1;36m⏱️  Running benchmark in release mode: $name\033[0m\n"; \
+            $bench 1; \
+        done \
+    '
+
+# =====================
+# Example commands
+# =====================
 
 # Build and list examples
 examples:

@@ -81,13 +81,6 @@ By default, cargs performs comprehensive validation of your option structures du
 
 For production deployments, you can enable release mode to skip these validations and improve performance:
 
-=== "With Meson"
-    ```bash
-    # Enable release mode when building
-    meson setup .build -Drelease_mode=true
-    meson compile -C .build
-    ```
-
 === "Manual Compilation"
     ```bash
     # Add -DCARGS_RELEASE flag to your compilation
@@ -97,7 +90,7 @@ For production deployments, you can enable release mode to skip these validation
 === "In a Meson project"
     ```meson
     # In your meson.build
-    if get_option('optimize_cargs')
+    if get_option('cargs_release')
       add_project_arguments('-DCARGS_RELEASE', language: 'c')
     endif
     ```
