@@ -28,7 +28,12 @@ CARGS_OPTIONS(
     OPTION_INT('p', NULL, "Port number", 
                DEFAULT(8080), 
                RANGE(1, 65535)),
-               
+
+    // Boolean option with both short and long names
+    OPTION_BOOL('d', NULL, "Debug mode", 
+               DEFAULT(false), 
+               HINT("true|false")),
+
     // Another option with only long name (using '\0' instead of 0)
     OPTION_FLAG('\0', "dry-run", "Run without making changes"),
     
@@ -54,6 +59,7 @@ int main(int argc, char **argv)
     int port = cargs_get(cargs, "p").as_int;  // Using short name as ID when only short name exists
     bool dry_run = cargs_get(cargs, "dry-run").as_bool;
     const char* input = cargs_get(cargs, "input").as_string;
+    bool debug = cargs_get(cargs, "d").as_bool;  // Using short name as ID when both exist
 
     // Display configuration
     printf("Configuration:\n");
@@ -61,6 +67,7 @@ int main(int argc, char **argv)
     printf("  Output (--output only): %s\n", output);
     printf("  Port (-p only): %d\n", port);
     printf("  Dry run (--dry-run only): %s\n", dry_run ? "enabled" : "disabled");
+    printf("  Debug (-d only): %s\n", debug ? "enabled" : "disabled");
     printf("  Input: %s\n", input);
 
     // Free resources

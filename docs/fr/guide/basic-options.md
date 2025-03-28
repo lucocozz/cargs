@@ -80,7 +80,23 @@ cargs prend en charge quatre types fondamentaux d'éléments de ligne de command
     float scale = cargs_get(cargs, "scale").as_float;
     ```
 
-## Options booléennes (drapeaux)
+### Options Booléennes
+=== "Définition"
+    ```c
+    OPTION_BOOL('f', "force", "Forcer l'opération",
+                 DEFAULT(false))  // Default value
+    ```
+=== "Utilisation"
+    ```bash
+    $ ./my_program --force=true
+    $ ./my_program -f false
+    ```
+=== "Accès"
+    ```c
+    bool force = cargs_get(cargs, "force").as_bool;
+    ```
+
+## Options Drapeau Booléennes (pas de valeur)
 
 === "Définition"
     ```c

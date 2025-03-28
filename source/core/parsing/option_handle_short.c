@@ -23,7 +23,7 @@ int handle_short_option(cargs_t *cargs, cargs_option_t *options, char *arg, char
         context_set_option(cargs, option);
 
         char *value = NULL;
-        if (option->value_type != VALUE_TYPE_BOOL) {
+        if (option->value_type != VALUE_TYPE_FLAG) {
             // Format "-ovalue"
             if (i < len - 1) {
                 value = arg + i + 1;

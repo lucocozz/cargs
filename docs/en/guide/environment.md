@@ -162,12 +162,12 @@ Environment variables are always strings, but cargs automatically converts them 
 | `OPTION_STRING` | Any text | Used as-is |
 | `OPTION_INT` | "123" | Parsed as integer 123 |
 | `OPTION_FLOAT` | "3.14" | Parsed as float 3.14 |
-| `OPTION_FLAG` | "1", "true", "yes", "on", "y" | Converted to `true` |
+| `OPTION_BOOL` | "1", "true", "yes", "on", "y" | Converted to `true` |
 | | "0", "false", "no", "off", "n" | Converted to `false` |
 | Collections | "value1,value2,value3" | Parsed as comma-separated values |
 
 !!! note "Boolean Value Support"
-    For boolean options (`OPTION_FLAG`), the environment variables support true/false values in various formats (case-insensitive):
+    For boolean options (`OPTION_BOOL`), the environment variables support true/false values in various formats (case-insensitive):
     
     - **True values**: "1", "true", "yes", "on", "y" 
     - **False values**: "0", "false", "no", "off", "n"

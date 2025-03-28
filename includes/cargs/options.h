@@ -14,6 +14,7 @@
 #include "cargs/types.h"
 
 /* Forward declaration for handler functions */
+int flag_handler(cargs_t *cargs, cargs_option_t *option, char *value);
 int bool_handler(cargs_t *cargs, cargs_option_t *option, char *value);
 int string_handler(cargs_t *cargs, cargs_option_t *option, char *value);
 int int_handler(cargs_t *cargs, cargs_option_t *option, char *value);
@@ -135,6 +136,8 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
  * Option type macros
  */
 #define OPTION_FLAG(short_name, long_name, help, ...)                                              \
+    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLAG, HANDLER(flag_handler), __VA_ARGS__)
+#define OPTION_BOOL(short_name, long_name, help, ...)                                              \
     OPTION_BASE(short_name, long_name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
 #define OPTION_STRING(short_name, long_name, help, ...)                                            \
     OPTION_BASE(short_name, long_name, help, VALUE_TYPE_STRING, HANDLER(string_handler),           \
