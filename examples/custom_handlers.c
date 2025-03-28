@@ -46,7 +46,7 @@ int url_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Allocate and initialize the URL structure
     url_t *url = calloc(1, sizeof(url_t));  // Use calloc instead of malloc + manual init
     if (!url) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
     }
     
     // Parse protocol
@@ -55,14 +55,14 @@ int url_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
         size_t protocol_len = protocol_end - arg;
         if (!(url->protocol = strndup(arg, protocol_len))) {  // Use strndup for cleaner code
             free_url(url);
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+            CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
         }
         arg = protocol_end + 3;  // Move past the protocol part
     } else {
         // Default protocol
         if (!(url->protocol = strdup("http"))) {
             free_url(url);
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+            CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
         }
     }
     
@@ -84,7 +84,7 @@ int url_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Allocate and copy host
     if (!(url->host = strndup(arg, host_len))) {
         free_url(url);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
     }
     
     // Update position for path parsing
@@ -98,20 +98,20 @@ int url_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
             if (!(url->path = strndup(arg, query_start - arg)) ||
                 !(url->query = strdup(query_start + 1))) {
                 free_url(url);
-                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+                CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
             }
         } else {
             // Path without query
             if (!(url->path = strdup(arg))) {
                 free_url(url);
-                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+                CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
             }
         }
     } else {
         // No path
         if (!(url->path = strdup("/"))) {
             free_url(url);
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+            CALLOC_INTERNAL_ERROR(cargs, "Memory allocation failed");
         }
     }
     
@@ -148,7 +148,7 @@ int color_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Allocate the color structure
     rgb_color_t *color = calloc(1, sizeof(rgb_color_t));  // Use calloc for simpler initialization
     if (!color) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
     }
     
     // Handle hex format (#RRGGBB or #RGB)
@@ -251,7 +251,7 @@ int coordinate_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Allocate and initialize the coordinate structure
     geo_coord_t *coord = calloc(1, sizeof(geo_coord_t));
     if (!coord) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
     }
     
     // Check for decimal format: "lat,lon"

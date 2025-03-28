@@ -97,7 +97,7 @@ int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
     if (strchr(value, ',') != NULL) {
         char **splited_values = split(value, ",");
         if (splited_values == NULL) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
         }
 
         for (size_t i = 0; splited_values[i] != NULL; ++i) {

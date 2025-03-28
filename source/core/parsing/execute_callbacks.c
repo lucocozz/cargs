@@ -32,8 +32,8 @@ int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
     int status;
 
     if (option->handler == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, "Option %s has no handler",
-                           option->name);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, 
+            "Option '%s' has no handler", option->name);
     }
 
     if (option->pre_validator != NULL) {

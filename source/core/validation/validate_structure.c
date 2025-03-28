@@ -31,20 +31,20 @@ static int is_unique(cargs_t *cargs, cargs_option_t *option, cargs_option_t *oth
     int status = CARGS_SUCCESS;
 
     if (option->name && other_option->name && strcmp(option->name, other_option->name) == 0) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION, "%s: Name must be unique",
-                            option->name);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION, 
+                            "Duplicate option name '%s'", option->name);
         status = CARGS_ERROR_DUPLICATE_OPTION;
     }
 
     if (option->sname && other_option->sname && option->sname == other_option->sname) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION, "%c: Short name must be unique",
-                            option->sname);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION, 
+            "Duplicate short option '-%c'", option->sname);
         status = CARGS_ERROR_DUPLICATE_OPTION;
     }
 
     if (option->lname && other_option->lname && strcmp(option->lname, other_option->lname) == 0) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION, "%s: Long name must be unique",
-                            option->lname);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_DUPLICATE_OPTION, 
+            "Duplicate long option '--%s'", option->lname);
         status = CARGS_ERROR_DUPLICATE_OPTION;
     }
 

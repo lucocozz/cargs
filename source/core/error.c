@@ -49,6 +49,10 @@ const char *cargs_strerror(cargs_error_type_t error)
             return "Missing help option";
         case CARGS_ERROR_STACK_OVERFLOW:
             return "Error stack overflow";
+        case CARGS_ERROR_MEMORY:
+            return "Memory error";
+        case CARGS_ERROR_INTERNAL:
+            return "Internal error";
         default:
             return "Unknown error";
     }

@@ -68,8 +68,7 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     // Split the string at the separator
     char *key = strndup(pair, separator - pair);
     if (key == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
-                           key);
+        CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
     }
     char *value = separator + 1;
 
@@ -112,7 +111,7 @@ int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *value)
     if (strchr(value, ',') != NULL) {
         char **pairs = split(value, ",");
         if (pairs == NULL) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            CARGS_INTERNAL_ERROR(cargs, "Memory allocation failed");
         }
 
         for (size_t i = 0; pairs[i] != NULL; ++i) {

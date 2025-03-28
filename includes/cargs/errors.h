@@ -47,6 +47,7 @@ typedef enum cargs_error_type_e
 
     /* Internal errors */
     CARGS_ERROR_MEMORY,
+    CARGS_ERROR_INTERNAL,
 
     /* Value errors */
     CARGS_ERROR_INVALID_VALUE,
@@ -121,5 +122,16 @@ static inline int cargs_report_error(cargs_t *cargs, int code, const char *fmt, 
  * This version uses an inline function to handle the variadic arguments correctly
  */
 #define CARGS_REPORT_ERROR(cargs, code, ...) return cargs_report_error(cargs, code, __VA_ARGS__)
+
+/**
+ * CARGS_INTERNAL_ERROR - Report an internal error with file/line/function information
+ * This is for serious errors that are not the user's fault (memory allocation, etc.)
+ */
+#define CARGS_INTERNAL_ERROR(cargs, fmt, ...) do { \
+    fprintf(stderr, "CARGS INTERNAL ERROR: " fmt "\n", ##__VA_ARGS__); \
+    fprintf(stderr, "  at %s:%d in %s\n", __FILE__, __LINE__, __func__); \
+    cargs_collect_error(cargs, CARGS_ERROR_INTERNAL, "Internal error: " fmt, ##__VA_ARGS__); \
+    return CARGS_ERROR_INTERNAL; \
+} while (0)
 
 #endif /* CARGS_ERRORS_H */

@@ -39,8 +39,8 @@ int validate_group(cargs_t *cargs, cargs_option_t *option)
 
     context_set_group(cargs, option);
     if (option->flags & ~GROUP_FLAG_MASK) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_GROUP, "Invalid flags for group '%s'",
-                            option->name);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_GROUP, 
+            "Invalid group definition '%s'", option->name);
         status = CARGS_ERROR_INVALID_GROUP;
     }
 

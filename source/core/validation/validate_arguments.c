@@ -22,8 +22,8 @@ static int validate_basics(cargs_t *cargs, cargs_option_t *option)
     }
 
     if (option->handler == NULL) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, "Option '%s' must have a handler",
-                            option->name);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, 
+            "Option '%s' has no handler", option->name);
         status = CARGS_ERROR_INVALID_HANDLER;
     }
 
@@ -42,9 +42,8 @@ static int validate_default_value(cargs_t *cargs, cargs_option_t *option)
             valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
         }
         if (!valid_default) {
-            CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_DEFAULT,
-                                "Default value of option '%s' must be one of the available choices",
-                                option->name);
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_DEFAULT, 
+                "Default value for option '%s' must be one of the available choices", option->name);
             status = CARGS_ERROR_INVALID_DEFAULT;
         }
     }
@@ -130,8 +129,8 @@ int validate_positional(cargs_t *cargs, cargs_option_t *option)
     }
 
     if (option->handler == NULL) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER,
-                            "Positional option '%s' must have a handler", option->name);
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, 
+            "Positionnal '%s' has no handler", option->name);
         status = CARGS_ERROR_INVALID_HANDLER;
     }
 
@@ -150,10 +149,8 @@ int validate_positional(cargs_t *cargs, cargs_option_t *option)
             valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
         }
         if (!valid_default) {
-            CARGS_COLLECT_ERROR(
-                cargs, CARGS_ERROR_INVALID_DEFAULT,
-                "Default value of positional option '%s' must be one of the available choices",
-                option->name);
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_DEFAULT, 
+                "Default value for option '%s' must be one of the available choices", option->name);
             status = CARGS_ERROR_INVALID_DEFAULT;
         }
     }
