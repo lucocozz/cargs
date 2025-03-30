@@ -50,7 +50,7 @@ Defines a command-line option with all its properties and behavior.
 ```c
 typedef struct cargs_option_s {
     /* Base metadata */
-    option_type_t type;        // Type of option (flag, positional, etc.)
+    cargs_optype_t type;        // Type of option (flag, positional, etc.)
     const char *name;          // Internal name for references
     char sname;                // Short name (e.g., 'v' for -v)
     const char *lname;         // Long name (e.g., "verbose" for --verbose)
@@ -58,9 +58,9 @@ typedef struct cargs_option_s {
     const char *hint;          // Value hint for help display
     
     /* Value metadata */
-    value_type_t value_type;   // Type of value
-    value_t value;             // Current value
-    value_t default_value;     // Default value
+    cargs_valtype_t value_type;   // Type of value
+    cargs_value_t value;             // Current value
+    cargs_value_t default_value;     // Default value
     bool have_default;         // Whether a default is set
     /* Additional value fields... */
     
@@ -75,7 +75,7 @@ typedef struct cargs_option_s {
     const char **conflicts;    // Options that cannot be used with this one
     
     /* State */
-    option_flags_t flags;      // Option behavior flags
+    cargs_optflags_t flags;      // Option behavior flags
     bool is_set;               // Whether the option was set on command line
     
     /* Subcommand fields */
@@ -89,12 +89,12 @@ typedef struct cargs_option_s {
 
 ## Value Types
 
-### value_t
+### cargs_value_t
 
 A union type that can hold values of different types:
 
 ```c
-typedef union value_u {
+typedef union cargs_value_u {
     uintptr_t raw;          // Raw value as integer
     void     *as_ptr;       // Generic pointer
     
@@ -107,9 +107,9 @@ typedef union value_u {
     bool   as_bool;         // Boolean
     
     // Collection types
-    value_t      *as_array;  // Array of values
+    cargs_value_t      *as_array;  // Array of values
     cargs_pair_t *as_map;    // Key-value map
-} value_t;
+} cargs_value_t;
 ```
 
 ### cargs_pair_t
@@ -119,32 +119,32 @@ A key-value pair used in map collections:
 ```c
 typedef struct cargs_pair_s {
     const char *key;    // String key
-    value_t     value;  // Value of any supported type
+    cargs_value_t     value;  // Value of any supported type
 } cargs_pair_t;
 ```
 
 ## Enumerations
 
-### option_type_t
+### cargs_optype_t
 
 Defines the different types of command-line elements:
 
 ```c
-typedef enum option_type_e {
+typedef enum cargs_optype_e {
     TYPE_NONE = 0,        // Terminator for option arrays
     TYPE_OPTION,          // Standard option with - or -- prefix
     TYPE_GROUP,           // Logical grouping of options
     TYPE_POSITIONAL,      // Positional argument
     TYPE_SUBCOMMAND,      // Subcommand with its own options
-} option_type_t;
+} cargs_optype_t;
 ```
 
-### value_type_t
+### cargs_valtype_t
 
 Defines the types of values an option can hold:
 
 ```c
-typedef enum value_type_e {
+typedef enum cargs_valtype_e {
     VALUE_TYPE_NONE = 0,        // No value
     
     // Primitive types
@@ -166,15 +166,15 @@ typedef enum value_type_e {
     VALUE_TYPE_MAP_BOOL   = 1 << 11,   // Boolean map
     
     VALUE_TYPE_CUSTOM = 1 << 12,       // Custom type
-} value_type_t;
+} cargs_valtype_t;
 ```
 
-### option_flags_t
+### cargs_optflags_t
 
 Defines flags that modify option behavior:
 
 ```c
-typedef enum option_flags_e {
+typedef enum cargs_optflags_e {
     FLAG_NONE = 0,
     /* Option flags */
     FLAG_REQUIRED      = 1 << 0,  // Option must be specified
@@ -196,7 +196,7 @@ typedef enum option_flags_e {
     
     /* Group flags */
     FLAG_EXCLUSIVE = 1 << 14,     // Only one option in group can be set
-} option_flags_t;
+} cargs_optflags_t;
 ```
 
 ## Collection Iterators
@@ -207,10 +207,10 @@ Iterator for array collections:
 
 ```c
 typedef struct cargs_array_iterator_s {
-    value_t *_array;      // Internal array pointer
+    cargs_value_t *_array;      // Internal array pointer
     size_t   _count;      // Number of elements
     size_t   _position;   // Current position
-    value_t  value;       // Current value
+    cargs_value_t  value;       // Current value
 } cargs_array_it_t;
 ```
 
@@ -232,7 +232,7 @@ typedef struct cargs_map_iterator_s {
     size_t        _count;  // Number of elements
     size_t        _position; // Current position
     const char   *key;     // Current key
-    value_t       value;   // Current value
+    cargs_value_t       value;   // Current value
 } cargs_map_it_t;
 ```
 
@@ -271,7 +271,7 @@ Custom free handlers clean up resources allocated by a handler function.
 Validator function for checking option values:
 
 ```c
-typedef int (*cargs_validator_t)(cargs_t *, value_t, validator_data_t);
+typedef int (*cargs_validator_t)(cargs_t *, cargs_value_t, validator_data_t);
 ```
 
 Validators ensure values meet certain criteria after processing.

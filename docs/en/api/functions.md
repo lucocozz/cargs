@@ -90,7 +90,7 @@ cargs_free(&cargs);
 Retrieves the value of an option.
 
 ```c
-value_t cargs_get(cargs_t cargs, const char *option_path);
+cargs_value_t cargs_get(cargs_t cargs, const char *option_path);
 ```
 
 **Parameters:**
@@ -98,7 +98,7 @@ value_t cargs_get(cargs_t cargs, const char *option_path);
 - `option_path`: Path to the option (name or `subcommand.name` format)
 
 **Returns:**
-- The option's value as a `value_t` union, or `{.raw = 0}` if not found
+- The option's value as a `cargs_value_t` union, or `{.raw = 0}` if not found
 
 **Example:**
 ```c
@@ -157,7 +157,7 @@ printf("Tags: %zu\n", tags_count);
 Retrieves an element from an array option at the specified index.
 
 ```c
-value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
+cargs_value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
 ```
 
 **Parameters:**
@@ -178,7 +178,7 @@ const char *first_tag = cargs_array_get(cargs, "tags", 0).as_string;
 Retrieves a value from a map option with the specified key.
 
 ```c
-value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
+cargs_value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
 ```
 
 **Parameters:**

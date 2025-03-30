@@ -77,10 +77,10 @@ cargs prend en charge divers types de valeurs pour les options :
 | **Maps** | `VALUE_TYPE_MAP_STRING`<br>`VALUE_TYPE_MAP_INT`<br>`VALUE_TYPE_MAP_FLOAT`<br>`VALUE_TYPE_MAP_BOOL` | Paires clé-valeur |
 | **Personnalisés** | `VALUE_TYPE_CUSTOM` | Types définis par l'utilisateur |
 
-Les valeurs sont stockées dans une union `value_t` qui peut contenir différents types :
+Les valeurs sont stockées dans une union `cargs_value_t` qui peut contenir différents types :
 
 ```c
-union value_u {
+union cargs_value_u {
     uintptr_t raw;          // Valeur brute sous forme d'entier
     void     *as_ptr;       // Pointeur générique
     
@@ -91,7 +91,7 @@ union value_u {
     bool      as_bool;      // Booléen
     
     // Types de collection
-    value_t      *as_array;  // Tableau de valeurs
+    cargs_value_t      *as_array;  // Tableau de valeurs
     cargs_pair_t *as_map;    // Map de paires clé-valeur
 };
 ```

@@ -5,6 +5,6 @@
 int string_handler(cargs_t *cargs, cargs_option_t *option, char *value)
 {
     UNUSED(cargs);
-    option->value = (value_t){.as_string = value};
+    option->value = (cargs_value_t){.as_string = value};
     return (CARGS_SUCCESS);
 }

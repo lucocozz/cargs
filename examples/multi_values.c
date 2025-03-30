@@ -66,7 +66,7 @@ void process_arrays_direct(cargs_t cargs)
     // Handle array of strings
     if (cargs_is_set(cargs, "names"))
     {
-        value_t *names = cargs_get(cargs, "names").as_array;
+        cargs_value_t *names = cargs_get(cargs, "names").as_array;
         size_t count = cargs_count(cargs, "names");
         
         printf("Names array (%zu items):\n", count);
@@ -78,7 +78,7 @@ void process_arrays_direct(cargs_t cargs)
     // Handle array of integers
     if (cargs_is_set(cargs, "ids"))
     {
-        value_t *ids = cargs_get(cargs, "ids").as_array;
+        cargs_value_t *ids = cargs_get(cargs, "ids").as_array;
         size_t count = cargs_count(cargs, "ids");
         
         printf("ID numbers array (%zu items):\n", count);

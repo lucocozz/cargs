@@ -150,7 +150,7 @@ The most straightforward approach is direct access to the value arrays or maps:
 
 ```c
 // Get the entire array
-value_t *names_array = cargs_get(cargs, "names").as_array;
+cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
 size_t names_count = cargs_count(cargs, "names");
 
 // Access array elements directly
@@ -367,11 +367,11 @@ Behind the scenes, cargs implements collections using efficient data structures:
 
 ### Arrays
 
-Arrays are implemented as dynamic arrays of `value_t` elements:
+Arrays are implemented as dynamic arrays of `cargs_value_t` elements:
 
 ```c
 // Array storage in option
-option->value.as_array = malloc(option->value_capacity * sizeof(value_t));
+option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
 ```
 
 When an array needs to grow:
@@ -381,10 +381,10 @@ void adjust_array_size(cargs_option_t *option)
 {
     if (option->value.as_array == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_array = malloc(option->value_capacity * sizeof(value_t));
+        option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
-        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(value_t));
+        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(cargs_value_t));
         if (new == NULL) {
             option->value_capacity /= 2;
             return;
@@ -402,7 +402,7 @@ Maps are implemented as dynamic arrays of `cargs_pair_t` elements:
 typedef struct cargs_pair_s
 {
     const char *key;
-    value_t     value;
+    cargs_value_t     value;
 } cargs_pair_t;
 ```
 
@@ -426,10 +426,10 @@ Iterators are simple structures that maintain a reference to the collection and 
 ```c
 typedef struct cargs_array_iterator_s
 {
-    value_t *_array;    /* Pointer to the array */
+    cargs_value_t *_array;    /* Pointer to the array */
     size_t   _count;    /* Number of elements */
     size_t   _position; /* Current position */
-    value_t  value;     /* Current value */
+    cargs_value_t  value;     /* Current value */
 } cargs_array_it_t;
 
 typedef struct cargs_map_iterator_s
@@ -438,7 +438,7 @@ typedef struct cargs_map_iterator_s
     size_t        _count;    /* Number of elements */
     size_t        _position; /* Current position */
     const char   *key;       /* Current key */
-    value_t       value;     /* Current value */
+    cargs_value_t       value;     /* Current value */
 } cargs_map_it_t;
 ```
 

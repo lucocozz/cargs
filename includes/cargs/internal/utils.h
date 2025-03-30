@@ -70,11 +70,12 @@ void apply_map_flags(cargs_option_t *option);
 /**
  * Value manipulation functions
  */
-int     cmp_value(value_type_t type, value_t a, value_t b);
-value_t choices_to_value(value_type_t type, value_t choices, size_t choices_count, int index);
-void    free_option_value(cargs_option_t *option);
-void    print_value(FILE *stream, value_type_t type, value_t value);
-void    print_value_array(FILE *stream, value_type_t type, value_t *values, size_t count);
+int           cmp_value(cargs_valtype_t type, cargs_value_t a, cargs_value_t b);
+cargs_value_t choices_to_value(cargs_valtype_t type, cargs_value_t choices, size_t choices_count,
+                               int index);
+void          free_option_value(cargs_option_t *option);
+void          print_value(FILE *stream, cargs_valtype_t type, cargs_value_t value);
+void print_value_array(FILE *stream, cargs_valtype_t type, cargs_value_t *values, size_t count);
 
 /**
  * Option lookup functions

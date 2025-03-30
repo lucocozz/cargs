@@ -21,7 +21,7 @@ cargs prend en charge deux types de fonctions de validation personnalisées :
 Les validateurs vérifient la valeur **traitée** après que le gestionnaire l'a convertie en son type final :
 
 ```c
-int validator_function(cargs_t *cargs, value_t value, validator_data_t data);
+int validator_function(cargs_t *cargs, cargs_value_t value, validator_data_t data);
 ```
 
 Utilisez les validateurs lorsque vous devez valider en fonction du type de la valeur traitée (int, float, etc.).
@@ -46,7 +46,7 @@ Utilisez les pré-validateurs lorsque vous devez :
 Créons un validateur simple qui garantit qu'un entier est pair :
 
 ```c
-int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     UNUSED(data);  // Pas d'utilisation de données personnalisées dans cet exemple
     
@@ -112,7 +112,7 @@ typedef struct {
 Créez un validateur qui utilise cette structure :
 
 ```c
-int custom_number_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int custom_number_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     // Obtenir les contraintes des données du validateur
     number_constraints_t *constraints = (number_constraints_t *)data.custom;
@@ -157,7 +157,7 @@ Pour des configurations simples, vous pouvez utiliser des variables statiques :
 static size_t USERNAME_MIN_LENGTH = 3;
 static size_t USERNAME_MAX_LENGTH = 20;
 
-int username_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int username_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     UNUSED(data);
     const char *username = value.as_string;
@@ -199,10 +199,10 @@ typedef struct {
     const char *related_option;
 } option_relation_t;
 
-int greater_than_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int greater_than_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     option_relation_t *relation = (option_relation_t *)data.custom;
-    value_t other_value = cargs_get(*cargs, relation->related_option);
+    cargs_value_t other_value = cargs_get(*cargs, relation->related_option);
     
     if (value.as_int <= other_value.as_int) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
@@ -278,8 +278,8 @@ Chaque validateur doit se concentrer sur une préoccupation de validation :
 
 === "Bon : Validateurs ciblés"
     ```c
-    int is_even_validator(cargs_t *cargs, value_t value, validator_data_t data);
-    int in_range_validator(cargs_t *cargs, value_t value, validator_data_t data);
+    int is_even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
+    int in_range_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
     
     // Utiliser les deux validateurs ensemble
     OPTION_INT('n', "number", "Nombre", 
@@ -289,7 +289,7 @@ Chaque validateur doit se concentrer sur une préoccupation de validation :
 
 === "Mauvais : Validateur monolithique"
     ```c
-    int complex_validator(cargs_t *cargs, value_t value, validator_data_t data)
+    int complex_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
     {
         // Fait trop de choses dans une seule fonction
         // - Vérifie si la valeur est paire
@@ -320,7 +320,7 @@ Fournissez des messages d'erreur clairs et exploitables :
 Validez toujours les paramètres et gérez les cas limites :
 
 ```c
-int string_length_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int string_length_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     // Vérifier si la valeur est NULL
     if (value.as_string == NULL) {
@@ -337,7 +337,7 @@ int string_length_validator(cargs_t *cargs, value_t value, validator_data_t data
 Évitez les allocations excessives dans les validateurs :
 
 ```c
-int efficient_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int efficient_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     // Utiliser des tampons basés sur la pile pour les opérations temporaires
     char buffer[256];
@@ -354,7 +354,7 @@ Concevez des validateurs pour être réutilisables sur plusieurs options :
 
 ```c
 // Validateur générique pour vérifier si un nombre est divisible par n
-int divisible_by_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int divisible_by_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     int divisor = *(int *)data.custom;
     
@@ -386,7 +386,7 @@ Voici un exemple complet démontrant diverses techniques de validateurs personna
 #include <ctype.h>
 
 // Validateur personnalisé pour les adresses email
-int email_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int email_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     (void)data; // Paramètre non utilisé
     
@@ -414,7 +414,7 @@ int email_validator(cargs_t *cargs, value_t value, validator_data_t data)
 }
 
 // Validateur personnalisé pour les nombres pairs
-int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     (void)data; // Paramètre non utilisé
     

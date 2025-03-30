@@ -108,7 +108,7 @@ bool cargs_is_set(cargs_t cargs, const char *option_path);
  *
  * @return Value of the option, or {0} if not found
  */
-value_t cargs_get(cargs_t cargs, const char *option_path);
+cargs_value_t cargs_get(cargs_t cargs, const char *option_path);
 
 /**
  * cargs_count - Get the number of values for an option
@@ -148,7 +148,7 @@ int cargs_exec(cargs_t *cargs, void *data);
  *
  * @return Value of the element at the specified index, or {0} if not found or index out of bounds
  */
-value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
+cargs_value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
 
 /**
  * cargs_map_get - Get a value from a map option with the specified key
@@ -159,7 +159,7 @@ value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
  *
  * @return Value associated with the key, or {0} if not found
  */
-value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
+cargs_value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
 
 /**
  * cargs_array_it - Create an iterator for efficiently traversing an array option

@@ -18,8 +18,8 @@
 
 static int compare_int_values(const void *a, const void *b)
 {
-    const value_t *va = (const value_t *)a;
-    const value_t *vb = (const value_t *)b;
+    const cargs_value_t *va = (const cargs_value_t *)a;
+    const cargs_value_t *vb = (const cargs_value_t *)b;
 
     if (va->as_int < vb->as_int)
         return -1;
@@ -30,8 +30,8 @@ static int compare_int_values(const void *a, const void *b)
 
 static int compare_string_values(const void *a, const void *b)
 {
-    const value_t *va = (const value_t *)a;
-    const value_t *vb = (const value_t *)b;
+    const cargs_value_t *va = (const cargs_value_t *)a;
+    const cargs_value_t *vb = (const cargs_value_t *)b;
 
     if (!va->as_string)
         return -1;
@@ -43,8 +43,8 @@ static int compare_string_values(const void *a, const void *b)
 
 static int compare_float_values(const void *a, const void *b)
 {
-    const value_t *va = (const value_t *)a;
-    const value_t *vb = (const value_t *)b;
+    const cargs_value_t *va = (const cargs_value_t *)a;
+    const cargs_value_t *vb = (const cargs_value_t *)b;
 
     if (va->as_float < vb->as_float)
         return -1;
@@ -115,32 +115,32 @@ static int compare_map_bool_values(const void *a, const void *b)
  * Array sorting implementations
  */
 
-void sort_int_array(value_t *array, size_t count)
+void sort_int_array(cargs_value_t *array, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(array, count, sizeof(value_t), compare_int_values);
+    qsort(array, count, sizeof(cargs_value_t), compare_int_values);
 }
 
-void sort_string_array(value_t *array, size_t count)
+void sort_string_array(cargs_value_t *array, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(array, count, sizeof(value_t), compare_string_values);
+    qsort(array, count, sizeof(cargs_value_t), compare_string_values);
 }
 
-void sort_float_array(value_t *array, size_t count)
+void sort_float_array(cargs_value_t *array, size_t count)
 {
     if (count <= 1)
         return;
-    qsort(array, count, sizeof(value_t), compare_float_values);
+    qsort(array, count, sizeof(cargs_value_t), compare_float_values);
 }
 
 /*
  * Array uniqueness implementations
  */
 
-size_t make_int_array_unique(value_t *array, size_t count)
+size_t make_int_array_unique(cargs_value_t *array, size_t count)
 {
     if (count <= 1)
         return count;
@@ -164,7 +164,7 @@ size_t make_int_array_unique(value_t *array, size_t count)
     return unique_count;
 }
 
-size_t make_string_array_unique(value_t *array, size_t count)
+size_t make_string_array_unique(cargs_value_t *array, size_t count)
 {
     if (count <= 1)
         return count;
@@ -191,7 +191,7 @@ size_t make_string_array_unique(value_t *array, size_t count)
     return unique_count;
 }
 
-size_t make_float_array_unique(value_t *array, size_t count)
+size_t make_float_array_unique(cargs_value_t *array, size_t count)
 {
     if (count <= 1)
         return count;
@@ -260,7 +260,7 @@ void sort_map_by_bool_values(cargs_pair_t *map, size_t count)
  * Map uniqueness implementation
  */
 
-size_t make_map_values_unique(cargs_pair_t *map, size_t count, value_type_t type)
+size_t make_map_values_unique(cargs_pair_t *map, size_t count, cargs_valtype_t type)
 {
     if (count <= 1)
         return count;
@@ -441,10 +441,10 @@ void adjust_array_size(cargs_option_t *option)
 {
     if (option->value.as_array == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_array = malloc(option->value_capacity * sizeof(value_t));
+        option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
-        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(value_t));
+        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(cargs_value_t));
         if (new == NULL) {
             option->value_capacity /= 2;
             return;

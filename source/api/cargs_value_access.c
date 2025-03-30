@@ -3,11 +3,11 @@
 #include <stddef.h>
 #include <string.h>
 
-value_t cargs_get(cargs_t cargs, const char *option_path)
+cargs_value_t cargs_get(cargs_t cargs, const char *option_path)
 {
     cargs_option_t *option = find_option_by_active_path(cargs, option_path);
     if (option == NULL)
-        return ((value_t){.raw = 0});
+        return ((cargs_value_t){.raw = 0});
     return (option->value);
 }
 
@@ -27,35 +27,35 @@ size_t cargs_count(cargs_t cargs, const char *option_path)
     return (option->value_count);
 }
 
-value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index)
+cargs_value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index)
 {
     cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 
     if (option == NULL)
-        return ((value_t){.raw = 0});
+        return ((cargs_value_t){.raw = 0});
 
     // Check if the option is an array type
     if (!(option->value_type & VALUE_TYPE_ARRAY))
-        return ((value_t){.raw = 0});
+        return ((cargs_value_t){.raw = 0});
 
     // Check if the index is valid
     if (index >= option->value_count)
-        return ((value_t){.raw = 0});
+        return ((cargs_value_t){.raw = 0});
 
     // Return the element at the specified index
     return option->value.as_array[index];
 }
 
-value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key)
+cargs_value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key)
 {
     cargs_option_t *option = find_option_by_active_path(cargs, option_path);
 
     if (option == NULL)
-        return ((value_t){.raw = 0});
+        return ((cargs_value_t){.raw = 0});
 
     // Check if the option is a map type
     if (!(option->value_type & VALUE_TYPE_MAP))
-        return ((value_t){.raw = 0});
+        return ((cargs_value_t){.raw = 0});
 
     // Look for the key in the map
     for (size_t i = 0; i < option->value_count; ++i) {
@@ -65,7 +65,7 @@ value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key)
     }
 
     // Key not found
-    return ((value_t){.raw = 0});
+    return ((cargs_value_t){.raw = 0});
 }
 
 cargs_array_it_t cargs_array_it(cargs_t cargs, const char *option_path)

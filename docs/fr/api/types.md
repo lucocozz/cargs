@@ -50,7 +50,7 @@ Définit une option de ligne de commande avec toutes ses propriétés et son com
 ```c
 typedef struct cargs_option_s {
     /* Métadonnées de base */
-    option_type_t type;        // Type d'option (drapeau, positionnel, etc.)
+    cargs_optype_t type;        // Type d'option (drapeau, positionnel, etc.)
     const char *name;          // Nom interne pour les références
     char sname;                // Nom court (ex., 'v' pour -v)
     const char *lname;         // Nom long (ex., "verbose" pour --verbose)
@@ -58,9 +58,9 @@ typedef struct cargs_option_s {
     const char *hint;          // Indice de valeur pour l'affichage d'aide
     
     /* Métadonnées de valeur */
-    value_type_t value_type;   // Type de valeur
-    value_t value;             // Valeur actuelle
-    value_t default_value;     // Valeur par défaut
+    cargs_valtype_t value_type;   // Type de valeur
+    cargs_value_t value;             // Valeur actuelle
+    cargs_value_t default_value;     // Valeur par défaut
     bool have_default;         // Si une valeur par défaut est définie
     /* Champs de valeur supplémentaires... */
     
@@ -75,7 +75,7 @@ typedef struct cargs_option_s {
     const char **conflicts;    // Options qui ne peuvent pas être utilisées avec celle-ci
     
     /* État */
-    option_flags_t flags;      // Drapeaux de comportement d'option
+    cargs_optflags_t flags;      // Drapeaux de comportement d'option
     bool is_set;               // Si l'option a été définie en ligne de commande
     
     /* Champs de sous-commande */
@@ -89,12 +89,12 @@ typedef struct cargs_option_s {
 
 ## Types de valeurs
 
-### value_t
+### cargs_value_t
 
 Un type union qui peut contenir des valeurs de différents types :
 
 ```c
-typedef union value_u {
+typedef union cargs_value_u {
     uintptr_t raw;          // Valeur brute en entier
     void     *as_ptr;       // Pointeur générique
     
@@ -107,9 +107,9 @@ typedef union value_u {
     bool   as_bool;         // Booléen
     
     // Types de collection
-    value_t      *as_array;  // Tableau de valeurs
+    cargs_value_t      *as_array;  // Tableau de valeurs
     cargs_pair_t *as_map;    // Map clé-valeur
-} value_t;
+} cargs_value_t;
 ```
 
 ### cargs_pair_t
@@ -119,32 +119,32 @@ Une paire clé-valeur utilisée dans les collections de type map :
 ```c
 typedef struct cargs_pair_s {
     const char *key;    // Clé chaîne
-    value_t     value;  // Valeur de n'importe quel type supporté
+    cargs_value_t     value;  // Valeur de n'importe quel type supporté
 } cargs_pair_t;
 ```
 
 ## Énumérations
 
-### option_type_t
+### cargs_optype_t
 
 Définit les différents types d'éléments de ligne de commande :
 
 ```c
-typedef enum option_type_e {
+typedef enum cargs_optype_e {
     TYPE_NONE = 0,        // Terminateur pour les tableaux d'options
     TYPE_OPTION,          // Option standard avec préfixe - ou --
     TYPE_GROUP,           // Groupement logique d'options
     TYPE_POSITIONAL,      // Argument positionnel
     TYPE_SUBCOMMAND,      // Sous-commande avec ses propres options
-} option_type_t;
+} cargs_optype_t;
 ```
 
-### value_type_t
+### cargs_valtype_t
 
 Définit les types de valeurs qu'une option peut contenir :
 
 ```c
-typedef enum value_type_e {
+typedef enum cargs_valtype_e {
     VALUE_TYPE_NONE = 0,        // Pas de valeur
     
     // Types primitifs
@@ -166,15 +166,15 @@ typedef enum value_type_e {
     VALUE_TYPE_MAP_BOOL   = 1 << 11,   // Map de booléens
     
     VALUE_TYPE_CUSTOM = 1 << 12,       // Type personnalisé
-} value_type_t;
+} cargs_valtype_t;
 ```
 
-### option_flags_t
+### cargs_optflags_t
 
 Définit des drapeaux qui modifient le comportement des options :
 
 ```c
-typedef enum option_flags_e {
+typedef enum cargs_optflags_e {
     FLAG_NONE = 0,
     /* Drapeaux d'option */
     FLAG_REQUIRED      = 1 << 0,  // L'option doit être spécifiée
@@ -196,7 +196,7 @@ typedef enum option_flags_e {
     
     /* Drapeaux de groupe */
     FLAG_EXCLUSIVE = 1 << 14,     // Une seule option du groupe peut être définie
-} option_flags_t;
+} cargs_optflags_t;
 ```
 
 ## Itérateurs de collections
@@ -207,10 +207,10 @@ Itérateur pour les collections de type tableau :
 
 ```c
 typedef struct cargs_array_iterator_s {
-    value_t *_array;      // Pointeur interne du tableau
+    cargs_value_t *_array;      // Pointeur interne du tableau
     size_t   _count;      // Nombre d'éléments
     size_t   _position;   // Position actuelle
-    value_t  value;       // Valeur actuelle
+    cargs_value_t  value;       // Valeur actuelle
 } cargs_array_it_t;
 ```
 
@@ -232,7 +232,7 @@ typedef struct cargs_map_iterator_s {
     size_t        _count;  // Nombre d'éléments
     size_t        _position; // Position actuelle
     const char   *key;     // Clé actuelle
-    value_t       value;   // Valeur actuelle
+    cargs_value_t       value;   // Valeur actuelle
 } cargs_map_it_t;
 ```
 
@@ -271,7 +271,7 @@ Les gestionnaires de libération personnalisés nettoient les ressources alloué
 Fonction validateur pour vérifier les valeurs d'options :
 
 ```c
-typedef int (*cargs_validator_t)(cargs_t *, value_t, validator_data_t);
+typedef int (*cargs_validator_t)(cargs_t *, cargs_value_t, validator_data_t);
 ```
 
 Les validateurs s'assurent que les valeurs répondent à certains critères après traitement.

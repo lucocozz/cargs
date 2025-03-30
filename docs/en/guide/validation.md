@@ -93,7 +93,7 @@ For more complex validation logic, you can create your own validators:
 
 === "Simple Validator"
     ```c
-    int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+    int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
     {
         if (value.as_int % 2 != 0) {
             CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
