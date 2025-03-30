@@ -85,7 +85,7 @@ If you prefer not to install the library system-wide, you can:
 3. Copy the `includes/` directory to your project
 4. Link against the static library:
    ```bash
-   gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs -lpcre2-8
+   gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
    ```
 
 ### 🧩 As a Dependency in a Meson Project
