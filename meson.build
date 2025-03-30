@@ -1,6 +1,6 @@
 project(
     'cargs', 'c',
-    version: '0.1.0',
+    version: '1.1.0',
     license: 'MIT',
     default_options: [
         'warning_level=3',
@@ -11,7 +11,6 @@ project(
     meson_version: '>=1.0.0',
 )
 
-# Compiler configuration based on type (Meson ≥ 1.0.0 compatible)
 cc = meson.get_compiler('c')
 if cc.get_id() == 'clang'
     add_project_arguments('-Wno-gnu-zero-variadic-macro-arguments', language: 'c')
