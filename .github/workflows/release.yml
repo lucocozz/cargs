@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build-package:
     runs-on: ubuntu-latest
@@ -28,11 +31,12 @@ jobs:
       
       - name: Create package with installer
         run: |
-          mkdir -p cargs-${{ env.VERSION }}/{include,lib}
+          mkdir -p cargs-${{ env.VERSION }}/include
+          mkdir -p cargs-${{ env.VERSION }}/lib
 
           cp -r includes/* cargs-${{ env.VERSION }}/include/
           cp .build/libcargs.a cargs-${{ env.VERSION }}/lib/
-          cp .build/libcargs.so* cargs-${{ env.VERSION }}/lib/
+          cp .build/libcargs.so.${{ env.VERSION }} cargs-${{ env.VERSION }}/lib/
 
           cp packaging/installers/install.sh cargs-${{ env.VERSION }}/
           chmod +x cargs-${{ env.VERSION }}/install.sh
@@ -41,67 +45,11 @@ jobs:
 
           tar -czf cargs-${{ env.VERSION }}.tar.gz cargs-${{ env.VERSION }}
           zip -r cargs-${{ env.VERSION }}.zip cargs-${{ env.VERSION }}
-
-      - name: Upload tar.gz to GitHub Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./cargs-${{ env.VERSION }}.tar.gz
-          asset_name: cargs-${{ env.VERSION }}.tar.gz
-          asset_content_type: application/gzip
       
-      - name: Upload zip to GitHub Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./cargs-${{ env.VERSION }}.zip
-          asset_name: cargs-${{ env.VERSION }}.zip
-          asset_content_type: application/zip
-
-
-
-
-		#   release:
-		# 	name: Release
-		# 	if: startsWith(github.ref, 'refs/tags/v')
-		# 	needs: [build, test]
-		# 	runs-on: ubuntu-latest
-		# 	permissions:
-		# 	  contents: write
-			
-		# 	steps:
-		# 	  - uses: actions/checkout@v3
-		# 		with:
-		# 		  fetch-depth: 0
-			  
-		# 	  - name: Install dependencies
-		# 		run: |
-		# 		  sudo apt-get update
-		# 		  sudo apt-get install -y meson ninja-build libpcre2-dev
-			  
-		# 	  - name: Build release
-		# 		run: |
-		# 		  meson setup -Dbuildtype=release .build
-		# 		  meson compile -C .build
-			  
-		# 	  - name: Create release archive
-		# 		run: |
-		# 		  mkdir -p release/include release/lib
-		# 		  cp -r includes/cargs* release/include/
-		# 		  cp includes/cargs.h release/include/
-		# 		  cp .build/libcargs.a release/lib/
-		# 		  cp .build/libcargs.so release/lib/
-		# 		  tar -czf cargs-${{ github.ref_name }}.tar.gz release/
-			  
-		# 	  - name: Create GitHub Release
-		# 		uses: softprops/action-gh-release@v1
-		# 		with:
-		# 		  files: cargs-${{ github.ref_name }}.tar.gz
-		# 		  draft: false
-		# 		  prerelease: false
-		# 		  generate_release_notes: true
-		
+          files: |
+            cargs-${{ env.VERSION }}.tar.gz
+            cargs-${{ env.VERSION }}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
