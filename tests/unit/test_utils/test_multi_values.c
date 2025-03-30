@@ -6,15 +6,15 @@
 #include <string.h>
 
 // Declare functions from source/utils/multi_values.c
-extern void sort_int_array(value_t *array, size_t count);
-extern void sort_string_array(value_t *array, size_t count);
-extern size_t make_int_array_unique(value_t *array, size_t count);
+extern void sort_int_array(cargs_value_t *array, size_t count);
+extern void sort_string_array(cargs_value_t *array, size_t count);
+extern size_t make_int_array_unique(cargs_value_t *array, size_t count);
 extern void sort_map_by_keys(cargs_pair_t *map, size_t count);
 extern void apply_array_flags(cargs_option_t *option);
 extern void apply_map_flags(cargs_option_t *option);
 
 // Setup function for array tests
-void setup_array_option(cargs_option_t *option, value_type_t type)
+void setup_array_option(cargs_option_t *option, cargs_valtype_t type)
 {
     memset(option, 0, sizeof(cargs_option_t));
     option->value_type = type;
@@ -24,7 +24,7 @@ void setup_array_option(cargs_option_t *option, value_type_t type)
 }
 
 // Setup function for map tests
-void setup_map_option(cargs_option_t *option, value_type_t type)
+void setup_map_option(cargs_option_t *option, cargs_valtype_t type)
 {
     memset(option, 0, sizeof(cargs_option_t));
     option->value_type = type;
@@ -78,7 +78,7 @@ Test(multi_values, adjust_map_size)
 Test(multi_values, sort_int_array)
 {
     // Create an unsorted array
-    value_t array[5] = {
+    cargs_value_t array[5] = {
         {.as_int = 42},
         {.as_int = 10},
         {.as_int = 30},
@@ -100,7 +100,7 @@ Test(multi_values, sort_int_array)
 Test(multi_values, sort_string_array)
 {
     // Create an unsorted array
-    value_t array[4] = {
+    cargs_value_t array[4] = {
         {.as_string = "delta"},
         {.as_string = "alpha"},
         {.as_string = "charlie"},
@@ -120,7 +120,7 @@ Test(multi_values, sort_string_array)
 Test(multi_values, make_int_array_unique)
 {
     // Create an array with duplicates
-    value_t array[6] = {
+    cargs_value_t array[6] = {
         {.as_int = 10},
         {.as_int = 20},
         {.as_int = 10},  // Duplicate
@@ -147,7 +147,7 @@ Test(multi_values, apply_array_flags)
     
     // Allocate array with duplicates and unsorted values
     option.value_capacity = 6;
-    option.value.as_array = malloc(option.value_capacity * sizeof(value_t));
+    option.value.as_array = malloc(option.value_capacity * sizeof(cargs_value_t));
     
     option.value.as_array[0].as_int = 30;
     option.value.as_array[1].as_int = 10;
@@ -171,7 +171,7 @@ Test(multi_values, apply_array_flags)
     
     // Reset array
     free(option.value.as_array);
-    option.value.as_array = malloc(option.value_capacity * sizeof(value_t));
+    option.value.as_array = malloc(option.value_capacity * sizeof(cargs_value_t));
     
     option.value.as_array[0].as_int = 30;
     option.value.as_array[1].as_int = 10;
@@ -194,7 +194,7 @@ Test(multi_values, apply_array_flags)
     
     // Reset array
     free(option.value.as_array);
-    option.value.as_array = malloc(option.value_capacity * sizeof(value_t));
+    option.value.as_array = malloc(option.value_capacity * sizeof(cargs_value_t));
     
     option.value.as_array[0].as_int = 30;
     option.value.as_array[1].as_int = 10;

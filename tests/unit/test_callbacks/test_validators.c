@@ -5,7 +5,7 @@
 #include "cargs/internal/callbacks/validators.h"
 
 // Forward declarations of validators to test
-int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
+int range_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
 int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 
 // Mock cargs context for testing
@@ -24,9 +24,9 @@ Test(validators, range_validator_valid, .init = setup)
     validator_data_t data = {.range = {.min = 1, .max = 100}};
     
     // Valid cases
-    value_t val1 = {.as_int = 1};
-    value_t val2 = {.as_int = 50};
-    value_t val3 = {.as_int = 100};
+    cargs_value_t val1 = {.as_int = 1};
+    cargs_value_t val2 = {.as_int = 50};
+    cargs_value_t val3 = {.as_int = 100};
     
     cr_assert_eq(range_validator(&test_cargs, val1, data), CARGS_SUCCESS, "Min value should be valid");
     cr_assert_eq(range_validator(&test_cargs, val2, data), CARGS_SUCCESS, "Middle value should be valid");
@@ -40,8 +40,8 @@ Test(validators, range_validator_invalid, .init = setup)
     validator_data_t data = {.range = {.min = 1, .max = 100}};
     
     // Invalid cases
-    value_t val1 = {.as_int = 0};    // Below min
-    value_t val2 = {.as_int = 101};  // Above max
+    cargs_value_t val1 = {.as_int = 0};    // Below min
+    cargs_value_t val2 = {.as_int = 101};  // Above max
     
     cr_assert_neq(range_validator(&test_cargs, val1, data), CARGS_SUCCESS, "Value below min should fail");
     cr_assert_eq(test_cargs.error_stack.count, 1, "Error should be reported for value below min");
@@ -59,12 +59,12 @@ Test(validators, range_validator_equal_bounds, .init = setup)
     validator_data_t data = {.range = {.min = 42, .max = 42}};
     
     // Valid case - matching the only valid value
-    value_t val1 = {.as_int = 42};
+    cargs_value_t val1 = {.as_int = 42};
     cr_assert_eq(range_validator(&test_cargs, val1, data), CARGS_SUCCESS, "Equal bounds value should be valid");
     
     // Invalid cases
-    value_t val2 = {.as_int = 41};
-    value_t val3 = {.as_int = 43};
+    cargs_value_t val2 = {.as_int = 41};
+    cargs_value_t val3 = {.as_int = 43};
     
     cr_assert_neq(range_validator(&test_cargs, val2, data), CARGS_SUCCESS, "Value below equal bounds should fail");
     test_cargs.error_stack.count = 0;
@@ -78,17 +78,17 @@ Test(validators, range_validator_negative_values, .init = setup)
     validator_data_t data = {.range = {.min = -100, .max = -1}};
     
     // Valid cases
-    value_t val1 = {.as_int = -100};
-    value_t val2 = {.as_int = -50};
-    value_t val3 = {.as_int = -1};
+    cargs_value_t val1 = {.as_int = -100};
+    cargs_value_t val2 = {.as_int = -50};
+    cargs_value_t val3 = {.as_int = -1};
     
     cr_assert_eq(range_validator(&test_cargs, val1, data), CARGS_SUCCESS, "Negative min should be valid");
     cr_assert_eq(range_validator(&test_cargs, val2, data), CARGS_SUCCESS, "Middle negative value should be valid");
     cr_assert_eq(range_validator(&test_cargs, val3, data), CARGS_SUCCESS, "Negative max should be valid");
     
     // Invalid cases
-    value_t val4 = {.as_int = -101};
-    value_t val5 = {.as_int = 0};
+    cargs_value_t val4 = {.as_int = -101};
+    cargs_value_t val5 = {.as_int = 0};
     
     cr_assert_neq(range_validator(&test_cargs, val4, data), CARGS_SUCCESS, "Value below negative min should fail");
     test_cargs.error_stack.count = 0;

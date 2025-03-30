@@ -161,7 +161,7 @@ if (cargs_is_set(cargs, "names")) {
     size_t count = cargs_count(cargs, "names");
     
     // Get the array pointer
-    value_t *names_array = cargs_get(cargs, "names").as_array;
+    cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
     
     // Print all names
     printf("Names (%zu):\n", count);
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
     // Process string array
     if (cargs_is_set(cargs, "name")) {
         size_t count = cargs_count(cargs, "name");
-        value_t *names = cargs_get(cargs, "name").as_array;
+        cargs_value_t *names = cargs_get(cargs, "name").as_array;
         
         printf("Names (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -294,7 +294,7 @@ int main(int argc, char **argv)
     // Process integer array
     if (cargs_is_set(cargs, "id")) {
         size_t count = cargs_count(cargs, "id");
-        value_t *ids = cargs_get(cargs, "id").as_array;
+        cargs_value_t *ids = cargs_get(cargs, "id").as_array;
         
         printf("IDs (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {

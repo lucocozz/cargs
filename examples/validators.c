@@ -11,7 +11,7 @@
 #include <ctype.h>
 
 // Custom validator for email addresses
-int email_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int email_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     (void)data; // Unused parameter
     
@@ -39,7 +39,7 @@ int email_validator(cargs_t *cargs, value_t value, validator_data_t data)
 }
 
 // Custom validator for even numbers
-int even_validator(cargs_t *cargs, value_t value, validator_data_t data)
+int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 {
     (void)data; // Unused parameter
     

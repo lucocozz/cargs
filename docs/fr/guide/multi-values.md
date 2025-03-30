@@ -161,7 +161,7 @@ if (cargs_is_set(cargs, "names")) {
     size_t count = cargs_count(cargs, "names");
     
     // Obtenir le pointeur du tableau
-    value_t *names_array = cargs_get(cargs, "names").as_array;
+    cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
     
     // Afficher tous les noms
     printf("Noms (%zu) :\n", count);
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
     // Traiter le tableau de chaînes
     if (cargs_is_set(cargs, "name")) {
         size_t count = cargs_count(cargs, "name");
-        value_t *names = cargs_get(cargs, "name").as_array;
+        cargs_value_t *names = cargs_get(cargs, "name").as_array;
         
         printf("Noms (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -294,7 +294,7 @@ int main(int argc, char **argv)
     // Traiter le tableau d'entiers
     if (cargs_is_set(cargs, "id")) {
         size_t count = cargs_count(cargs, "id");
-        value_t *ids = cargs_get(cargs, "id").as_array;
+        cargs_value_t *ids = cargs_get(cargs, "id").as_array;
         
         printf("Identifiants (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {

@@ -9,7 +9,7 @@ static int validate_choices(cargs_t *cargs, cargs_option_t *option)
     if (option->choices_count > 0) {
         bool valid_choices = false;
         for (size_t i = 0; i < option->choices_count && !valid_choices; ++i) {
-            value_t choice =
+            cargs_value_t choice =
                 choices_to_value(option->value_type, option->choices, option->choices_count, i);
             valid_choices = (cmp_value(option->value_type, option->value, choice) == 0);
         }

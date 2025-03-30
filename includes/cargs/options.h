@@ -37,7 +37,7 @@ int free_map_int_handler(cargs_option_t *option);
 int free_map_float_handler(cargs_option_t *option);
 int free_map_bool_handler(cargs_option_t *option);
 
-int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
+int range_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
 int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 
 /*
@@ -49,8 +49,8 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
  * Optional option fields macros
  */
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
-#define DEFAULT(val)            .value = (value_t){ .raw = (uintptr_t)(val) }, \
-                                .default_value = (value_t){ .raw = (uintptr_t)(val) }, \
+#define DEFAULT(val)            .value = (cargs_value_t){ .raw = (uintptr_t)(val) }, \
+                                .default_value = (cargs_value_t){ .raw = (uintptr_t)(val) }, \
                                 .is_set = true, \
                                 .have_default = true
 #define HANDLER(fn)             .handler = (cargs_handler_t)(fn)
@@ -87,15 +87,15 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
  * Choice macros for different types
  */
 #define CHOICES_INT(...) \
-    .choices = (value_t){ .as_array_int = (long long[]){ __VA_ARGS__ } }, \
+    .choices = (cargs_value_t){ .as_array_int = (long long[]){ __VA_ARGS__ } }, \
     .choices_count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long)
 
 #define CHOICES_STRING(...) \
-    .choices = (value_t){ .as_array_string = (char*[]){ __VA_ARGS__ } }, \
+    .choices = (cargs_value_t){ .as_array_string = (char*[]){ __VA_ARGS__ } }, \
     .choices_count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*)
 
 #define CHOICES_FLOAT(...) \
-    .choices = (value_t){ .as_float_array = (double[]){ __VA_ARGS__ } }, \
+    .choices = (cargs_value_t){ .as_float_array = (double[]){ __VA_ARGS__ } }, \
     .choices_count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double)
 
 /*

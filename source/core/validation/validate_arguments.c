@@ -37,7 +37,7 @@ static int validate_default_value(cargs_t *cargs, cargs_option_t *option)
     if (option->choices_count > 0 && option->have_default) {
         bool valid_default = false;
         for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
-            value_t choice =
+            cargs_value_t choice =
                 choices_to_value(option->value_type, option->choices, option->choices_count, i);
             valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
         }
@@ -145,7 +145,7 @@ int validate_positional(cargs_t *cargs, cargs_option_t *option)
     if (option->choices_count > 0 && option->have_default) {
         bool valid_default = false;
         for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
-            value_t choice =
+            cargs_value_t choice =
                 choices_to_value(option->value_type, option->choices, option->choices_count, i);
             valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
         }

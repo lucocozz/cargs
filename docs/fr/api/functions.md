@@ -90,7 +90,7 @@ cargs_free(&cargs);
 Récupère la valeur d'une option.
 
 ```c
-value_t cargs_get(cargs_t cargs, const char *option_path);
+cargs_value_t cargs_get(cargs_t cargs, const char *option_path);
 ```
 
 **Paramètres :**
@@ -98,7 +98,7 @@ value_t cargs_get(cargs_t cargs, const char *option_path);
 - `option_path` : Chemin vers l'option (format nom ou `sous-commande.nom`)
 
 **Retourne :**
-- La valeur de l'option sous forme d'union `value_t`, ou `{.raw = 0}` si non trouvée
+- La valeur de l'option sous forme d'union `cargs_value_t`, ou `{.raw = 0}` si non trouvée
 
 **Exemple :**
 ```c
@@ -157,7 +157,7 @@ printf("Tags : %zu\n", tags_count);
 Récupère un élément d'une option de tableau à l'indice spécifié.
 
 ```c
-value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
+cargs_value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
 ```
 
 **Paramètres :**
@@ -178,7 +178,7 @@ const char *first_tag = cargs_array_get(cargs, "tags", 0).as_string;
 Récupère une valeur d'une option de mapping avec la clé spécifiée.
 
 ```c
-value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
+cargs_value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
 ```
 
 **Paramètres :**

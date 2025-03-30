@@ -21,7 +21,7 @@
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int range_validator(cargs_t *cargs, value_t value, validator_data_t data);
+int range_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
 
 /**
  * regex_validator - Validate that a string value matches a regex pattern

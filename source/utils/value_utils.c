@@ -16,9 +16,10 @@ void free_option_value(cargs_option_t *option)
     }
 }
 
-value_t choices_to_value(value_type_t type, value_t choices, int choices_count, int index)
+cargs_value_t choices_to_value(cargs_valtype_t type, cargs_value_t choices, int choices_count,
+                               int index)
 {
-    value_t value = {0};
+    cargs_value_t value = {0};
 
     if (index < 0 || index >= choices_count)
         return value;
@@ -39,7 +40,7 @@ value_t choices_to_value(value_type_t type, value_t choices, int choices_count, 
     return (value);
 }
 
-int cmp_value(value_type_t type, const value_t a, const value_t b)
+int cmp_value(cargs_valtype_t type, const cargs_value_t a, const cargs_value_t b)
 {
     if (a.raw == b.raw)
         return 0;
@@ -68,7 +69,7 @@ int cmp_value(value_type_t type, const value_t a, const value_t b)
     }
 }
 
-void print_value(FILE *stream, value_type_t type, value_t value)
+void print_value(FILE *stream, cargs_valtype_t type, cargs_value_t value)
 {
     switch (type) {
         case VALUE_TYPE_FLAG:
@@ -91,7 +92,7 @@ void print_value(FILE *stream, value_type_t type, value_t value)
     }
 }
 
-void print_value_array(FILE *stream, value_type_t type, value_t *values, size_t count)
+void print_value_array(FILE *stream, cargs_valtype_t type, cargs_value_t *values, size_t count)
 {
     fprintf(stream, "[");
     for (size_t i = 0; i < count; ++i) {

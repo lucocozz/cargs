@@ -20,14 +20,14 @@
 /* Forward declarations */
 typedef struct cargs_s         cargs_t;
 typedef struct cargs_option_s  cargs_option_t;
-typedef union value_u          value_t;
+typedef union cargs_value_u    cargs_value_t;
 typedef struct cargs_pair_s    cargs_pair_t;
 typedef union validator_data_u validator_data_t;
 
 /**
- * value_type_t - Types of values an option can hold
+ * cargs_valtype_t - Types of values an option can hold
  */
-typedef enum value_type_e
+typedef enum cargs_valtype_e
 {
     VALUE_TYPE_NONE = 0,
 
@@ -47,7 +47,7 @@ typedef enum value_type_e
     VALUE_TYPE_MAP_BOOL   = 1 << 11,
 
     VALUE_TYPE_CUSTOM = 1 << 12,
-} value_type_t;
+} cargs_valtype_t;
 
 #define VALUE_TYPE_ANY_BOOL (VALUE_TYPE_BOOL | VALUE_TYPE_FLAG)
 #define VALUE_TYPE_PRIMITIVE                                                                       \
@@ -57,21 +57,21 @@ typedef enum value_type_e
     (VALUE_TYPE_MAP_STRING | VALUE_TYPE_MAP_INT | VALUE_TYPE_MAP_FLOAT | VALUE_TYPE_MAP_BOOL)
 
 /**
- * option_type_t - Types of command line elements
+ * cargs_optype_t - Types of command line elements
  */
-typedef enum option_type_e
+typedef enum cargs_optype_e
 {
     TYPE_NONE = 0,
     TYPE_OPTION,     /* Standard option with - or -- prefix */
     TYPE_GROUP,      /* Logical grouping of options */
     TYPE_POSITIONAL, /* Positional argument */
     TYPE_SUBCOMMAND, /* Subcommand with its own options */
-} option_type_t;
+} cargs_optype_t;
 
 /**
- * option_flags_t - Flags that modify option behavior
+ * cargs_optflags_t - Flags that modify option behavior
  */
-typedef enum option_flags_e
+typedef enum cargs_optflags_e
 {
     FLAG_NONE = 0,
     /* Option flags */
@@ -94,7 +94,7 @@ typedef enum option_flags_e
 
     /* Group flags */
     FLAG_EXCLUSIVE = 1 << 14, /* Only one option in group can be set */
-} option_flags_t;
+} cargs_optflags_t;
 
 #define FLAG_OPTIONAL (FLAG_REQUIRED ^ FLAG_REQUIRED)
 
@@ -110,9 +110,9 @@ typedef enum option_flags_e
 #define SUBCOMMAND_FLAG_MASK (FLAG_HIDDEN | FLAG_ADVANCED | VERSIONING_FLAG_MASK)
 
 /**
- * value_u - Union to hold option values of different types
+ * cargs_value_u - Union to hold option values of different types
  */
-union value_u {
+union cargs_value_u {
     uintptr_t raw;
     void     *as_ptr;
 
@@ -128,17 +128,17 @@ union value_u {
     double as_float;
     bool   as_bool;
 
-    char        **as_array_string;
-    long long    *as_array_int;
-    double       *as_array_float;
-    value_t      *as_array; /* Generic array */
-    cargs_pair_t *as_map;
+    char         **as_array_string;
+    long long     *as_array_int;
+    double        *as_array_float;
+    cargs_value_t *as_array; /* Generic array */
+    cargs_pair_t  *as_map;
 };
 
 typedef struct cargs_pair_s
 {
-    const char *key;
-    value_t     value;
+    const char   *key;
+    cargs_value_t value;
 } cargs_pair_t;
 
 /**
@@ -146,10 +146,10 @@ typedef struct cargs_pair_s
  */
 typedef struct cargs_array_iterator_s
 {
-    value_t *_array;    /* Pointer to the array */
-    size_t   _count;    /* Number of elements */
-    size_t   _position; /* Current position */
-    value_t  value;     /* Current value */
+    cargs_value_t *_array;    /* Pointer to the array */
+    size_t         _count;    /* Number of elements */
+    size_t         _position; /* Current position */
+    cargs_value_t  value;     /* Current value */
 } cargs_array_it_t;
 
 /**
@@ -161,7 +161,7 @@ typedef struct cargs_map_iterator_s
     size_t        _count;    /* Number of elements */
     size_t        _position; /* Current position */
     const char   *key;       /* Current key */
-    value_t       value;     /* Current value */
+    cargs_value_t value;     /* Current value */
 } cargs_map_it_t;
 
 /**
@@ -194,7 +194,7 @@ union validator_data_u {
 /* Callback function types */
 typedef int (*cargs_handler_t)(cargs_t *, cargs_option_t *, char *);
 typedef int (*cargs_free_handler_t)(cargs_option_t *);
-typedef int (*cargs_validator_t)(cargs_t *, value_t, validator_data_t);
+typedef int (*cargs_validator_t)(cargs_t *, cargs_value_t, validator_data_t);
 typedef int (*cargs_pre_validator_t)(cargs_t *, const char *, validator_data_t);
 typedef int (*cargs_action_t)(cargs_t *, void *);
 
@@ -204,7 +204,7 @@ typedef int (*cargs_action_t)(cargs_t *, void *);
 struct cargs_option_s
 {
     /* Base metadata */
-    option_type_t type;
+    cargs_optype_t type;
 
     /* Naming metadata */
     const char *name;  /* Internal name used for references */
@@ -214,16 +214,16 @@ struct cargs_option_s
     const char *hint;  /* Value hint displayed in help */
 
     /* Value metadata */
-    value_type_t value_type;
-    value_t      value;
-    bool         is_allocated;
-    value_t      default_value;
-    bool         have_default;
-    value_t      choices;
-    size_t       choices_count;
-    size_t       value_count;
-    size_t       value_capacity;
-    char        *env_name;
+    cargs_valtype_t value_type;
+    cargs_value_t   value;
+    bool            is_allocated;
+    cargs_value_t   default_value;
+    bool            have_default;
+    cargs_value_t   choices;
+    size_t          choices_count;
+    size_t          value_count;
+    size_t          value_capacity;
+    char           *env_name;
 
     /* Callbacks metadata */
     cargs_handler_t       handler;
@@ -239,8 +239,8 @@ struct cargs_option_s
     const char **conflicts;
 
     /* Flags and state metadata */
-    option_flags_t flags;
-    bool           is_set;
+    cargs_optflags_t flags;
+    bool             is_set;
 
     /* Subcommand metadata */
     cargs_action_t         action;

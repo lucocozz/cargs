@@ -202,7 +202,7 @@ static void organize_options(const cargs_option_t *options, help_data_t *data)
  */
 
 // Helper function to get the base type name without collection indicators
-static const char *get_base_type_name(value_type_t type)
+static const char *get_base_type_name(cargs_valtype_t type)
 {
     switch (type) {
         case VALUE_TYPE_INT:
@@ -221,7 +221,7 @@ static const char *get_base_type_name(value_type_t type)
 }
 
 // Helper function to get the collection format pattern
-static const char *get_collection_format(value_type_t type)
+static const char *get_collection_format(cargs_valtype_t type)
 {
     if (type & VALUE_TYPE_ARRAY) {
         return "%s,...";
