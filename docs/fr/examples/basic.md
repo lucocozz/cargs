@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 ## Compilation and Execution
 
 ```bash
-gcc basic_usage.c -o basic_usage -lcargs -lpcre2-8
+gcc basic_usage.c -o basic_usage -lcargs
 ```
 
 ## Execution Examples

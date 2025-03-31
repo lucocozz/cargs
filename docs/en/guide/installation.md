@@ -84,7 +84,7 @@ For production deployments, you can enable release mode to skip these validation
 === "Manual Compilation"
     ```bash
     # Add -DCARGS_RELEASE flag to your compilation
-    gcc your_program.c -o your_program -DCARGS_RELEASE -lcargs -lpcre2-8
+    gcc your_program.c -o your_program -DCARGS_RELEASE -lcargs
     ```
 
 === "In a Meson project"
@@ -110,7 +110,7 @@ If you prefer not to install the library at the system level, you can:
 4. Link with the static library:
 
 ```bash
-gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs -lpcre2-8
+gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
 ```
 
 ## As a dependency in a Meson project
@@ -149,7 +149,7 @@ After installation, you can verify that everything works correctly:
 === "Compile an example"
     ```bash
     # Compile an example program
-    gcc -o test_cargs test.c -lcargs -lpcre2-8
+    gcc -o test_cargs test.c -lcargs
     
     # Run the program
     ./test_cargs --help

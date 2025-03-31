@@ -84,7 +84,7 @@ Pour les déploiements en production, vous pouvez activer le mode release pour i
 === "Compilation manuelle"
     ```bash
     # Ajouter le flag -DCARGS_RELEASE à votre compilation
-    gcc votre_programme.c -o votre_programme -DCARGS_RELEASE -lcargs -lpcre2-8
+    gcc votre_programme.c -o votre_programme -DCARGS_RELEASE -lcargs
     ```
 
 === "Dans un projet Meson"
@@ -110,7 +110,7 @@ Si vous préférez ne pas installer la bibliothèque au niveau du système, vous
 4. Lier avec la bibliothèque statique :
 
 ```bash
-gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs -lpcre2-8
+gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
 ```
 
 ## Comme dépendance dans un projet Meson
@@ -149,7 +149,7 @@ Après l'installation, vous pouvez vérifier que tout fonctionne correctement :
 === "Compiler un exemple"
     ```bash
     # Compiler un programme exemple
-    gcc -o test_cargs test.c -lcargs -lpcre2-8
+    gcc -o test_cargs test.c -lcargs
     
     # Exécuter le programme
     ./test_cargs --help

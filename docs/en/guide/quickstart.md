@@ -62,11 +62,14 @@ Cargs supports several types of options that you can use in your application:
 | Type | Macro | Description | Example |
 |------|-------|-------------|---------|
 | **Flag** | `OPTION_FLAG` | Boolean option (presence/absence) | `OPTION_FLAG('v', "verbose", "Verbose mode")` |
+| **Boolean** | `OPTION_BOOL` | Boolean option with true/false value | `OPTION_BOOL('d', "debug", "Debug mode")` |
 | **String** | `OPTION_STRING` | Option with string value | `OPTION_STRING('o', "output", "Output file")` |
 | **Integer** | `OPTION_INT` | Option with integer value | `OPTION_INT('p', "port", "Port number")` |
 | **Float** | `OPTION_FLOAT` | Option with floating-point value | `OPTION_FLOAT('f', "factor", "Scale factor")` |
 | **Positional** | `POSITIONAL_*` | Positional argument | `POSITIONAL_STRING("input", "Input file")` |
 | **Subcommand** | `SUBCOMMAND` | Subcommand with its own options | `SUBCOMMAND("add", add_options, ...)` |
+| **Array** | `OPTION_ARRAY_*` | Option with multiple values | `OPTION_ARRAY_STRING('i', "input", "Input files")` |
+| **Map** | `OPTION_MAP_*` | Option with key-value pairs | `OPTION_MAP_STRING('m', "map", "Key-value pairs")` |
 
 ## Complete Example
 
@@ -129,7 +132,7 @@ Here's a more complete example including different types of options:
 
 === "Compilation"
     ```bash
-    gcc -o complete_example complete_example.c -lcargs -lpcre2-8
+    gcc -o complete_example complete_example.c -lcargs
     ```
 
 ## Automatically Generated Help
