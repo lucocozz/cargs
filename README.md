@@ -216,6 +216,9 @@ For complete documentation, please visit [the online documentation](https://carg
 
 Check the `examples/` directory for more practical examples.
 
+## 🤖 Cargs guide for LLMs
+[download](docs/assets/llm-references.md)
+
 ## 🗺️ Roadmap
 
 Future planned features:
