@@ -110,10 +110,10 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Port number", RANGE(1, 65535), DEFAULT(8080)),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 int main(int argc, char **argv)
@@ -174,7 +174,7 @@ The key differentiator of cargs is its balance between ease of use and powerful 
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Force add operation")
+    OPTION_FLAG('f', "force", HELP("Force add operation"))
 )
 
 CARGS_OPTIONS(
@@ -191,7 +191,7 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('e', "email", "Email address", 
+    OPTION_STRING('e', "email", HELP("Email address"), 
                 REGEX(CARGS_RE_EMAIL))
 )
 ```
@@ -202,9 +202,9 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_ARRAY_INT('n', "numbers", "List of numbers", 
+    OPTION_ARRAY_INT('n', "numbers", HELP("List of numbers"), 
                     FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
-    OPTION_MAP_STRING('e', "env", "Environment variables")
+    OPTION_MAP_STRING('e', "env", HELP("Environment variables"))
 )
 
 // Usage: --numbers=1,2,3 --env=KEY1=value1,KEY2=value2
@@ -215,6 +215,10 @@ CARGS_OPTIONS(
 For complete documentation, please visit [the online documentation](https://cargs.readthedocs.io/).
 
 Check the `examples/` directory for more practical examples.
+
+## 🤖 Cargs guide for LLMs
+
+[download](docs/assets/llm-references.md)
 
 ## 🗺️ Roadmap
 
@@ -231,6 +235,7 @@ Future planned features:
   - Contextual validation (based on other option values)
 - 📦 **Packaging**: Official packages for various distributions
 - Shell completion scripts generation
+- Alias support for options
 
 ## 👥 Contributing
 

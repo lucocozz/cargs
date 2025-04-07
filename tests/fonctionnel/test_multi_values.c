@@ -7,10 +7,10 @@
 CARGS_OPTIONS(
     multi_value_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_ARRAY_STRING('s', "strings", "Array of strings"),
-    OPTION_ARRAY_INT('i', "ints", "Array of integers"),
-    OPTION_MAP_STRING('m', "map", "String map"),
-    OPTION_MAP_INT('p', "ports", "Port map")
+    OPTION_ARRAY_STRING('s', "strings", HELP("Array of strings")),
+    OPTION_ARRAY_INT('i', "ints", HELP("Array of integers")),
+    OPTION_MAP_STRING('m', "map", HELP("String map")),
+    OPTION_MAP_INT('p', "ports", HELP("Port map"))
 )
 
 // Setup function that parses arguments with multi-value options

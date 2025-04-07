@@ -58,22 +58,20 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Built-in range validator
-    OPTION_INT('p', "port", "Port number", 
+    OPTION_INT('p', "port", HELP("Port number"), 
                 DEFAULT(8080), RANGE(1, 65535)),
     
     // Built-in choices validator
-    OPTION_STRING('l', "log-level", "Log level", 
+    OPTION_STRING('l', "log-level", HELP("Log level"), 
                 DEFAULT("info"), 
                 CHOICES_STRING("debug", "info", "warning", "error")),
     
     // Custom email validator
-    OPTION_BASE('e', "email", "Email address", VALUE_TYPE_STRING,
-                HANDLER(string_handler), 
+    OPTION_STRING('e', "email", HELP("Email address"),
                 VALIDATOR(email_validator, NULL)),
     
     // Custom even number validator
-    OPTION_BASE('n', "number", "An even number", VALUE_TYPE_INT,
-                HANDLER(int_handler), 
+    OPTION_INT('n', "number", HELP("An even number"),
                 VALIDATOR(even_validator, NULL),
                 DEFAULT(42))
 )

@@ -57,10 +57,10 @@ Les options sont définies en utilisant la macro `CARGS_OPTIONS` avec des macros
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Numéro de port", RANGE(1, 65535), DEFAULT(8080)),
-    OPTION_FLAG('v', "verbose", "Activer le mode verbeux"),
-    POSITIONAL_STRING("input", "Fichier d'entrée")
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Numéro de port"), RANGE(1, 65535), DEFAULT(8080)),
+    OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux")),
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
 )
 ```
 
@@ -343,25 +343,25 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Options régulières
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse"),
-    OPTION_STRING('o', "output", "Fichier journal", 
+    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
+    OPTION_STRING('o', "output", HELP("Fichier journal"), 
                  DEFAULT("output.txt"), 
                  HINT("FICHIER")),
-    OPTION_INT('p', "port", "Numéro de port", 
+    OPTION_INT('p', "port", HELP("Numéro de port"), 
                DEFAULT(8080), 
                RANGE(1, 65535)),
     
     // Groupe d'options
     GROUP_START("Advanced", GROUP_DESC("Options avancées")),
-        OPTION_FLAG('f', "force", "Forcer l'opération"),
-        OPTION_FLAG('r', "recursive", "Mode récursif"),
+        OPTION_FLAG('f', "force", HELP("Forcer l'opération")),
+        OPTION_FLAG('r', "recursive", HELP("Mode récursif")),
     GROUP_END(),
     
     // Options de tableau
-    OPTION_ARRAY_STRING('t', "tag", "Tags", FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
+    OPTION_ARRAY_STRING('t', "tag", HELP("Tags"), FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
     
     // Arguments positionnels
-    POSITIONAL_STRING("input", "Fichier d'entrée")
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
 )
 
 int main(int argc, char **argv)

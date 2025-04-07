@@ -9,19 +9,19 @@ CARGS_OPTIONS(
     api_test_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('n', "number", "A number", DEFAULT(42)),
-    OPTION_ARRAY_INT('a', "array", "An array of numbers"),
-    OPTION_MAP_INT('m', "map", "A map of numbers"),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('n', "number", HELP("A number"), DEFAULT(42)),
+    OPTION_ARRAY_INT('a', "array", HELP("An array of numbers")),
+    OPTION_MAP_INT('m', "map", HELP("A map of numbers")),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 // Subcommand options
 CARGS_OPTIONS(
     api_sub_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('d', "debug", "Debug mode")
+    OPTION_FLAG('d', "debug", HELP("Debug mode"))
 )
 
 // Test action handler
@@ -37,7 +37,7 @@ int test_action(cargs_t *cargs, void *data) {
 CARGS_OPTIONS(
     api_cmd_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output"),
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     SUBCOMMAND("sub", api_sub_options, HELP("Subcommand"), ACTION(test_action))
 )
 

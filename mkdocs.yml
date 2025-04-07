@@ -44,6 +44,7 @@ theme:
     - content.code.copy
     - navigation.top
     - content.action.edit  
+    - content.action.download
   language: en
   icon:
     repo: fontawesome/brands/github
@@ -97,6 +98,7 @@ plugins:
           Multi-Values: Multi-valeurs
           Contributing: Contribuer
           License: Licence
+          # Misc: Divers
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -120,6 +122,9 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: document
+          class: document
           format: !!python/name:pymdownx.superfences.fence_code_format
 
 extra:
@@ -161,3 +166,8 @@ nav:
     - Multi-Values: advanced/multi-values.md
   - Contributing: contributing.md
   - License: license.md
+  # - Misc:
+    # - llm reference: misc/llm-references.md
+    # - FAQ: misc/faq.md
+    # - Changelog: misc/changelog.md
+    # - Roadmap: misc/roadmap.md

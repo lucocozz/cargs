@@ -25,15 +25,15 @@ cargs provides a wide range of predefined patterns in `cargs/regex.h` that cover
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Email validation
-        OPTION_STRING('e', "email", "Email address",
+        OPTION_STRING('e', "email", HELP("Email address"),
                     REGEX(CARGS_RE_EMAIL)),
         
         // IP address validation
-        OPTION_STRING('i', "ip", "IP address",
+        OPTION_STRING('i', "ip", HELP("IP address"),
                     REGEX(CARGS_RE_IPV4)),
         
         // URL validation
-        OPTION_STRING('u', "url", "URL",
+        OPTION_STRING('u', "url", HELP("URL"),
                     REGEX(CARGS_RE_URL))
     )
     ```
@@ -46,17 +46,17 @@ cargs provides a wide range of predefined patterns in `cargs/regex.h` that cover
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Date in ISO format (YYYY-MM-DD)
-        OPTION_STRING('d', "date", "Date (YYYY-MM-DD)",
+        OPTION_STRING('d', "date", HELP("Date (YYYY-MM-DD)"),
                     REGEX(CARGS_RE_ISO_DATE),
                     HINT("YYYY-MM-DD")),
         
         // Password with strong validation
-        OPTION_STRING('p', "password", "Password (8+ chars, mixed case, numbers, symbols)",
+        OPTION_STRING('p', "password", HELP("Password (8+ chars, mixed case, numbers, symbols)"),
                     REGEX(CARGS_RE_PASSWD_STRONG),
                     HINT("StrongP@ss1")),
         
         // Semantic version number
-        OPTION_STRING('v', "version", "Semantic version",
+        OPTION_STRING('v', "version", HELP("Semantic version"),
                     REGEX(CARGS_RE_SEMVER),
                     HINT("X.Y.Z"),
                     FLAGS(FLAG_REQUIRED))
@@ -87,10 +87,10 @@ The `MAKE_REGEX` macro creates a new regex pattern with an error hint:
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Use custom patterns
-        OPTION_STRING('p', "product", "Product ID",
+        OPTION_STRING('p', "product", HELP("Product ID"),
                     REGEX(RE_PRODUCT_ID)),
         
-        OPTION_STRING('n', "name", "Username",
+        OPTION_STRING('n', "name", HELP("Username"),
                     REGEX(RE_SIMPLE_NAME))
     )
     ```
@@ -100,7 +100,7 @@ The `MAKE_REGEX` macro creates a new regex pattern with an error hint:
 You can also define patterns inline without creating a constant:
 
 ```c
-OPTION_STRING('z', "zipcode", "US ZIP code",
+OPTION_STRING('z', "zipcode", HELP("US ZIP code"),
             REGEX(MAKE_REGEX("^\\d{5}(-\\d{4})?$", "Format: 12345 or 12345-6789")))
 ```
 
@@ -249,31 +249,31 @@ CARGS_OPTIONS(
 
     // Using predefined patterns
     GROUP_START("Network and Communication", GROUP_DESC("Network-related options")),
-       OPTION_STRING('i', "ip", "IPv4 address",
+       OPTION_STRING('i', "ip", HELP("IPv4 address"),
                     REGEX(CARGS_RE_IPV4)),
 
-       OPTION_STRING('e', "email", "Email address",
+       OPTION_STRING('e', "email", HELP("Email address"),
                     REGEX(CARGS_RE_EMAIL)),
 
-        OPTION_STRING('u', "url", "URL with any protocol",
+        OPTION_STRING('u', "url", HELP("URL with any protocol"),
                     REGEX(CARGS_RE_URL)),
     GROUP_END(),
 
     // Custom patterns defined above
     GROUP_START("Custom Formats", GROUP_DESC("Options with custom regex patterns")),
-        OPTION_STRING('p', "product", "Product ID (format: XX0000-XXXXXX)",
+        OPTION_STRING('p', "product", HELP("Product ID (format: XX0000-XXXXXX)"),
                     REGEX(RE_PRODUCT_ID)),
 
-        OPTION_STRING('n', "name", "Username (letters, numbers, underscore, dash)",
+        OPTION_STRING('n', "name", HELP("Username (letters, numbers, underscore, dash)"),
                     REGEX(RE_SIMPLE_NAME)),
     GROUP_END(),
 
     // Inline patterns
     GROUP_START("Inline Patterns", GROUP_DESC("Options with inline regex patterns")),
-        OPTION_STRING('z', "zipcode", "US Zip code",
+        OPTION_STRING('z', "zipcode", HELP("US Zip code"),
                     REGEX(MAKE_REGEX("^\\d{5}(-\\d{4})?$", "Format: 12345 or 12345-6789"))),
 
-        OPTION_STRING('t', "time", "Time (format: HH:MM)",
+        OPTION_STRING('t', "time", HELP("Time (format: HH:MM)"),
                     REGEX(MAKE_REGEX("^([01]?[0-9]|2[0-3]):[0-5][0-9]$", "Format: HH:MM"))),
     GROUP_END()
 )

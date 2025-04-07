@@ -8,7 +8,7 @@ cargs includes a rich set of predefined regular expression patterns in the `carg
     ```c
     #include "cargs/regex.h"
     
-    OPTION_STRING('e', "email", "Email address", 
+    OPTION_STRING('e', "email", HELP("Email address"), 
                  REGEX(CARGS_RE_EMAIL))
     ```
 
@@ -104,7 +104,7 @@ You can define your own regex patterns using the `MAKE_REGEX` macro:
 
 === "Usage"
     ```c
-    OPTION_STRING('p', "product", "Product ID", 
+    OPTION_STRING('p', "product", HELP("Product ID"), 
                  REGEX(RE_PRODUCT_ID))
     ```
 

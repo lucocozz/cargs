@@ -33,14 +33,14 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Tableau de chaînes simple sans drapeaux
-    OPTION_ARRAY_STRING('n', "names", "Liste de noms"),
+    OPTION_ARRAY_STRING('n', "names", HELP("Liste de noms")),
     
     // Tableau d'entiers avec tri et unicité
-    OPTION_ARRAY_INT('i', "ids", "Liste d'identifiants",
+    OPTION_ARRAY_INT('i', "ids", HELP("Liste d'identifiants"),
                     FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
     
     // Tableau de flottants avec indice personnalisé
-    OPTION_ARRAY_FLOAT('f', "factors", "Facteurs d'échelle",
+    OPTION_ARRAY_FLOAT('f', "factors", HELP("Facteurs d'échelle"),
                       HINT("FLOAT"))
 )
 ```
@@ -320,7 +320,7 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Drapeaux de fonctionnalités avec clés triées pour un affichage cohérent
-    OPTION_MAP_BOOL('f', "feature", "Drapeaux de fonctionnalités",
+    OPTION_MAP_BOOL('f', "feature", HELP("Drapeaux de fonctionnalités"),
                    FLAGS(FLAG_SORTED_KEY))
 )
 
@@ -456,17 +456,17 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Options de tableau avec drapeaux
-    OPTION_ARRAY_STRING('n', "name", "Noms d'utilisateurs",
+    OPTION_ARRAY_STRING('n', "name", HELP("Noms d'utilisateurs"),
                        FLAGS(FLAG_SORTED)),
-    OPTION_ARRAY_INT('i', "id", "IDs d'utilisateurs",
+    OPTION_ARRAY_INT('i', "id", HELP("IDs d'utilisateurs"),
                     FLAGS(FLAG_UNIQUE | FLAG_SORTED)),
     
     // Options de mapping avec drapeaux
-    OPTION_MAP_STRING('e', "env", "Variables d'environnement",
+    OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement"),
                      FLAGS(FLAG_SORTED_KEY)),
-    OPTION_MAP_INT('p', "port", "Mappages de ports",
+    OPTION_MAP_INT('p', "port", HELP("Mappages de ports"),
                   FLAGS(FLAG_SORTED_KEY)),
-    OPTION_MAP_BOOL('f', "feature", "Drapeaux de fonctionnalités")
+    OPTION_MAP_BOOL('f', "feature", HELP("Drapeaux de fonctionnalités"))
 )
 
 int main(int argc, char **argv)

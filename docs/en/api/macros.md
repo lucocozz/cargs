@@ -31,8 +31,8 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_FLAG('v', "verbose", "Enable verbose output")
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output"))
 )
 ```
 
@@ -51,12 +51,12 @@ OPTION_STRING(short_name, long_name, help, ...)
 **Parameters:**
 - `short_name`: Character for short name (e.g., 'o' for -o), or '\0' if none
 - `long_name`: String for long name (e.g., "output" for --output), or NULL if none
-- `help`: Help text describing the option
+- `help`: Help text describing the option (use HELP() macro)
 - `...`: Optional modifiers (DEFAULT, HINT, FLAGS, etc.)
 
 **Example:**
 ```c
-OPTION_STRING('o', "output", "Output file", 
+OPTION_STRING('o', "output", HELP("Output file"), 
              DEFAULT("output.txt"), 
              HINT("FILE"))
 ```
@@ -73,7 +73,7 @@ OPTION_INT(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_INT('p', "port", "Port number", 
+OPTION_INT('p', "port", HELP("Port number"), 
            DEFAULT(8080), 
            RANGE(1, 65535))
 ```
@@ -90,7 +90,7 @@ OPTION_FLOAT(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_FLOAT('f', "factor", "Scaling factor", 
+OPTION_FLOAT('f', "factor", HELP("Scaling factor"), 
              DEFAULT(1.0))
 ```
 
@@ -103,7 +103,7 @@ OPTION_BOOL(short_name, long_name, help, ...)
 **Parameters:** Same as `OPTION_STRING`
 **Example:**
 ```c
-OPTION_BOOL('d', "debug", "Enable debug mode", 
+OPTION_BOOL('d', "debug", HELP("Enable debug mode"), 
             DEFAULT(false))
 ```
 
@@ -119,7 +119,7 @@ OPTION_FLAG(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_FLAG('v', "verbose", "Enable verbose output")
+OPTION_FLAG('v', "verbose", HELP("Enable verbose output"))
 ```
 
 ### Array Options
@@ -136,7 +136,7 @@ OPTION_ARRAY_STRING(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_ARRAY_STRING('t', "tags", "Tags for the resource", 
+OPTION_ARRAY_STRING('t', "tags", HELP("Tags for the resource"), 
                    FLAGS(FLAG_SORTED | FLAG_UNIQUE))
 ```
 
@@ -152,7 +152,7 @@ OPTION_ARRAY_INT(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_ARRAY_INT('p', "ports", "Port numbers", 
+OPTION_ARRAY_INT('p', "ports", HELP("Port numbers"), 
                 FLAGS(FLAG_UNIQUE))
 ```
 
@@ -168,7 +168,7 @@ OPTION_ARRAY_FLOAT(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_ARRAY_FLOAT('f', "factors", "Scaling factors")
+OPTION_ARRAY_FLOAT('f', "factors", HELP("Scaling factors"))
 ```
 
 ### Map Options
@@ -185,7 +185,7 @@ OPTION_MAP_STRING(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_MAP_STRING('e', "env", "Environment variables", 
+OPTION_MAP_STRING('e', "env", HELP("Environment variables"), 
                  FLAGS(FLAG_SORTED_KEY))
 ```
 
@@ -201,7 +201,7 @@ OPTION_MAP_INT(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_MAP_INT('p', "ports", "Service ports", 
+OPTION_MAP_INT('p', "ports", HELP("Service ports"), 
               FLAGS(FLAG_SORTED_KEY))
 ```
 
@@ -217,7 +217,7 @@ OPTION_MAP_FLOAT(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_MAP_FLOAT('s', "scales", "Scale factors by dimension")
+OPTION_MAP_FLOAT('s', "scales", HELP("Scale factors by dimension"))
 ```
 
 #### OPTION_MAP_BOOL
@@ -232,7 +232,7 @@ OPTION_MAP_BOOL(short_name, long_name, help, ...)
 
 **Example:**
 ```c
-OPTION_MAP_BOOL('f', "features", "Feature toggles")
+OPTION_MAP_BOOL('f', "features", HELP("Feature toggles"))
 ```
 
 ### Positional Arguments
@@ -252,7 +252,7 @@ POSITIONAL_STRING(name, help, ...)
 
 **Example:**
 ```c
-POSITIONAL_STRING("input", "Input file")
+POSITIONAL_STRING("input", HELP("Input file"))
 ```
 
 #### POSITIONAL_INT
@@ -267,7 +267,7 @@ POSITIONAL_INT(name, help, ...)
 
 **Example:**
 ```c
-POSITIONAL_INT("count", "Number of iterations", 
+POSITIONAL_INT("count", HELP("Number of iterations"), 
                DEFAULT(1))
 ```
 
@@ -283,7 +283,7 @@ POSITIONAL_FLOAT(name, help, ...)
 
 **Example:**
 ```c
-POSITIONAL_FLOAT("threshold", "Detection threshold", 
+POSITIONAL_FLOAT("threshold", HELP("Detection threshold"), 
                  DEFAULT(0.5))
 ```
 
@@ -299,7 +299,7 @@ POSITIONAL_BOOL(name, help, ...)
 
 **Example:**
 ```c
-POSITIONAL_BOOL("enabled", "Enable feature")
+POSITIONAL_BOOL("enabled", HELP("Enable feature"))
 ```
 
 ### Common Options
@@ -355,7 +355,7 @@ OPTION_BASE(short_name, long_name, help, value_type, ...)
 
 **Example:**
 ```c
-OPTION_BASE('i', "ip", "IP address", VALUE_TYPE_CUSTOM,
+OPTION_BASE('i', "ip", HELP("IP address"), VALUE_TYPE_CUSTOM,
             HANDLER(ip_handler),
             FREE_HANDLER(ip_free_handler))
 ```
@@ -376,7 +376,7 @@ POSITIONAL_BASE(name, help, value_type, ...)
 
 **Example:**
 ```c
-POSITIONAL_BASE("coordinate", "Point coordinates", VALUE_TYPE_CUSTOM,
+POSITIONAL_BASE("coordinate", HELP("Point coordinates"), VALUE_TYPE_CUSTOM,
                 HANDLER(coordinate_handler),
                 FREE_HANDLER(coordinate_free_handler))
 ```
@@ -445,7 +445,7 @@ DEFAULT(value)
 
 **Example:**
 ```c
-OPTION_INT('p', "port", "Port number", DEFAULT(8080))
+OPTION_INT('p', "port", HELP("Port number"), DEFAULT(8080))
 ```
 
 ### HINT
@@ -458,7 +458,7 @@ HINT(text)
 
 **Example:**
 ```c
-OPTION_STRING('o', "output", "Output file", HINT("FILE"))
+OPTION_STRING('o', "output", HELP("Output file"), HINT("FILE"))
 ```
 
 ### HELP
@@ -497,7 +497,7 @@ FLAGS(flags)
 
 **Example:**
 ```c
-OPTION_STRING('o', "output", "Output file", FLAGS(FLAG_REQUIRED))
+OPTION_STRING('o', "output", HELP("Output file"), FLAGS(FLAG_REQUIRED))
 ```
 
 ### REQUIRES
@@ -510,7 +510,7 @@ REQUIRES(...)
 
 **Example:**
 ```c
-OPTION_STRING('u', "username", "Username", REQUIRES("password"))
+OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password"))
 ```
 
 ### CONFLICTS
@@ -523,7 +523,7 @@ CONFLICTS(...)
 
 **Example:**
 ```c
-OPTION_FLAG('v', "verbose", "Verbose mode", CONFLICTS("quiet"))
+OPTION_FLAG('v', "verbose", HELP("Verbose mode"), CONFLICTS("quiet"))
 ```
 
 ### ENV_VAR
@@ -536,7 +536,7 @@ ENV_VAR(name)
 
 **Example:**
 ```c
-OPTION_STRING('H', "host", "Hostname", ENV_VAR("HOST"))
+OPTION_STRING('H', "host", HELP("Hostname"), ENV_VAR("HOST"))
 ```
 
 ### ACTION
@@ -590,7 +590,7 @@ RANGE(min, max)
 
 **Example:**
 ```c
-OPTION_INT('p', "port", "Port number", RANGE(1, 65535))
+OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535))
 ```
 
 ### CHOICES_STRING, CHOICES_INT, CHOICES_FLOAT
@@ -605,7 +605,7 @@ CHOICES_FLOAT(...)
 
 **Example:**
 ```c
-OPTION_STRING('l', "level", "Logging level", 
+OPTION_STRING('l', "level", HELP("Logging level"), 
              CHOICES_STRING("debug", "info", "warning", "error"))
 ```
 
@@ -619,7 +619,7 @@ REGEX(pattern)
 
 **Example:**
 ```c
-OPTION_STRING('e', "email", "Email address", REGEX(CARGS_RE_EMAIL))
+OPTION_STRING('e', "email", HELP("Email address"), REGEX(CARGS_RE_EMAIL))
 ```
 
 ### MAKE_REGEX
@@ -710,17 +710,17 @@ Here's a complete example showing various macros in use:
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Force add operation", 
+    OPTION_FLAG('f', "force", HELP("Force add operation"), 
                CONFLICTS("dry-run")),
-    POSITIONAL_STRING("file", "File to add")
+    POSITIONAL_STRING("file", HELP("File to add"))
 )
 
 // Define options for the "remove" subcommand
 CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", "Recursively remove directories"),
-    POSITIONAL_STRING("file", "File to remove")
+    OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
+    POSITIONAL_STRING("file", HELP("File to remove"))
 )
 
 // Define main options with subcommands and option groups
@@ -730,24 +730,24 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Global options
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    OPTION_STRING('o', "output", "Log file", 
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Log file"), 
                  DEFAULT("output.log"), 
                  HINT("FILE")),
     
     // Options in a group
     GROUP_START("Display", GROUP_DESC("Display options")),
-        OPTION_FLAG('q', "quiet", "Suppress output", 
+        OPTION_FLAG('q', "quiet", HELP("Suppress output"), 
                    CONFLICTS("verbose")),
-        OPTION_FLAG('c', "color", "Colorize output"),
+        OPTION_FLAG('c', "color", HELP("Colorize output")),
     GROUP_END(),
     
     // Options in an exclusive group (only one can be selected)
     GROUP_START("Format", GROUP_DESC("Output format"), 
                 FLAGS(FLAG_EXCLUSIVE)),
-        OPTION_FLAG('j', "json", "JSON output"),
-        OPTION_FLAG('x', "xml", "XML output"),
-        OPTION_FLAG('y', "yaml", "YAML output"),
+        OPTION_FLAG('j', "json", HELP("JSON output")),
+        OPTION_FLAG('x', "xml", HELP("XML output")),
+        OPTION_FLAG('y', "yaml", HELP("YAML output")),
     GROUP_END(),
     
     // Subcommands

@@ -8,21 +8,21 @@
 // Mock options for testing
 CARGS_OPTIONS(
     context_test_options,
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('o', "output", "Output file")
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"))
 )
 
 // Mock subcommand options
 CARGS_OPTIONS(
     context_sub_options,
-    OPTION_FLAG('d', "debug", "Debug mode"),
-    OPTION_STRING('f', "file", "File option")
+    OPTION_FLAG('d', "debug", HELP("Debug mode")),
+    OPTION_STRING('f', "file", HELP("File option"))
 )
 
 // Mock nested subcommand options
 CARGS_OPTIONS(
     context_nested_options,
-    OPTION_FLAG('n', "nested", "Nested flag")
+    OPTION_FLAG('n', "nested", HELP("Nested flag"))
 )
 
 // Define subcommands with nested structure

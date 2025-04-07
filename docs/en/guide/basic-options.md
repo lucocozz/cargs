@@ -25,7 +25,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Definition"
     ```c
-    OPTION_STRING('o', "output", "Output file", 
+    OPTION_STRING('o', "output", HELP("Output file"), 
                   DEFAULT("output.txt"),   // Default value
                   HINT("FILE"))            // Hint displayed in help
     ```
@@ -45,7 +45,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Definition"
     ```c
-    OPTION_INT('p', "port", "Port number", 
+    OPTION_INT('p', "port", HELP("Port number"), 
                RANGE(1, 65535),   // Range validation
                DEFAULT(8080))     // Default value
     ```
@@ -65,7 +65,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Definition"
     ```c
-    OPTION_FLOAT('s', "scale", "Scale factor", 
+    OPTION_FLOAT('s', "scale", HELP("Scale factor"), 
                  DEFAULT(1.0))    // Default value
     ```
 
@@ -83,7 +83,7 @@ cargs supports four fundamental types of command-line elements:
 ### Boolean Options
 === "Definition"
     ```c
-    OPTION_BOOL('f', "force", "Force operation",
+    OPTION_BOOL('f', "force", HELP("Force operation"),
                  DEFAULT(false))  // Default value
     ```
 === "Usage"
@@ -100,7 +100,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Definition"
     ```c
-    OPTION_FLAG('v', "verbose", "Enable verbose mode")
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose mode"))
     ```
 
 === "Usage"
@@ -137,12 +137,12 @@ Positional arguments are ordered and not preceded by dashes.
 
 === "Required Positional"
     ```c
-    POSITIONAL_STRING("input", "Input file")
+    POSITIONAL_STRING("input", HELP("Input file"))
     ```
 
 === "Optional Positional"
     ```c
-    POSITIONAL_STRING("output", "Output file", 
+    POSITIONAL_STRING("output", HELP("Output file"), 
                       FLAGS(FLAG_OPTIONAL),   // Optional argument
                       DEFAULT("output.txt"))  // Default value
     ```
@@ -161,13 +161,13 @@ For example, this is the correct order:
 CARGS_OPTIONS(
     options,
     // Required positional arguments first
-    POSITIONAL_STRING("input", "Input file"),                       // Required
-    POSITIONAL_STRING("output", "Output file"),                     // Required
+    POSITIONAL_STRING("input", HELP("Input file")),                       // Required
+    POSITIONAL_STRING("output", HELP("Output file")),                     // Required
     
     // Optional positional arguments after
-    POSITIONAL_INT("buffer_size", "Buffer size", 
-                   FLAGS(FLAG_OPTIONAL), DEFAULT(4096)),            // Optional
-    POSITIONAL_STRING("log_file", "Log file", FLAGS(FLAG_OPTIONAL)) // Optional
+    POSITIONAL_INT("buffer_size", HELP("Buffer size"), 
+                   FLAGS(FLAG_OPTIONAL), DEFAULT(4096)),                  // Optional
+    POSITIONAL_STRING("log_file", HELP("Log file"), FLAGS(FLAG_OPTIONAL)) // Optional
 )
 ```
 
@@ -194,14 +194,14 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     GROUP_START("Connection", GROUP_DESC("Connection options")),
-        OPTION_STRING('h', "host", "Hostname", DEFAULT("localhost")),
-        OPTION_INT('p', "port", "Port number", DEFAULT(8080)),
+        OPTION_STRING('h', "host", HELP("Hostname"), DEFAULT("localhost")),
+        OPTION_INT('p', "port", HELP("Port number"), DEFAULT(8080)),
     GROUP_END(),
     
     GROUP_START("Security", GROUP_DESC("Security options")),
-        OPTION_STRING('u', "username", "Username"),
-        OPTION_STRING('P', "password", "Password"),
-        OPTION_FLAG('s', "secure", "Use secure connection"),
+        OPTION_STRING('u', "username", HELP("Username")),
+        OPTION_STRING('P', "password", HELP("Password")),
+        OPTION_FLAG('s', "secure", HELP("Use secure connection")),
     GROUP_END()
 )
 ```
@@ -226,9 +226,9 @@ You can create groups of mutually exclusive options:
 ```c
 GROUP_START("Compression", GROUP_DESC("Compression options"), 
             FLAGS(FLAG_EXCLUSIVE)),
-    OPTION_FLAG('z', "gzip", "Use gzip compression"),
-    OPTION_FLAG('j', "bzip2", "Use bzip2 compression"),
-    OPTION_FLAG('Z', "lzma", "Use lzma compression"),
+    OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
+    OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
+    OPTION_FLAG('Z', "lzma", HELP("Use lzma compression")),
 GROUP_END()
 ```
 
@@ -250,7 +250,7 @@ Options can have various flags that modify their behavior:
 Multiple flags can be combined using the bitwise OR operator:
 
 ```c
-OPTION_STRING('t', "temp-dir", "Temporary directory",
+OPTION_STRING('t', "temp-dir", HELP("Temporary directory"),
               FLAGS(FLAG_ADVANCED | FLAG_EXPERIMENTAL))
 ```
 
@@ -283,11 +283,11 @@ You can define dependencies between options:
 
 ```c
 // The username option requires password
-OPTION_STRING('u', "username", "Username", 
+OPTION_STRING('u', "username", HELP("Username"), 
               REQUIRES("password"))
 
 // The password option requires username
-OPTION_STRING('p', "password", "Password", 
+OPTION_STRING('p', "password", HELP("Password"), 
               REQUIRES("username"))
 ```
 
@@ -297,11 +297,11 @@ You can define incompatibilities between options:
 
 ```c
 // The verbose option is incompatible with quiet
-OPTION_FLAG('v', "verbose", "Verbose mode", 
+OPTION_FLAG('v', "verbose", HELP("Verbose mode"), 
             CONFLICTS("quiet"))
 
 // The quiet option is incompatible with verbose
-OPTION_FLAG('q', "quiet", "Quiet mode", 
+OPTION_FLAG('q', "quiet", HELP("Quiet mode"), 
             CONFLICTS("verbose"))
 ```
 
@@ -317,23 +317,23 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Standard options
-    OPTION_FLAG('v', "verbose", "Enable verbose mode"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Port number", RANGE(1, 65535), DEFAULT(8080)),
-    OPTION_FLOAT('s', "scale", "Scale factor", DEFAULT(1.0)),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
+    OPTION_FLOAT('s', "scale", HELP("Scale factor"), DEFAULT(1.0)),
     
     // Exclusive options
     GROUP_START("Mode", GROUP_DESC("Mode options"), FLAGS(FLAG_EXCLUSIVE)),
-        OPTION_FLAG('d', "debug", "Debug mode"),
-        OPTION_FLAG('r', "release", "Release mode"),
+        OPTION_FLAG('d', "debug", HELP("Debug mode")),
+        OPTION_FLAG('r', "release", HELP("Release mode")),
     GROUP_END(),
     
     // Options with dependencies
-    OPTION_STRING('u', "username", "Username", REQUIRES("password")),
-    OPTION_STRING('P', "password", "Password", REQUIRES("username")),
+    OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password")),
+    OPTION_STRING('P', "password", HELP("Password"), REQUIRES("username")),
     
     // Positional arguments
-    POSITIONAL_STRING("input", "Input file")
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 int main(int argc, char **argv)

@@ -108,16 +108,16 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 }
 
 
-#define OPTION_BASE(_short, _long, _help, _value_type, ...)                                   \
+#define OPTION_BASE(_short, _long, _value_type, ...)                                          \
     (cargs_option_t) {                                                                        \
-        .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                             \
-        .sname = _short, .lname = _long, .help = _help, .value_type = _value_type,            \
+        .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                              \
+        .sname = _short, .lname = _long, .value_type = _value_type,                           \
         .free_handler = default_free, ##__VA_ARGS__                                           \
     }
 
-#define POSITIONAL_BASE(_name, _help, _value_type, ...)                                        \
+#define POSITIONAL_BASE(_name, _value_type, ...)                                        \
     (cargs_option_t) {                                                                         \
-        .type = TYPE_POSITIONAL, .name = _name, .help = _help, .value_type = _value_type,      \
+        .type = TYPE_POSITIONAL, .name = _name, .value_type = _value_type,      \
         .free_handler = default_free, .flags = FLAG_REQUIRED, ##__VA_ARGS__                    \
     }
 
@@ -135,49 +135,48 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 /*
  * Option type macros
  */
-#define OPTION_FLAG(short_name, long_name, help, ...)                                              \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLAG, HANDLER(flag_handler), __VA_ARGS__)
-#define OPTION_BOOL(short_name, long_name, help, ...)                                              \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
-#define OPTION_STRING(short_name, long_name, help, ...)                                            \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_STRING, HANDLER(string_handler),           \
-                __VA_ARGS__)
-#define OPTION_INT(short_name, long_name, help, ...)                                               \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_INT, HANDLER(int_handler), __VA_ARGS__)
-#define OPTION_FLOAT(short_name, long_name, help, ...)                                             \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
+#define OPTION_FLAG(short_name, long_name, ...)                                                    \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_FLAG, HANDLER(flag_handler), __VA_ARGS__)
+#define OPTION_BOOL(short_name, long_name, ...)                                                    \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
+#define OPTION_STRING(short_name, long_name, ...)                                                  \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_STRING, HANDLER(string_handler), __VA_ARGS__)
+#define OPTION_INT(short_name, long_name, ...)                                                     \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_INT, HANDLER(int_handler), __VA_ARGS__)
+#define OPTION_FLOAT(short_name, long_name, ...)                                                   \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
 
-#define OPTION_ARRAY_STRING(short_name, long_name, help, ...)                                      \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_ARRAY_STRING,                              \
-                HANDLER(array_string_handler), FREE_HANDLER(free_array_string_handler),            \
+#define OPTION_ARRAY_STRING(short_name, long_name, ...)                                            \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_ARRAY_STRING, HANDLER(array_string_handler),     \
+                FREE_HANDLER(free_array_string_handler), __VA_ARGS__)
+#define OPTION_ARRAY_INT(short_name, long_name, ...)                                               \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_ARRAY_INT, HANDLER(array_int_handler),           \
                 __VA_ARGS__)
-#define OPTION_ARRAY_INT(short_name, long_name, help, ...)                                         \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_ARRAY_INT, HANDLER(array_int_handler),     \
-                __VA_ARGS__)
-#define OPTION_ARRAY_FLOAT(short_name, long_name, help, ...)                                       \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_ARRAY_FLOAT, HANDLER(array_float_handler), \
+#define OPTION_ARRAY_FLOAT(short_name, long_name, ...)                                             \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_ARRAY_FLOAT, HANDLER(array_float_handler),       \
                 __VA_ARGS__)
 
-#define OPTION_MAP_STRING(short_name, long_name, help, ...)                                        \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_MAP_STRING, HANDLER(map_string_handler),   \
+#define OPTION_MAP_STRING(short_name, long_name, ...)                                              \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_MAP_STRING, HANDLER(map_string_handler),         \
                 FREE_HANDLER(free_map_string_handler), __VA_ARGS__)
-#define OPTION_MAP_INT(short_name, long_name, help, ...)                                           \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_MAP_INT, HANDLER(map_int_handler),         \
+#define OPTION_MAP_INT(short_name, long_name, ...)                                                 \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_MAP_INT, HANDLER(map_int_handler),               \
                 FREE_HANDLER(free_map_int_handler), __VA_ARGS__)
-#define OPTION_MAP_FLOAT(short_name, long_name, help, ...)                                         \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_MAP_FLOAT, HANDLER(map_float_handler),     \
+#define OPTION_MAP_FLOAT(short_name, long_name, ...)                                               \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_MAP_FLOAT, HANDLER(map_float_handler),           \
                 FREE_HANDLER(free_map_float_handler), __VA_ARGS__)
-#define OPTION_MAP_BOOL(short_name, long_name, help, ...)                                          \
-    OPTION_BASE(short_name, long_name, help, VALUE_TYPE_MAP_BOOL, HANDLER(map_bool_handler),       \
+#define OPTION_MAP_BOOL(short_name, long_name, ...)                                                \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_MAP_BOOL, HANDLER(map_bool_handler),             \
                 FREE_HANDLER(free_map_bool_handler), __VA_ARGS__)
 
 /*
  * Common options
  */
 #define HELP_OPTION(...)                                                                           \
-    OPTION_FLAG('h', "help", "Show help message", HANDLER(help_handler), ##__VA_ARGS__)
+    OPTION_FLAG('h', "help", HELP("Show help message"), HANDLER(help_handler), ##__VA_ARGS__)
 #define VERSION_OPTION(...)                                                                        \
-    OPTION_FLAG('V', "version", "Show version information", HANDLER(version_handler), ##__VA_ARGS__)
+    OPTION_FLAG('V', "version", HELP("Show version information"), HANDLER(version_handler),        \
+                ##__VA_ARGS__)
 
 /*
  * Group macros
@@ -188,14 +187,14 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 /*
  * Positional argument macros
  */
-#define POSITIONAL_STRING(name, help, ...)                                                         \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_STRING, HANDLER(string_handler), __VA_ARGS__)
-#define POSITIONAL_INT(name, help, ...)                                                            \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_INT, HANDLER(int_handler), __VA_ARGS__)
-#define POSITIONAL_BOOL(name, help, ...)                                                           \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
-#define POSITIONAL_FLOAT(name, help, ...)                                                          \
-    POSITIONAL_BASE(name, help, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
+#define POSITIONAL_STRING(name, ...)                                                               \
+    POSITIONAL_BASE(name, VALUE_TYPE_STRING, HANDLER(string_handler), __VA_ARGS__)
+#define POSITIONAL_INT(name, ...)                                                                  \
+    POSITIONAL_BASE(name, VALUE_TYPE_INT, HANDLER(int_handler), __VA_ARGS__)
+#define POSITIONAL_BOOL(name, ...)                                                                 \
+    POSITIONAL_BASE(name, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
+#define POSITIONAL_FLOAT(name, ...)                                                                \
+    POSITIONAL_BASE(name, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
 
 /*
  * Subcommand macro

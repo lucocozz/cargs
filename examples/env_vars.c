@@ -34,36 +34,36 @@ CARGS_OPTIONS(
 
 	// Option 1: Explicit environment variable with prefix
 	// Will look for APP_HOST environment variable
-	OPTION_STRING('H', "host", "Server hostname",
+	OPTION_STRING('H', "host", HELP("Server hostname"),
 				DEFAULT("localhost"),
 				ENV_VAR("HOST")),
 	
 	// Option 2: Auto-generated environment variable name
 	// Will generate APP_PORT from the option name
-	OPTION_INT('p', "port", "Server port", 
+	OPTION_INT('p', "port", HELP("Server port"), 
 			   DEFAULT(8080),
 			   FLAGS(FLAG_AUTO_ENV)),
 	
 	// Option 3: Explicit environment variable without prefix
 	// Will look for DATABASE_URL exactly as specified
-	OPTION_STRING('d', "database", "Database connection string",
+	OPTION_STRING('d', "database", HELP("Database connection string"),
 				ENV_VAR("DATABASE_URL"),
 				FLAGS(FLAG_NO_ENV_PREFIX)),
 	
 	// Option 4: Auto-generated name without prefix
 	// Will generate VERBOSE from the option name
-	OPTION_FLAG('v', "verbose", "Enable verbose output",
+	OPTION_FLAG('v', "verbose", HELP("Enable verbose output"),
 				FLAGS(FLAG_AUTO_ENV | FLAG_NO_ENV_PREFIX)),
 	
 	// Option 5: Environment variable that can override command line
 	// Even if --timeout is specified, FORCE_TIMEOUT will take precedence
-	OPTION_INT('t', "timeout", "Connection timeout in seconds",
+	OPTION_INT('t', "timeout", HELP("Connection timeout in seconds"),
 			   DEFAULT(30),
 			   ENV_VAR("FORCE_TIMEOUT"),
 			   FLAGS(FLAG_ENV_OVERRIDE)),
 			  
 	// Option 6: Debug flag with default prefix
-	OPTION_FLAG('\0', "debug", "Enable debug mode",
+	OPTION_FLAG('\0', "debug", HELP("Enable debug mode"),
 			   ENV_VAR("DEBUG"))
 )
 

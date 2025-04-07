@@ -16,16 +16,16 @@ int remove_command(cargs_t *cargs, void *data);
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Force add operation"),
-    POSITIONAL_STRING("file", "File to add")
+    OPTION_FLAG('f', "force", HELP("Force add operation")),
+    POSITIONAL_STRING("file", HELP("File to add"))
 )
 
 // Define options for "remove" subcommand
 CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", "Recursively remove directories"),
-    POSITIONAL_STRING("file", "File to remove")
+    OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
+    POSITIONAL_STRING("file", HELP("File to remove"))
 )
 
 // Define main options with subcommands
@@ -35,7 +35,7 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Global option applicable to all subcommands
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
     
     // Define subcommands
     SUBCOMMAND("add", add_options, 

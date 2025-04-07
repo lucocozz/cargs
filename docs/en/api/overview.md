@@ -57,10 +57,10 @@ Options are defined using the `CARGS_OPTIONS` macro along with option-specific m
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Port number", RANGE(1, 65535), DEFAULT(8080)),
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 ```
 
@@ -102,12 +102,12 @@ Options are categorized into several types:
 
 | Type | Macro | Description | Example |
 |------|-------|-------------|---------|
-| **Regular options** | `OPTION_*` | Standard options with - or -- prefix | `OPTION_INT('p', "port", "Port number")` |
-| **Flag options** | `OPTION_FLAG` | Boolean options | `OPTION_FLAG('v', "verbose", "Enable verbose mode")` |
-| **Positional arguments** | `POSITIONAL_*` | Arguments without dash prefix | `POSITIONAL_STRING("input", "Input file")` |
+| **Regular options** | `OPTION_*` | Standard options with - or -- prefix | `OPTION_INT('p', "port", HELP("Port number"))` |
+| **Flag options** | `OPTION_FLAG` | Boolean options | `OPTION_FLAG('v', "verbose", HELP("Enable verbose mode"))` |
+| **Positional arguments** | `POSITIONAL_*` | Arguments without dash prefix | `POSITIONAL_STRING("input", HELP("Input file"))` |
 | **Subcommands** | `SUBCOMMAND` | Command hierarchies | `SUBCOMMAND("add", add_options, ...)` |
 | **Option groups** | `GROUP_START` ... `GROUP_END` | Visual grouping | `GROUP_START("Network", ...)` |
-| **Collection options** | `OPTION_ARRAY_*`<br>`OPTION_MAP_*` | Multiple values | `OPTION_ARRAY_STRING('t', "tags", "Tags")` |
+| **Collection options** | `OPTION_ARRAY_*`<br>`OPTION_MAP_*` | Multiple values | `OPTION_ARRAY_STRING('t', "tags", HELP("Tags"))` |
 
 ## API Lifecycle
 
@@ -242,19 +242,19 @@ Validators check that input values meet certain criteria:
 === "Range Validator"
     ```c
     // Ensure port is between 1 and 65535
-    OPTION_INT('p', "port", "Port number", RANGE(1, 65535))
+    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535))
     ```
 
 === "Regular Expression Validator"
     ```c
     // Ensure email is valid
-    OPTION_STRING('e', "email", "Email address", REGEX(CARGS_RE_EMAIL))
+    OPTION_STRING('e', "email", HELP("Email address"), REGEX(CARGS_RE_EMAIL))
     ```
 
 === "Custom Validator"
     ```c
     // Custom validation logic
-    OPTION_INT('n', "number", "Even number", 
+    OPTION_INT('n', "number", HELP("Even number"), 
                VALIDATOR(even_validator, NULL))
     ```
 
@@ -267,7 +267,7 @@ Handlers process input values and convert them to internal representations:
 int ipv4_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
 
 // Usage
-OPTION_BASE('i', "ip", "IP address", VALUE_TYPE_CUSTOM,
+OPTION_BASE('i', "ip", HELP("IP address"), VALUE_TYPE_CUSTOM,
             HANDLER(ipv4_handler),
             FREE_HANDLER(ipv4_free_handler))
 ```
@@ -280,9 +280,9 @@ Options can be configured to read from environment variables:
 // Define options with environment variable support
 CARGS_OPTIONS(
     options,
-    OPTION_STRING('H', "host", "Hostname", 
+    OPTION_STRING('H', "host", HELP("Hostname"), 
                   ENV_VAR("HOST")),  // Will use APP_HOST
-    OPTION_INT('p', "port", "Port number", 
+    OPTION_INT('p', "port", HELP("Port number"), 
                FLAGS(FLAG_AUTO_ENV))  // Will use APP_PORT
 )
 
@@ -342,21 +342,21 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Regular options
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Port number", RANGE(1, 65535), DEFAULT(8080)),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
     
     // Option group
     GROUP_START("Advanced", GROUP_DESC("Advanced options")),
-        OPTION_FLAG('f', "force", "Force operation"),
-        OPTION_FLAG('r', "recursive", "Recursive mode"),
+        OPTION_FLAG('f', "force", HELP("Force operation")),
+        OPTION_FLAG('r', "recursive", HELP("Recursive mode")),
     GROUP_END(),
     
     // Array options
-    OPTION_ARRAY_STRING('t', "tag", "Tags", FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
+    OPTION_ARRAY_STRING('t', "tag", HELP("Tags"), FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
     
     // Positional arguments
-    POSITIONAL_STRING("input", "Input file")
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 int main(int argc, char **argv)

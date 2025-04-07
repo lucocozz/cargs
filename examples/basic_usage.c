@@ -17,28 +17,28 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Flag option with both short and long names
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
     
     // String option with only long name (no short name)
-    OPTION_STRING(0, "output", "Output file", 
+    OPTION_STRING(0, "output", HELP("Output file"), 
                  DEFAULT("output.txt"), 
                  HINT("FILE")),
     
     // Integer option with only short name (no long name)
-    OPTION_INT('p', NULL, "Port number", 
+    OPTION_INT('p', NULL, HELP("Port number"), 
                DEFAULT(8080), 
                RANGE(1, 65535)),
 
     // Boolean option with both short and long names
-    OPTION_BOOL('d', NULL, "Debug mode", 
+    OPTION_BOOL('d', NULL, HELP("Debug mode"), 
                DEFAULT(false), 
                HINT("true|false")),
 
     // Another option with only long name (using '\0' instead of 0)
-    OPTION_FLAG('\0', "dry-run", "Run without making changes"),
+    OPTION_FLAG('\0', "dry-run", HELP("Run without making changes")),
     
     // Required positional argument
-    POSITIONAL_STRING("input", "Input file")
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 int main(int argc, char **argv)

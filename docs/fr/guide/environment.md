@@ -35,7 +35,7 @@ This prefix helps namespace your environment variables to avoid conflicts with o
 === "Definition"
     ```c
     // With prefix (APP_HOST if prefix is set)
-    OPTION_STRING('H', "host", "Server hostname",
+    OPTION_STRING('H', "host", HELP("Server hostname"),
                   ENV_VAR("HOST"))
     ```
 
@@ -56,7 +56,7 @@ This prefix helps namespace your environment variables to avoid conflicts with o
 === "Definition"
     ```c
     // Will use APP_PORT if prefix is "APP", or PORT if no prefix
-    OPTION_INT('p', "port", "Server port", 
+    OPTION_INT('p', "port", HELP("Server port"), 
                FLAGS(FLAG_AUTO_ENV))
     ```
 
@@ -82,7 +82,7 @@ When using `FLAG_AUTO_ENV`, cargs automatically generates a variable name:
 === "Definition"
     ```c
     // Always uses DATABASE_URL exactly as specified, ignoring any prefix
-    OPTION_STRING('d', "database", "Database URL",
+    OPTION_STRING('d', "database", HELP("Database URL"),
                   ENV_VAR("DATABASE_URL"),
                   FLAGS(FLAG_NO_ENV_PREFIX))
     ```
@@ -103,7 +103,7 @@ Use `FLAG_NO_ENV_PREFIX` for standard system variables that shouldn't have your 
 === "Definition"
     ```c
     // Uses VERBOSE directly, ignoring any prefix
-    OPTION_FLAG('v', "verbose", "Enable verbose output",
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output"),
                 FLAGS(FLAG_AUTO_ENV | FLAG_NO_ENV_PREFIX))
     ```
 
@@ -126,7 +126,7 @@ By default, environment variables provide fallback values when command-line opti
 
 === "Definition"
     ```c
-    OPTION_INT('t', "timeout", "Timeout in seconds",
+    OPTION_INT('t', "timeout", HELP("Timeout in seconds"),
                ENV_VAR("TIMEOUT"))
     ```
 
@@ -141,7 +141,7 @@ Use `FLAG_ENV_OVERRIDE` to make environment variables override command-line opti
 
 === "Definition"
     ```c
-    OPTION_INT('t', "timeout", "Timeout in seconds",
+    OPTION_INT('t', "timeout", HELP("Timeout in seconds"),
                ENV_VAR("FORCE_TIMEOUT"), 
                FLAGS(FLAG_ENV_OVERRIDE))
     ```
@@ -189,7 +189,7 @@ Clearly document the environment variables your application supports:
 
 ```c
 // Help text explicitly mentions environment variable
-OPTION_STRING('H', "host", "Server hostname (env: APP_HOST)",
+OPTION_STRING('H', "host", HELP("Server hostname (env: APP_HOST)"),
               ENV_VAR("HOST"))
 ```
 
@@ -209,36 +209,36 @@ CARGS_OPTIONS(
 
     // Option 1: Explicit environment variable with optional prefix
     // Will look for APP_HOST if prefix is set, or HOST if no prefix
-    OPTION_STRING('H', "host", "Server hostname",
+    OPTION_STRING('H', "host", HELP("Server hostname"),
                 DEFAULT("localhost"),
                 ENV_VAR("HOST")),
     
     // Option 2: Auto-generated environment variable name
     // Will generate APP_PORT or PORT from the option name
-    OPTION_INT('p', "port", "Server port", 
+    OPTION_INT('p', "port", HELP("Server port"), 
                DEFAULT(8080),
                FLAGS(FLAG_AUTO_ENV)),
     
     // Option 3: Explicit environment variable without prefix
     // Will look for DATABASE_URL exactly as specified
-    OPTION_STRING('d', "database", "Database connection string",
+    OPTION_STRING('d', "database", HELP("Database connection string"),
                 ENV_VAR("DATABASE_URL"),
                 FLAGS(FLAG_NO_ENV_PREFIX)),
     
     // Option 4: Auto-generated name without prefix
     // Will generate VERBOSE from the option name
-    OPTION_FLAG('v', "verbose", "Enable verbose output",
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output"),
                 FLAGS(FLAG_AUTO_ENV | FLAG_NO_ENV_PREFIX)),
     
     // Option 5: Environment variable that can override command line
     // Even if --timeout is specified, FORCE_TIMEOUT will take precedence
-    OPTION_INT('t', "timeout", "Connection timeout in seconds",
+    OPTION_INT('t', "timeout", HELP("Connection timeout in seconds"),
                DEFAULT(30),
                ENV_VAR("FORCE_TIMEOUT"),
                FLAGS(FLAG_ENV_OVERRIDE)),
               
     // Option 6: Debug flag with prefix (if set)
-    OPTION_FLAG('\0', "debug", "Enable debug mode",
+    OPTION_FLAG('\0', "debug", HELP("Enable debug mode"),
                ENV_VAR("DEBUG"))
 )
 

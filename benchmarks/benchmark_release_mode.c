@@ -13,40 +13,40 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     GROUP_START("Input Options", GROUP_DESC("Options related to input")),
-        OPTION_FLAG('v', "verbose", "Enable verbose output"),
-        OPTION_STRING('i', "input", "Input file", DEFAULT("input.txt")),
-        OPTION_ARRAY_STRING('I', "include", "Include files", FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
+        OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+        OPTION_STRING('i', "input", HELP("Input file"), DEFAULT("input.txt")),
+        OPTION_ARRAY_STRING('I', "include", HELP("Include files"), FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
     GROUP_END(),
     
     GROUP_START("Output Options", GROUP_DESC("Options related to output")),
-        OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-        OPTION_STRING('f', "format", "Output format", CHOICES_STRING("text", "json", "xml", "binary")),
-        OPTION_FLAG('s', "silent", "Suppress output", CONFLICTS("verbose")),
+        OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+        OPTION_STRING('f', "format", HELP("Output format"), CHOICES_STRING("text", "json", "xml", "binary")),
+        OPTION_FLAG('s', "silent", HELP("Suppress output"), CONFLICTS("verbose")),
     GROUP_END(),
     
     GROUP_START("Processing Options", GROUP_DESC("Options controlling processing")),
-        OPTION_INT('l', "level", "Processing level", RANGE(1, 10), DEFAULT(5)),
-        OPTION_INT('j', "jobs", "Number of parallel jobs", RANGE(1, 100), DEFAULT(4)),
-        OPTION_FLOAT('t', "threshold", "Processing threshold", DEFAULT(0.5)),
-        OPTION_MAP_STRING('D', "define", "Define variables", FLAGS(FLAG_SORTED_KEY)),
+        OPTION_INT('l', "level", HELP("Processing level"), RANGE(1, 10), DEFAULT(5)),
+        OPTION_INT('j', "jobs", HELP("Number of parallel jobs"), RANGE(1, 100), DEFAULT(4)),
+        OPTION_FLOAT('t', "threshold", HELP("Processing threshold"), DEFAULT(0.5)),
+        OPTION_MAP_STRING('D', "define", HELP("Define variables"), FLAGS(FLAG_SORTED_KEY)),
     GROUP_END(),
     
     GROUP_START("Advanced Options", GROUP_DESC("Advanced configuration")),
-        OPTION_FLAG('d', "debug", "Enable debug mode"),
-        OPTION_STRING('c', "config", "Configuration file"),
-        OPTION_ARRAY_INT('p', "ports", "Port numbers", FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
-        OPTION_MAP_INT('m', "memory", "Memory limits", FLAGS(FLAG_SORTED_KEY)),
+        OPTION_FLAG('d', "debug", HELP("Enable debug mode")),
+        OPTION_STRING('c', "config", HELP("Configuration file")),
+        OPTION_ARRAY_INT('p', "ports", HELP("Port numbers"), FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
+        OPTION_MAP_INT('m', "memory", HELP("Memory limits"), FLAGS(FLAG_SORTED_KEY)),
     GROUP_END(),
     
-    POSITIONAL_STRING("command", "Command to execute"),
-    POSITIONAL_STRING("arguments", "Command arguments", FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_STRING("command", HELP("Command to execute")),
+    POSITIONAL_STRING("arguments", HELP("Command arguments"), FLAGS(FLAG_OPTIONAL))
 )
 
 // Invalid options with duplicated option names
 CARGS_OPTIONS(
     invalid_options,
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('v', "verbose", "Duplicate option")  // Same names - should fail validation
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('v', "verbose", HELP("Duplicate option"))  // Same names - should fail validation
 )
 
 // Small options structure for comparison
@@ -54,9 +54,9 @@ CARGS_OPTIONS(
     simple_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    OPTION_STRING('o', "output", "Output file"),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file")),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 // Forward declaration of the function

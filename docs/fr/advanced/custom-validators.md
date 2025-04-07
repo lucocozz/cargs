@@ -61,7 +61,7 @@ int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 Pour utiliser ce validateur :
 
 ```c
-OPTION_INT('n', "number", "Un nombre pair", 
+OPTION_INT('n', "number", HELP("Un nombre pair"), 
           VALIDATOR(even_validator, NULL))
 ```
 
@@ -89,7 +89,7 @@ Pour utiliser ce pré-validateur :
 // Définir la contrainte de validation
 size_t min_length = 8;
 
-OPTION_STRING('p', "password", "Mot de passe", 
+OPTION_STRING('p', "password", HELP("Mot de passe"), 
             PRE_VALIDATOR(string_length_pre_validator, &min_length))
 ```
 
@@ -144,7 +144,7 @@ static number_constraints_t constraints = {
     .allow_odd = false
 };
 
-OPTION_INT('n', "number", "Un nombre avec contraintes", 
+OPTION_INT('n', "number", HELP("Un nombre avec contraintes"), 
           VALIDATOR(custom_number_validator, &constraints))
 ```
 
@@ -184,7 +184,7 @@ int username_validator(cargs_t *cargs, cargs_value_t value, validator_data_t dat
 Vous pouvez transmettre des données sans variable séparée en utilisant des littéraux composés :
 
 ```c
-OPTION_STRING('u', "username", "Nom d'utilisateur",
+OPTION_STRING('u', "username", HELP("Nom d'utilisateur"),
              PRE_VALIDATOR(string_length_pre_validator, &((size_t){3})))
 ```
 
@@ -218,8 +218,8 @@ static option_relation_t max_relation = { .related_option = "min" };
 
 CARGS_OPTIONS(
     options,
-    OPTION_INT('n', "min", "Valeur minimale"),
-    OPTION_INT('x', "max", "Valeur maximale", 
+    OPTION_INT('n', "min", HELP("Valeur minimale")),
+    OPTION_INT('x', "max", HELP("Valeur maximale"), 
                VALIDATOR(greater_than_validator, &max_relation))
 )
 ```
@@ -247,9 +247,9 @@ Pour les modèles de validation fréquemment utilisés, créez des macros d'aide
 // Utilisation
 CARGS_OPTIONS(
     options,
-    OPTION_INT('n', "number", "Un nombre pair", EVEN_NUMBER()),
-    OPTION_STRING('p', "password", "Mot de passe", MIN_LENGTH(8)),
-    OPTION_STRING('u', "username", "Nom d'utilisateur", STRING_LENGTH(3, 20))
+    OPTION_INT('n', "number", HELP("Un nombre pair"), EVEN_NUMBER()),
+    OPTION_STRING('p', "password", HELP("Mot de passe"), MIN_LENGTH(8)),
+    OPTION_STRING('u', "username", HELP("Nom d'utilisateur"), STRING_LENGTH(3, 20))
 )
 ```
 

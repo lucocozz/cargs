@@ -10,24 +10,25 @@
 CARGS_OPTIONS(
     parse_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('o', "output", "Output file"),
-    OPTION_INT('c', "count", "Count value"),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file")),
+    OPTION_INT('c', "count", HELP("Count value")),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 // Options for testing subcommands
 CARGS_OPTIONS(
     sub_parse_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('d', "debug", "Debug mode")
+    OPTION_FLAG('d', "debug", HELP("Debug mode"))
 )
 
 CARGS_OPTIONS(
     cmd_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    SUBCOMMAND("sub", sub_parse_options, HELP("Subcommand"))
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    SUBCOMMAND("sub", sub_parse_options, 
+               HELP("Subcommand"))
 )
 
 // Cargs context for tests

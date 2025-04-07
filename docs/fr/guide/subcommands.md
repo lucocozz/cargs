@@ -37,16 +37,16 @@ D'abord, définissez les options pour chacune de vos sous-commandes :
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Forcer l'opération d'ajout"),
-    POSITIONAL_STRING("file", "Fichier à ajouter")
+    OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout")),
+    POSITIONAL_STRING("file", HELP("Fichier à ajouter"))
 )
 
 // Options pour la sous-commande "remove"
 CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", "Supprimer récursivement les répertoires"),
-    POSITIONAL_STRING("file", "Fichier à supprimer")
+    OPTION_FLAG('r', "recursive", HELP("Supprimer récursivement les répertoires")),
+    POSITIONAL_STRING("file", HELP("Fichier à supprimer"))
 )
 ```
 
@@ -94,7 +94,7 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Option globale applicable à toutes les sous-commandes
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse"),
+    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
     
     // Définir les sous-commandes
     SUBCOMMAND("add", add_options, 
@@ -223,16 +223,16 @@ int remove_command(cargs_t *cargs, void *data);
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Forcer l'opération d'ajout"),
-    POSITIONAL_STRING("file", "Fichier à ajouter")
+    OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout")),
+    POSITIONAL_STRING("file", HELP("Fichier à ajouter"))
 )
 
 // Définir les options pour la sous-commande "remove"
 CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", "Supprimer récursivement les répertoires"),
-    POSITIONAL_STRING("file", "Fichier à supprimer")
+    OPTION_FLAG('r', "recursive", HELP("Supprimer récursivement les répertoires")),
+    POSITIONAL_STRING("file", HELP("Fichier à supprimer"))
 )
 
 // Définir les options principales avec sous-commandes
@@ -242,7 +242,7 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Option globale applicable à toutes les sous-commandes
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse"),
+    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
     
     // Définir les sous-commandes
     SUBCOMMAND("add", add_options, 

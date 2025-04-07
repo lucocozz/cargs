@@ -8,7 +8,7 @@ cargs inclut un riche ensemble de motifs d'expressions régulières prédéfinis
     ```c
     #include "cargs/regex.h"
     
-    OPTION_STRING('e', "email", "Adresse email", 
+    OPTION_STRING('e', "email", HELP("Adresse email"), 
                  REGEX(CARGS_RE_EMAIL))
     ```
 
@@ -104,7 +104,7 @@ Vous pouvez définir vos propres motifs d'expressions régulières en utilisant 
 
 === "Utilisation"
     ```c
-    OPTION_STRING('p', "product", "ID du produit", 
+    OPTION_STRING('p', "product", HELP("ID du produit"), 
                  REGEX(RE_PRODUCT_ID))
     ```
 

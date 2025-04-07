@@ -20,15 +20,15 @@ int config_get_action(cargs_t *cargs, void *data);
 CARGS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('n', "name", "Service name", FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", "Container image", FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
 )
 
 // Define options for "service list" command
 CARGS_OPTIONS(
     service_list_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('a', "all", "Show all services, including stopped ones")
+    OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones"))
 )
 
 // Define options for the "service" parent command
@@ -48,15 +48,15 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     config_set_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("key", "Configuration key"),
-    POSITIONAL_STRING("value", "Configuration value")
+    POSITIONAL_STRING("key", HELP("Configuration key")),
+    POSITIONAL_STRING("value", HELP("Configuration value"))
 )
 
 // Define options for "config get" command
 CARGS_OPTIONS(
     config_get_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("key", "Configuration key")
+    POSITIONAL_STRING("key", HELP("Configuration key"))
 )
 
 // Define options for the "config" parent command
@@ -79,8 +79,8 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Global option at root level
-    OPTION_FLAG('d', "debug", "Enable debug mode"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.log")),
+    OPTION_FLAG('d', "debug", HELP("Enable debug mode")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.log")),
     
     SUBCOMMAND("service", service_options, 
                HELP("Service management commands")),

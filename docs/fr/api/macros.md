@@ -31,8 +31,8 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.txt")),
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse")
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
+    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse"))
 )
 ```
 
@@ -56,7 +56,7 @@ OPTION_STRING(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_STRING('o', "output", "Fichier de sortie", 
+OPTION_STRING('o', "output", HELP("Fichier de sortie"), 
              DEFAULT("output.txt"), 
              HINT("FILE"))
 ```
@@ -73,7 +73,7 @@ OPTION_INT(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_INT('p', "port", "Numéro de port", 
+OPTION_INT('p', "port", HELP("Numéro de port"), 
            DEFAULT(8080), 
            RANGE(1, 65535))
 ```
@@ -90,7 +90,7 @@ OPTION_FLOAT(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_FLOAT('f', "factor", "Facteur d'échelle", 
+OPTION_FLOAT('f', "factor", HELP("Facteur d'échelle"), 
              DEFAULT(1.0))
 ```
 
@@ -103,7 +103,7 @@ OPTION_BOOL(nom_court, nom_long, aide, ...)
 **Paramètres :** Identiques à `OPTION_STRING`
 **Exemple :**
 ```c
-OPTION_BOOL('d', "debug", "Activer le mode débogage", 
+OPTION_BOOL('d', "debug", HELP("Activer le mode débogage"), 
             DEFAULT(false))
 ```
 
@@ -119,7 +119,7 @@ OPTION_FLAG(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse")
+OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse"))
 ```
 
 ### Options de type tableau
@@ -136,7 +136,7 @@ OPTION_ARRAY_STRING(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_ARRAY_STRING('t', "tags", "Tags pour la ressource", 
+OPTION_ARRAY_STRING('t', "tags", HELP("Tags pour la ressource"), 
                    FLAGS(FLAG_SORTED | FLAG_UNIQUE))
 ```
 
@@ -152,7 +152,7 @@ OPTION_ARRAY_INT(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_ARRAY_INT('p', "ports", "Numéros de ports", 
+OPTION_ARRAY_INT('p', "ports", HELP("Numéros de ports"), 
                 FLAGS(FLAG_UNIQUE))
 ```
 
@@ -168,7 +168,7 @@ OPTION_ARRAY_FLOAT(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_ARRAY_FLOAT('f', "factors", "Facteurs d'échelle")
+OPTION_ARRAY_FLOAT('f', "factors", HELP("Facteurs d'échelle"))
 ```
 
 ### Options de type map
@@ -185,7 +185,7 @@ OPTION_MAP_STRING(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_MAP_STRING('e', "env", "Variables d'environnement", 
+OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement"), 
                  FLAGS(FLAG_SORTED_KEY))
 ```
 
@@ -201,7 +201,7 @@ OPTION_MAP_INT(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_MAP_INT('p', "ports", "Ports de service", 
+OPTION_MAP_INT('p', "ports", HELP("Ports de service"), 
               FLAGS(FLAG_SORTED_KEY))
 ```
 
@@ -217,7 +217,7 @@ OPTION_MAP_FLOAT(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_MAP_FLOAT('s', "scales", "Facteurs d'échelle par dimension")
+OPTION_MAP_FLOAT('s', "scales", HELP("Facteurs d'échelle par dimension"))
 ```
 
 #### OPTION_MAP_BOOL
@@ -232,7 +232,7 @@ OPTION_MAP_BOOL(nom_court, nom_long, aide, ...)
 
 **Exemple :**
 ```c
-OPTION_MAP_BOOL('f', "features", "Bascules de fonctionnalités")
+OPTION_MAP_BOOL('f', "features", HELP("Bascules de fonctionnalités"))
 ```
 
 ### Arguments positionnels
@@ -252,7 +252,7 @@ POSITIONAL_STRING(nom, aide, ...)
 
 **Exemple :**
 ```c
-POSITIONAL_STRING("input", "Fichier d'entrée")
+POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
 ```
 
 #### POSITIONAL_INT
@@ -267,7 +267,7 @@ POSITIONAL_INT(nom, aide, ...)
 
 **Exemple :**
 ```c
-POSITIONAL_INT("count", "Nombre d'itérations", 
+POSITIONAL_INT("count", HELP("Nombre d'itérations"), 
                DEFAULT(1))
 ```
 
@@ -283,7 +283,7 @@ POSITIONAL_FLOAT(nom, aide, ...)
 
 **Exemple :**
 ```c
-POSITIONAL_FLOAT("threshold", "Seuil de détection", 
+POSITIONAL_FLOAT("threshold", HELP("Seuil de détection"), 
                  DEFAULT(0.5))
 ```
 
@@ -299,7 +299,7 @@ POSITIONAL_BOOL(nom, aide, ...)
 
 **Exemple :**
 ```c
-POSITIONAL_BOOL("enabled", "Activer la fonctionnalité")
+POSITIONAL_BOOL("enabled", HELP("Activer la fonctionnalité"))
 ```
 
 ### Options courantes
@@ -355,7 +355,7 @@ OPTION_BASE(nom_court, nom_long, aide, type_valeur, ...)
 
 **Exemple :**
 ```c
-OPTION_BASE('i', "ip", "Adresse IP", VALUE_TYPE_CUSTOM,
+OPTION_BASE('i', "ip", HELP("Adresse IP"), VALUE_TYPE_CUSTOM,
             HANDLER(ip_handler),
             FREE_HANDLER(ip_free_handler))
 ```
@@ -376,7 +376,7 @@ POSITIONAL_BASE(nom, aide, type_valeur, ...)
 
 **Exemple :**
 ```c
-POSITIONAL_BASE("coordinate", "Coordonnées du point", VALUE_TYPE_CUSTOM,
+POSITIONAL_BASE("coordinate", HELP("Coordonnées du point"), VALUE_TYPE_CUSTOM,
                 HANDLER(coordinate_handler),
                 FREE_HANDLER(coordinate_free_handler))
 ```
@@ -710,17 +710,17 @@ Voici un exemple complet montrant diverses macros en utilisation :
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Forcer l'opération d'ajout", 
+    OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout"), 
                CONFLICTS("dry-run")),
-    POSITIONAL_STRING("file", "Fichier à ajouter")
+    POSITIONAL_STRING("file", HELP("Fichier à ajouter"))
 )
 
 // Définir les options pour la sous-commande "remove"
 CARGS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", "Supprimer récursivement les répertoires"),
-    POSITIONAL_STRING("file", "Fichier à supprimer")
+    OPTION_FLAG('r', "recursive", HELP("Supprimer récursivement les répertoires")),
+    POSITIONAL_STRING("file", HELP("Fichier à supprimer"))
 )
 
 // Définir les options principales avec sous-commandes et groupes d'options
@@ -730,24 +730,24 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Options globales
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse"),
-    OPTION_STRING('o', "output", "Fichier journal", 
+    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
+    OPTION_STRING('o', "output", HELP("Fichier journal"), 
                  DEFAULT("output.log"), 
                  HINT("FICHIER")),
     
     // Options dans un groupe
     GROUP_START("Display", GROUP_DESC("Options d'affichage")),
-        OPTION_FLAG('q', "quiet", "Supprimer la sortie", 
+        OPTION_FLAG('q', "quiet", HELP("Supprimer la sortie"), 
                    CONFLICTS("verbose")),
-        OPTION_FLAG('c', "color", "Coloriser la sortie"),
+        OPTION_FLAG('c', "color", HELP("Coloriser la sortie")),
     GROUP_END(),
     
     // Options dans un groupe exclusif (une seule peut être sélectionnée)
     GROUP_START("Format", GROUP_DESC("Format de sortie"), 
                 FLAGS(FLAG_EXCLUSIVE)),
-        OPTION_FLAG('j', "json", "Sortie JSON"),
-        OPTION_FLAG('x', "xml", "Sortie XML"),
-        OPTION_FLAG('y', "yaml", "Sortie YAML"),
+        OPTION_FLAG('j', "json", HELP("Sortie JSON")),
+        OPTION_FLAG('x', "xml", HELP("Sortie XML")),
+        OPTION_FLAG('y', "yaml", HELP("Sortie YAML")),
     GROUP_END(),
     
     // Sous-commandes

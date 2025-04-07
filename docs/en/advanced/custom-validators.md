@@ -61,7 +61,7 @@ int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 To use this validator:
 
 ```c
-OPTION_INT('n', "number", "An even number", 
+OPTION_INT('n', "number", HELP("An even number"), 
           VALIDATOR(even_validator, NULL))
 ```
 
@@ -89,8 +89,8 @@ To use this pre-validator:
 // Define the validation constraint
 size_t min_length = 8;
 
-OPTION_STRING('p', "password", "Password", 
-            PRE_VALIDATOR(string_length_pre_validator, &min_length))
+OPTION_STRING('p', "password", HELP("Password"),
+             PRE_VALIDATOR(length_pre_validator, &min_length))
 ```
 
 ## Passing Data to Validators
@@ -218,8 +218,8 @@ static option_relation_t max_relation = { .related_option = "min" };
 
 CARGS_OPTIONS(
     options,
-    OPTION_INT('n', "min", "Minimum value"),
-    OPTION_INT('x', "max", "Maximum value", 
+    OPTION_INT('n', "min", HELP("Minimum value")),
+    OPTION_INT('x', "max", HELP("Maximum value"), 
                VALIDATOR(greater_than_validator, &max_relation))
 )
 ```
@@ -247,9 +247,9 @@ For frequently used validation patterns, create helper macros:
 // Usage
 CARGS_OPTIONS(
     options,
-    OPTION_INT('n', "number", "An even number", EVEN_NUMBER()),
-    OPTION_STRING('p', "password", "Password", MIN_LENGTH(8)),
-    OPTION_STRING('u', "username", "Username", STRING_LENGTH(3, 20))
+    OPTION_INT('n', "number", HELP("An even number"), EVEN_NUMBER()),
+    OPTION_STRING('p', "password", HELP("Password"), MIN_LENGTH(8)),
+    OPTION_STRING('u', "username", HELP("Username"), STRING_LENGTH(3, 20))
 )
 ```
 
@@ -480,29 +480,29 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Built-in range validator
-    OPTION_INT('p', "port", "Port number", 
+    OPTION_INT('p', "port", HELP("Port number"), 
                 DEFAULT(8080), RANGE(1, 65535)),
     
     // Built-in choices validator
-    OPTION_STRING('l', "log-level", "Log level", 
+    OPTION_STRING('l', "log-level", HELP("Log level"), 
                 DEFAULT("info"), 
                 CHOICES_STRING("debug", "info", "warning", "error")),
     
     // Custom email validator
-    OPTION_STRING('e', "email", "Email address",
+    OPTION_STRING('e', "email", HELP("Email address"),
                 EMAIL_VALIDATOR()),
     
     // Custom even number validator
-    OPTION_INT('n', "number", "An even number",
+    OPTION_INT('n', "number", HELP("An even number"),
                 EVEN_NUMBER(),
                 DEFAULT(42)),
     
     // String with case validation
-    OPTION_STRING('u', "username", "Username (lowercase)",
+    OPTION_STRING('u', "username", HELP("Username (lowercase)"),
                 LOWERCASE_ONLY()),
                 
     // String with multiple validators
-    OPTION_STRING('p', "password", "Password (mixed case)",
+    OPTION_STRING('p', "password", HELP("Password (mixed case)"),
                 MIXED_CASE())
 )
 

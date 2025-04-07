@@ -21,6 +21,12 @@ static int validate_basics(cargs_t *cargs, cargs_option_t *option)
         status = CARGS_ERROR_INVALID_FLAG;
     }
 
+    if (option->help == NULL) {
+        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
+                            "Option '%s' must have a help message", option->name);
+        status = CARGS_ERROR_MALFORMED_OPTION;
+    }
+
     if (option->handler == NULL) {
         CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, "Option '%s' must have a handler",
                             option->name);
@@ -120,6 +126,12 @@ int validate_positional(cargs_t *cargs, cargs_option_t *option)
     if (option->name == NULL) {
         CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
                             "Positional option must have a name");
+        status = CARGS_ERROR_MALFORMED_OPTION;
+    }
+
+    if (option->help == NULL) {
+        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
+                            "Positional option '%s' must have a help message", option->name);
         status = CARGS_ERROR_MALFORMED_OPTION;
     }
 

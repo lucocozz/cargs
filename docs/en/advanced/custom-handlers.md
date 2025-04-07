@@ -123,7 +123,7 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Option with custom handler
-    OPTION_BASE('e', "endpoint", "Server endpoint (host:port)", 
+    OPTION_BASE('e', "endpoint", HELP("Server endpoint (host:port)"), 
                 VALUE_TYPE_CUSTOM,
                 HANDLER(endpoint_handler),
                 FREE_HANDLER(endpoint_free_handler))
@@ -136,8 +136,8 @@ For reusability and cleaner code, you can create your own macro:
 
 ```c
 // Helper macro for endpoint options
-#define OPTION_ENDPOINT(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_ENDPOINT(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(endpoint_handler), \
                 FREE_HANDLER(endpoint_free_handler), \
                 ##__VA_ARGS__)
@@ -148,7 +148,7 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Much cleaner with a dedicated macro
-    OPTION_ENDPOINT('e', "endpoint", "Server endpoint")
+    OPTION_ENDPOINT('e', "endpoint", HELP("Server endpoint"))
 )
 ```
 
@@ -174,8 +174,8 @@ if (cargs_is_set(cargs, "endpoint")) {
 You can use custom handlers with validators for complex processing:
 
 ```c
-// Custom handler for processing
-OPTION_BASE('e', "endpoint", "Server endpoint (host:port)", 
+// Custom handler for endpoint "host:port"
+OPTION_BASE('e', "endpoint", HELP("Server endpoint (host:port)"), 
             VALUE_TYPE_CUSTOM,
             HANDLER(endpoint_handler),
             FREE_HANDLER(endpoint_free_handler),
@@ -331,14 +331,14 @@ int my_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
 Create helper macros for custom types:
 
 ```c
-#define OPTION_ENDPOINT(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_ENDPOINT(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(endpoint_handler), \
                 FREE_HANDLER(endpoint_free_handler), \
                 ##__VA_ARGS__)
 
-#define OPTION_COLOR(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_COLOR(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(color_handler), \
                 FREE_HANDLER(color_free_handler), \
                 ##__VA_ARGS__)
@@ -418,8 +418,8 @@ int endpoint_free_handler(cargs_option_t *option)
 }
 
 // Helper macro for endpoint options
-#define OPTION_ENDPOINT(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_ENDPOINT(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(endpoint_handler), \
                 FREE_HANDLER(endpoint_free_handler), \
                 ##__VA_ARGS__)
@@ -431,10 +431,10 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Server endpoint using the custom handler
-    OPTION_ENDPOINT('s', "server", "Server endpoint (host:port)"),
+    OPTION_ENDPOINT('s', "server", HELP("Server endpoint (host:port)")),
     
     // Database endpoint with default value
-    OPTION_ENDPOINT('d', "database", "Database endpoint (host:port)", 
+    OPTION_ENDPOINT('d', "database", HELP("Database endpoint (host:port)"), 
                    DEFAULT("localhost:5432"))
 )
 

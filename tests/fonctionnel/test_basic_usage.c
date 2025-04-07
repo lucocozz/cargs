@@ -7,10 +7,10 @@ CARGS_OPTIONS(
     basic_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Port number", DEFAULT(8080), RANGE(1, 65535)),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), DEFAULT(8080), RANGE(1, 65535)),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 // Test successful parsing and execution
