@@ -15,31 +15,31 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Required option
-    OPTION_STRING('i', "input", "Input file", FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('i', "input", HELP("Input file"), FLAGS(FLAG_REQUIRED)),
     
     // Compression options in an exclusive group (only one can be selected)
     GROUP_START("Compression", GROUP_DESC("Compression options"), 
                 FLAGS(FLAG_EXCLUSIVE)),
-        OPTION_FLAG('z', "gzip", "Use gzip compression"),
-        OPTION_FLAG('j', "bzip2", "Use bzip2 compression"),
-        OPTION_FLAG('Z', "lzma", "Use lzma compression"),
+        OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
+        OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
+        OPTION_FLAG('Z', "lzma", HELP("Use lzma compression")),
     GROUP_END(),
     
     // Compression level requires one of the compression options
-    OPTION_INT('l', "level", "Compression level", 
+    OPTION_INT('l', "level", HELP("Compression level"), 
               DEFAULT(6), RANGE(1, 9),
               REQUIRES("gzip", "bzip2", "lzma")),
     
     // Options that conflict with each other
-    OPTION_FLAG('v', "verbose", "Enable verbose output", 
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output"), 
                CONFLICTS("quiet")),
-    OPTION_FLAG('q', "quiet", "Suppress all output", 
+    OPTION_FLAG('q', "quiet", HELP("Suppress all output"), 
                CONFLICTS("verbose")),
     
     // Options that require each other
-    OPTION_STRING('u', "username", "Username for authentication", 
+    OPTION_STRING('u', "username", HELP("Username for authentication"), 
                  REQUIRES("password")),
-    OPTION_STRING('p', "password", "Password for authentication", 
+    OPTION_STRING('p', "password", HELP("Password for authentication"), 
                  REQUIRES("username"))
 )
 

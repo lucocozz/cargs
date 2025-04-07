@@ -123,7 +123,7 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Option avec gestionnaire personnalisé
-    OPTION_BASE('e', "endpoint", "Point de terminaison du serveur (hôte:port)", 
+    OPTION_BASE('e', "endpoint", HELP("Point de terminaison du serveur (hôte:port)"), 
                 VALUE_TYPE_CUSTOM,
                 HANDLER(endpoint_handler),
                 FREE_HANDLER(endpoint_free_handler))
@@ -136,8 +136,8 @@ Pour la réutilisabilité et un code plus propre, vous pouvez créer votre propr
 
 ```c
 // Macro d'aide pour les options de point de terminaison
-#define OPTION_ENDPOINT(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_ENDPOINT(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(endpoint_handler), \
                 FREE_HANDLER(endpoint_free_handler), \
                 ##__VA_ARGS__)
@@ -148,7 +148,7 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Beaucoup plus propre avec une macro dédiée
-    OPTION_ENDPOINT('e', "endpoint", "Point de terminaison du serveur")
+    OPTION_ENDPOINT('e', "endpoint", HELP("Point de terminaison du serveur"))
 )
 ```
 
@@ -175,7 +175,7 @@ Vous pouvez utiliser des gestionnaires personnalisés avec des validateurs pour 
 
 ```c
 // Gestionnaire personnalisé pour le traitement
-OPTION_BASE('e', "endpoint", "Point de terminaison du serveur (hôte:port)", 
+OPTION_BASE('e', "endpoint", HELP("Point de terminaison du serveur (hôte:port)"), 
             VALUE_TYPE_CUSTOM,
             HANDLER(endpoint_handler),
             FREE_HANDLER(endpoint_free_handler),
@@ -331,14 +331,14 @@ int my_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
 Créez des macros d'aide pour les types personnalisés :
 
 ```c
-#define OPTION_ENDPOINT(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_ENDPOINT(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(endpoint_handler), \
                 FREE_HANDLER(endpoint_free_handler), \
                 ##__VA_ARGS__)
 
-#define OPTION_COLOR(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_COLOR(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(color_handler), \
                 FREE_HANDLER(color_free_handler), \
                 ##__VA_ARGS__)
@@ -418,8 +418,8 @@ int endpoint_free_handler(cargs_option_t *option)
 }
 
 // Macro d'aide pour les options de point de terminaison
-#define OPTION_ENDPOINT(short_name, long_name, help_text, ...) \
-    OPTION_BASE(short_name, long_name, help_text, VALUE_TYPE_CUSTOM, \
+#define OPTION_ENDPOINT(short_name, long_name, ...) \
+    OPTION_BASE(short_name, long_name, VALUE_TYPE_CUSTOM, \
                 HANDLER(endpoint_handler), \
                 FREE_HANDLER(endpoint_free_handler), \
                 ##__VA_ARGS__)
@@ -431,10 +431,10 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Point de terminaison du serveur utilisant le gestionnaire personnalisé
-    OPTION_ENDPOINT('s', "server", "Point de terminaison du serveur (hôte:port)"),
+    OPTION_ENDPOINT('s', "server", HELP("Point de terminaison du serveur (hôte:port)")),
     
     // Point de terminaison de la base de données avec valeur par défaut
-    OPTION_ENDPOINT('d', "database", "Point de terminaison de la base de données (hôte:port)", 
+    OPTION_ENDPOINT('d', "database", HELP("Point de terminaison de la base de données (hôte:port)"), 
                    DEFAULT("localhost:5432"))
 )
 

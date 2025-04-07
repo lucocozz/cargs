@@ -6,32 +6,32 @@
 // Mock options for testing
 CARGS_OPTIONS(
     test_options,
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('o', "output", "Output file"),
-    OPTION_STRING('s', NULL, "Short-only option"),
-    OPTION_FLAG('\0', "long-only", "Long-only option"),
-    POSITIONAL_STRING("input", "Input file"),
-    POSITIONAL_STRING("output", "Output file"),
-    POSITIONAL_INT("count", "Count value", FLAGS(FLAG_OPTIONAL))
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file")),
+    OPTION_STRING('s', NULL, HELP("Short-only option")),
+    OPTION_FLAG('\0', "long-only", HELP("Long-only option")),
+    POSITIONAL_STRING("input", HELP("Input file")),
+    POSITIONAL_STRING("output", HELP("Output file")),
+    POSITIONAL_INT("count", HELP("Count value"), FLAGS(FLAG_OPTIONAL))
 )
 
 // Mock subcommand options
 CARGS_OPTIONS(
     sub_options,
-    OPTION_FLAG('d', "debug", "Debug mode"),
-    POSITIONAL_STRING("subfile", "Subcommand file")
+    OPTION_FLAG('d', "debug", HELP("Debug mode")),
+    POSITIONAL_STRING("subfile", HELP("Subcommand file"))
 )
 
 // Mock nested subcommand options
 CARGS_OPTIONS(
     nested_options,
-    OPTION_FLAG('n', "nested", "Nested option")
+    OPTION_FLAG('n', "nested", HELP("Nested option"))
 )
 
 // Mock options with subcommands
 CARGS_OPTIONS(
     cmd_options,
-    OPTION_FLAG('g', "global", "Global option"),
+    OPTION_FLAG('g', "global", HELP("Global option")),
     SUBCOMMAND("sub", sub_options, HELP("Subcommand")),
     SUBCOMMAND("nested", nested_options, HELP("Nested subcommand"))
 )

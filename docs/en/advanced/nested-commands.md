@@ -33,8 +33,8 @@ To implement nested commands, you create a hierarchy of command definitions:
 CARGS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('n', "name", "Service name", FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", "Container image", FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
 )
 
 // Define options for "service" command group
@@ -55,7 +55,7 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Global options at root level
-    OPTION_FLAG('d', "debug", "Enable debug mode"),
+    OPTION_FLAG('d', "debug", HELP("Enable debug mode")),
     
     SUBCOMMAND("service", service_options, 
                HELP("Service management commands"))
@@ -125,7 +125,7 @@ This allows for intuitive command structures where some positional arguments mak
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Global positional arguments
-        POSITIONAL_STRING("source", "Source directory"),
+        POSITIONAL_STRING("source", HELP("Source directory")),
         
         // Commands with their own positional arguments
         SUBCOMMAND("copy", copy_options,
@@ -135,7 +135,7 @@ This allows for intuitive command structures where some positional arguments mak
     CARGS_OPTIONS(
         copy_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
-        POSITIONAL_STRING("destination", "Destination directory")
+        POSITIONAL_STRING("destination", HELP("Destination directory"))
     )
     ```
 
@@ -346,8 +346,8 @@ int config_get_action(cargs_t *cargs, void *data);
 CARGS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('n', "name", "Service name", FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", "Container image", FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
 )
 
 // Define options for "service list" command

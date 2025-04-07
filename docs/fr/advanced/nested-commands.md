@@ -33,8 +33,8 @@ Pour implémenter des commandes imbriquées, vous créez une hiérarchie de déf
 CARGS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('n', "name", "Nom du service", FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", "Image du conteneur", FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED))
 )
 
 // Définir les options pour le groupe de commandes "service"
@@ -55,7 +55,7 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Options globales au niveau racine
-    OPTION_FLAG('d', "debug", "Activer le mode debug"),
+    OPTION_FLAG('d', "debug", HELP("Activer le mode debug")),
     
     SUBCOMMAND("service", service_options, 
                HELP("Commandes de gestion de service"))
@@ -125,7 +125,7 @@ Cela permet des structures de commandes intuitives où certains arguments positi
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Arguments positionnels globaux
-        POSITIONAL_STRING("source", "Répertoire source"),
+        POSITIONAL_STRING("source", HELP("Répertoire source")),
         
         // Commandes avec leurs propres arguments positionnels
         SUBCOMMAND("copy", copy_options,
@@ -135,7 +135,7 @@ Cela permet des structures de commandes intuitives où certains arguments positi
     CARGS_OPTIONS(
         copy_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
-        POSITIONAL_STRING("destination", "Répertoire de destination")
+        POSITIONAL_STRING("destination", HELP("Répertoire de destination"))
     )
     ```
 
@@ -297,7 +297,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
         
         // Options globales pour toutes les commandes
-        OPTION_FLAG('q', "quiet", "Supprimer la sortie"),
+        OPTION_FLAG('q', "quiet", HELP("Supprimer la sortie")),
         
         SUBCOMMAND("container", container_options,
                    HELP("Gérer les conteneurs")),
@@ -346,15 +346,15 @@ int config_get_action(cargs_t *cargs, void *data);
 CARGS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('n', "name", "Nom du service", FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", "Image du conteneur", FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED))
 )
 
 // Définir les options pour la commande "service list"
 CARGS_OPTIONS(
     service_list_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('a', "all", "Afficher tous les services, y compris les arrêtés")
+    OPTION_FLAG('a', "all", HELP("Afficher tous les services, y compris les arrêtés"))
 )
 
 // Définir les options pour la commande parente "service"
@@ -374,15 +374,15 @@ CARGS_OPTIONS(
 CARGS_OPTIONS(
     config_set_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("key", "Clé de configuration"),
-    POSITIONAL_STRING("value", "Valeur de configuration")
+    POSITIONAL_STRING("key", HELP("Clé de configuration")),
+    POSITIONAL_STRING("value", HELP("Valeur de configuration"))
 )
 
 // Définir les options pour la commande "config get"
 CARGS_OPTIONS(
     config_get_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    POSITIONAL_STRING("key", "Clé de configuration")
+    POSITIONAL_STRING("key", HELP("Clé de configuration"))
 )
 
 // Définir les options pour la commande parente "config"
@@ -405,8 +405,8 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Option globale au niveau racine
-    OPTION_FLAG('d', "debug", "Activer le mode debug"),
-    OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.log")),
+    OPTION_FLAG('d', "debug", HELP("Activer le mode debug")),
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.log")),
     
     SUBCOMMAND("service", service_options, 
                HELP("Commandes de gestion de service")),

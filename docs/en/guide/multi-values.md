@@ -32,13 +32,13 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Simple string array
-    OPTION_ARRAY_STRING('n', "names", "List of names"),
+    OPTION_ARRAY_STRING('n', "names", HELP("List of names")),
     
     // Integer array
-    OPTION_ARRAY_INT('i', "ids", "List of IDs"),
+    OPTION_ARRAY_INT('i', "ids", HELP("List of IDs")),
     
     // Float array
-    OPTION_ARRAY_FLOAT('f', "factors", "Scaling factors")
+    OPTION_ARRAY_FLOAT('f', "factors", HELP("Scaling factors"))
 )
 ```
 
@@ -97,16 +97,16 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // String map
-    OPTION_MAP_STRING('e', "env", "Environment variables"),
+    OPTION_MAP_STRING('e', "env", HELP("Environment variables")),
     
     // Integer map
-    OPTION_MAP_INT('p', "ports", "Service port numbers"),
+    OPTION_MAP_INT('p', "ports", HELP("Service port numbers")),
     
     // Float map
-    OPTION_MAP_FLOAT('s', "scales", "Scaling factors"),
+    OPTION_MAP_FLOAT('s', "scales", HELP("Scaling factors")),
     
     // Boolean map
-    OPTION_MAP_BOOL('f', "features", "Feature flags")
+    OPTION_MAP_BOOL('f', "features", HELP("Feature flags"))
 )
 ```
 
@@ -260,13 +260,13 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Array options
-    OPTION_ARRAY_STRING('n', "name", "Names of users"),
-    OPTION_ARRAY_INT('i', "id", "User IDs"),
+    OPTION_ARRAY_STRING('n', "name", HELP("Names of users")),
+    OPTION_ARRAY_INT('i', "id", HELP("User IDs")),
     
     // Map options
-    OPTION_MAP_STRING('e', "env", "Environment variables"),
-    OPTION_MAP_INT('p', "port", "Port mappings"),
-    OPTION_MAP_BOOL('f', "feature", "Feature flags")
+    OPTION_MAP_STRING('e', "env", HELP("Environment variables")),
+    OPTION_MAP_INT('p', "port", HELP("Port mappings")),
+    OPTION_MAP_BOOL('f', "feature", HELP("Feature flags"))
 )
 
 int main(int argc, char **argv)

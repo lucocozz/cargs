@@ -20,37 +20,37 @@ CARGS_OPTIONS(
 
     // SECTION 1: Using predefined patterns from header
     GROUP_START("Network and Communication", GROUP_DESC("Network-related options")),
-       OPTION_STRING('i', "ip", "IPv4 address",
+       OPTION_STRING('i', "ip", HELP("IPv4 address"),
                     REGEX(CARGS_RE_IPV4)),
 
-       OPTION_STRING('m', "mac", "MAC address",
+       OPTION_STRING('m', "mac", HELP("MAC address"),
                     REGEX(CARGS_RE_MAC)),
 
-        OPTION_STRING('e', "email", "Email address",
+        OPTION_STRING('e', "email", HELP("Email address"),
                     REGEX(CARGS_RE_EMAIL)),
 
-        OPTION_STRING('u', "url", "URL with any protocol",
+        OPTION_STRING('u', "url", HELP("URL with any protocol"),
                     REGEX(CARGS_RE_URL)),
     GROUP_END(),
 
     // SECTION 2: Custom patterns defined in this file
     GROUP_START("Custom Formats", GROUP_DESC("Options with custom regex patterns")),
-        OPTION_STRING('p', "product", "Product ID (format: XX0000-XXXXXX)",
+        OPTION_STRING('p', "product", HELP("Product ID (format: XX0000-XXXXXX)"),
                     REGEX(RE_PRODUCT_ID)),
 
-        OPTION_STRING('n', "name", "Username (letters, numbers, underscore, dash)",
+        OPTION_STRING('n', "name", HELP("Username (letters, numbers, underscore, dash)"),
                     REGEX(RE_SIMPLE_NAME)),
     GROUP_END(),
 
     // SECTION 3: Custom inline regex (without defining a constant)
     GROUP_START("Inline Patterns", GROUP_DESC("Options with inline regex patterns")),
-        OPTION_STRING('z', "zipcode", "US Zip code",
+        OPTION_STRING('z', "zipcode", HELP("US Zip code"),
                     REGEX(MAKE_REGEX("^\\d{5}(-\\d{4})?$", "Format: 12345 or 12345-6789"))),
 
-        OPTION_STRING('t', "time", "Time (format: HH:MM)",
+        OPTION_STRING('t', "time", HELP("Time (format: HH:MM)"),
                     REGEX(MAKE_REGEX("^([01]?[0-9]|2[0-3]):[0-5][0-9]$", "Format: HH:MM"))),
 
-        OPTION_STRING('f', "float", "Floating point number",
+        OPTION_STRING('f', "float", HELP("Floating point number"),
                     REGEX(MAKE_REGEX("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$",
                            "Format: 123.45 or 1.23e-4"))),
     GROUP_END(),
@@ -58,17 +58,17 @@ CARGS_OPTIONS(
     // SECTION 4: Combining predefined patterns with custom options
     GROUP_START("Combined Patterns", GROUP_DESC("Options with combined validation")),
         // Date with custom error message
-        OPTION_STRING('d', "date", "Date (YYYY-MM-DD)",
+        OPTION_STRING('d', "date", HELP("Date (YYYY-MM-DD)"),
                     REGEX(CARGS_RE_ISO_DATE),
                     HINT("YYYY-MM-DD")),
 
         // Password with predefined pattern and custom error message
-        OPTION_STRING('P', "password", "Password (8+ chars, mixed case, numbers, symbols)",
+        OPTION_STRING('P', "password", HELP("Password (8+ chars, mixed case, numbers, symbols)"),
                     REGEX(CARGS_RE_PASSWD_STRONG),
                     HINT("StrongP@ss1")),
 
         // Version number with additional flags
-        OPTION_STRING('v', "version", "Semantic version",
+        OPTION_STRING('v', "version", HELP("Semantic version"),
                     REGEX(CARGS_RE_SEMVER),
                     HINT("X.Y.Z"),
                     FLAGS(FLAG_REQUIRED)),

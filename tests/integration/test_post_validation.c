@@ -9,11 +9,11 @@
 CARGS_OPTIONS(
     validation_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output", CONFLICTS("quiet")),
-    OPTION_FLAG('q', "quiet", "Quiet mode", CONFLICTS("verbose")),
-    OPTION_STRING('u', "username", "Username", REQUIRES("password")),
-    OPTION_STRING('p', "password", "Password", REQUIRES("username")),
-    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED))
+    OPTION_FLAG('v', "verbose", HELP("Verbose output"), CONFLICTS("quiet")),
+    OPTION_FLAG('q', "quiet", HELP("Quiet mode"), CONFLICTS("verbose")),
+    OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password")),
+    OPTION_STRING('p', "password", HELP("Password"), REQUIRES("username")),
+    POSITIONAL_STRING("input", HELP("Input file"), FLAGS(FLAG_REQUIRED))
 )
 
 // Test options with exclusive groups
@@ -21,10 +21,10 @@ CARGS_OPTIONS(
     group_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     GROUP_START("Compression", GROUP_DESC("Compression options"), FLAGS(FLAG_EXCLUSIVE)),
-        OPTION_FLAG('z', "gzip", "Use gzip compression"),
-        OPTION_FLAG('j', "bzip2", "Use bzip2 compression"),
+        OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
+        OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
     GROUP_END(),
-    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("input", HELP("Input file"), FLAGS(FLAG_REQUIRED))
 )
 
 // Test post_parse_validation with required positionals

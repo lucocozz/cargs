@@ -15,7 +15,7 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Enable verbose mode")
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose mode"))
 )
 
 int main(int argc, char **argv)
@@ -81,11 +81,11 @@ Here's a more complete example including different types of options:
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
-        OPTION_FLAG('v', "verbose", "Enable verbose mode"),
-        OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-        OPTION_INT('c', "count", "Number of iterations", RANGE(1, 100), DEFAULT(10)),
-        OPTION_FLOAT('f', "factor", "Scale factor", DEFAULT(1.0)),
-        POSITIONAL_STRING("input", "Input file")
+        OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),
+        OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+        OPTION_INT('c', "count", HELP("Number of iterations"), RANGE(1, 100), DEFAULT(10)),
+        OPTION_FLOAT('f', "factor", HELP("Scale factor"), DEFAULT(1.0)),
+        POSITIONAL_STRING("input", HELP("Input file"))
     )
     ```
 

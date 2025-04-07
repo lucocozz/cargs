@@ -37,10 +37,10 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Enable verbose mode"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Port number", RANGE(1, 65535), DEFAULT(8080)),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 int main(int argc, char **argv)
@@ -80,18 +80,18 @@ int main(int argc, char **argv)
 
 | Type | Macro | Access | Example |
 |------|-------|-------|---------|
-| Flag | `OPTION_FLAG('v', "verbose", "Description")` | `cargs_get(cargs, "verbose").as_bool` | `-v` or `--verbose` |
-| String | `OPTION_STRING('o', "output", "Description")` | `cargs_get(cargs, "output").as_string` | `--output=file.txt` |
-| Integer | `OPTION_INT('p', "port", "Description")` | `cargs_get(cargs, "port").as_int` | `--port=8080` |
-| Float | `OPTION_FLOAT('f', "factor", "Description")` | `cargs_get(cargs, "factor").as_float` | `--factor=1.5` |
-| Boolean | `OPTION_BOOL('d', "debug", "Description")` | `cargs_get(cargs, "debug").as_bool` | `--debug=true` |
+| Flag | `OPTION_FLAG('v', "verbose", HELP("Description"))` | `cargs_get(cargs, "verbose").as_bool` | `-v` or `--verbose` |
+| String | `OPTION_STRING('o', "output", HELP("Description"))` | `cargs_get(cargs, "output").as_string` | `--output=file.txt` |
+| Integer | `OPTION_INT('p', "port", HELP("Description"))` | `cargs_get(cargs, "port").as_int` | `--port=8080` |
+| Float | `OPTION_FLOAT('f', "factor", HELP("Description"))` | `cargs_get(cargs, "factor").as_float` | `--factor=1.5` |
+| Boolean | `OPTION_BOOL('d', "debug", HELP("Description"))` | `cargs_get(cargs, "debug").as_bool` | `--debug=true` |
 
 ### Positional Arguments
 
 ```c
-POSITIONAL_STRING("input", "Input file")
-POSITIONAL_INT("count", "Number of iterations", DEFAULT(1))
-POSITIONAL_FLOAT("scale", "Scale factor")
+POSITIONAL_STRING("input", HELP("Input file"))
+POSITIONAL_INT("count", HELP("Number of iterations"), DEFAULT(1))
+POSITIONAL_FLOAT("scale", HELP("Scale factor"))
 ```
 
 Positional arguments can be required (default) or optional with `FLAGS(FLAG_OPTIONAL)`.
@@ -100,15 +100,15 @@ Positional arguments can be required (default) or optional with `FLAGS(FLAG_OPTI
 
 ```c
 // Arrays
-OPTION_ARRAY_STRING('t', "tags", "List of tags", FLAGS(FLAG_SORTED | FLAG_UNIQUE))
-OPTION_ARRAY_INT('i', "ids", "List of IDs")
-OPTION_ARRAY_FLOAT('f', "factors", "Scaling factors")
+OPTION_ARRAY_STRING('t', "tags", HELP("List of tags"), FLAGS(FLAG_SORTED | FLAG_UNIQUE))
+OPTION_ARRAY_INT('i', "ids", HELP("List of IDs"))
+OPTION_ARRAY_FLOAT('f', "factors", HELP("Scaling factors"))
 
 // Maps (key-value pairs)
-OPTION_MAP_STRING('e', "env", "Environment variables")
-OPTION_MAP_INT('p', "ports", "Port mappings")
-OPTION_MAP_FLOAT('s', "scales", "Scaling factors by dimension")
-OPTION_MAP_BOOL('f', "features", "Active/inactive features")
+OPTION_MAP_STRING('e', "env", HELP("Environment variables"))
+OPTION_MAP_INT('p', "ports", HELP("Port mappings"))
+OPTION_MAP_FLOAT('s', "scales", HELP("Scaling factors by dimension"))
+OPTION_MAP_BOOL('f', "features", HELP("Active/inactive features"))
 ```
 
 Using arrays:
@@ -129,25 +129,25 @@ Using maps:
 ### Default Values
 
 ```c
-OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt"))
-OPTION_INT('p', "port", "Port number", DEFAULT(8080))
+OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt"))
+OPTION_INT('p', "port", HELP("Port number"), DEFAULT(8080))
 ```
 
 ### Validation
 
 ```c
 // Range validation
-OPTION_INT('p', "port", "Port number", RANGE(1, 65535))
+OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535))
 
 // Choice validation
-OPTION_STRING('l', "level", "Log level", 
+OPTION_STRING('l', "level", HELP("Log level"), 
              CHOICES_STRING("debug", "info", "warning", "error"))
 
 // Regex validation
-OPTION_STRING('e', "email", "Email address", REGEX(CARGS_RE_EMAIL))
+OPTION_STRING('e', "email", HELP("Email address"), REGEX(CARGS_RE_EMAIL))
 
 // Custom validation
-OPTION_INT('n', "number", "Even number", VALIDATOR(even_validator, NULL))
+OPTION_INT('n', "number", HELP("Even number"), VALIDATOR(even_validator, NULL))
 ```
 
 ### Option Groups
@@ -155,15 +155,15 @@ OPTION_INT('n', "number", "Even number", VALIDATOR(even_validator, NULL))
 ```c
 // Standard group
 GROUP_START("Connection", GROUP_DESC("Connection options")),
-    OPTION_STRING('h', "host", "Hostname", DEFAULT("localhost")),
-    OPTION_INT('p', "port", "Port number", DEFAULT(8080)),
+    OPTION_STRING('h', "host", HELP("Hostname"), DEFAULT("localhost")),
+    OPTION_INT('p', "port", HELP("Port number"), DEFAULT(8080)),
 GROUP_END(),
 
 // Exclusive group (only one option can be selected)
 GROUP_START("Format", GROUP_DESC("Output format"), FLAGS(FLAG_EXCLUSIVE)),
-    OPTION_FLAG('j', "json", "JSON format"),
-    OPTION_FLAG('x', "xml", "XML format"),
-    OPTION_FLAG('y', "yaml", "YAML format"),
+    OPTION_FLAG('j', "json", HELP("JSON format")),
+    OPTION_FLAG('x', "xml", HELP("XML format")),
+    OPTION_FLAG('y', "yaml", HELP("YAML format")),
 GROUP_END(),
 ```
 
@@ -171,12 +171,12 @@ GROUP_END(),
 
 ```c
 // Options must be used together
-OPTION_STRING('u', "username", "Username", REQUIRES("password"))
-OPTION_STRING('p', "password", "Password", REQUIRES("username"))
+OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password"))
+OPTION_STRING('p', "password", HELP("Password"), REQUIRES("username"))
 
 // Options are incompatible
-OPTION_FLAG('v', "verbose", "Verbose mode", CONFLICTS("quiet"))
-OPTION_FLAG('q', "quiet", "Quiet mode", CONFLICTS("verbose"))
+OPTION_FLAG('v', "verbose", HELP("Verbose mode"), CONFLICTS("quiet"))
+OPTION_FLAG('q', "quiet", HELP("Quiet mode"), CONFLICTS("verbose"))
 ```
 
 ## Subcommands
@@ -188,14 +188,14 @@ Subcommands allow creating interfaces similar to git/docker:
 CARGS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('f', "force", "Force addition"),
-    POSITIONAL_STRING("file", "File to add")
+    OPTION_FLAG('f', "force", HELP("Force addition")),
+    POSITIONAL_STRING("file", HELP("File to add"))
 )
 
 // Action function for the "add" command
 int add_command(cargs_t *cargs, void *data) {
     const char* file = cargs_get(*cargs, "file").as_string;
-    bool force = cargs_get(*cargs, "force").as_bool;
+    bool force = cargs_get(cargs, "force").as_bool;
     
     printf("Adding file: %s\n", file);
     if (force) printf("  with force option\n");
@@ -210,7 +210,7 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Global option applicable to all subcommands
-    OPTION_FLAG('v', "verbose", "Verbose mode"),
+    OPTION_FLAG('v', "verbose", HELP("Verbose mode")),
     
     // Define subcommand
     SUBCOMMAND("add", add_options, 
@@ -299,18 +299,18 @@ cargs supports configuration via environment variables:
 CARGS_OPTIONS(
     options,
     // Explicit environment variable (APP_HOST if prefix is set)
-    OPTION_STRING('H', "host", "Hostname", ENV_VAR("HOST")),
+    OPTION_STRING('H', "host", HELP("Hostname"), ENV_VAR("HOST")),
     
     // Auto-generated name from option name (APP_PORT)
-    OPTION_INT('p', "port", "Port", FLAGS(FLAG_AUTO_ENV)),
+    OPTION_INT('p', "port", HELP("Port"), FLAGS(FLAG_AUTO_ENV)),
     
     // Environment variable without prefix
-    OPTION_STRING('d', "database", "Database URL",
+    OPTION_STRING('d', "database", HELP("Database URL"),
                 ENV_VAR("DATABASE_URL"),
                 FLAGS(FLAG_NO_ENV_PREFIX)),
     
     // Environment variable can override command-line value
-    OPTION_INT('t', "timeout", "Timeout in seconds",
+    OPTION_INT('t', "timeout", HELP("Timeout in seconds"),
                ENV_VAR("FORCE_TIMEOUT"),
                FLAGS(FLAG_ENV_OVERRIDE))
 )
@@ -334,7 +334,7 @@ int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 }
 
 // Usage:
-OPTION_INT('n', "number", "An even number", VALIDATOR(even_validator, NULL))
+OPTION_INT('n', "number", HELP("An even number"), VALIDATOR(even_validator, NULL))
 ```
 
 ## Error Handling

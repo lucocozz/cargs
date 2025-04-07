@@ -25,7 +25,7 @@ cargs prend en charge quatre types fondamentaux d'éléments de ligne de command
 
 === "Définition"
     ```c
-    OPTION_STRING('o', "output", "Fichier de sortie", 
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), 
                   DEFAULT("output.txt"),   // Valeur par défaut
                   HINT("FILE"))            // Indice affiché dans l'aide
     ```
@@ -45,7 +45,7 @@ cargs prend en charge quatre types fondamentaux d'éléments de ligne de command
 
 === "Définition"
     ```c
-    OPTION_INT('p', "port", "Numéro de port", 
+    OPTION_INT('p', "port", HELP("Numéro de port"), 
                RANGE(1, 65535),   // Validation de plage
                DEFAULT(8080))     // Valeur par défaut
     ```
@@ -65,7 +65,7 @@ cargs prend en charge quatre types fondamentaux d'éléments de ligne de command
 
 === "Définition"
     ```c
-    OPTION_FLOAT('s', "scale", "Facteur d'échelle", 
+    OPTION_FLOAT('s', "scale", HELP("Facteur d'échelle"), 
                  DEFAULT(1.0))    // Valeur par défaut
     ```
 
@@ -83,7 +83,7 @@ cargs prend en charge quatre types fondamentaux d'éléments de ligne de command
 ### Options Booléennes
 === "Définition"
     ```c
-    OPTION_BOOL('f', "force", "Forcer l'opération",
+    OPTION_BOOL('f', "force", HELP("Forcer l'opération"),
                  DEFAULT(false))  // Default value
     ```
 === "Utilisation"
@@ -100,7 +100,7 @@ cargs prend en charge quatre types fondamentaux d'éléments de ligne de command
 
 === "Définition"
     ```c
-    OPTION_FLAG('v', "verbose", "Activer le mode verbeux")
+    OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux"))
     ```
 
 === "Utilisation"
@@ -137,12 +137,12 @@ Les arguments positionnels sont ordonnés et ne sont pas précédés de tirets.
 
 === "Positionnel requis"
     ```c
-    POSITIONAL_STRING("input", "Fichier d'entrée")
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
     ```
 
 === "Positionnel optionnel"
     ```c
-    POSITIONAL_STRING("output", "Fichier de sortie", 
+    POSITIONAL_STRING("output", HELP("Fichier de sortie"), 
                       FLAGS(FLAG_OPTIONAL),   // Argument optionnel
                       DEFAULT("output.txt"))  // Valeur par défaut
     ```
@@ -161,13 +161,13 @@ Par exemple, voici l'ordre correct :
 CARGS_OPTIONS(
     options,
     // Arguments positionnels requis d'abord
-    POSITIONAL_STRING("input", "Fichier d'entrée"),                       // Requis
-    POSITIONAL_STRING("output", "Fichier de sortie"),                     // Requis
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée")),                       // Requis
+    POSITIONAL_STRING("output", HELP("Fichier de sortie")),                     // Requis
     
     // Arguments positionnels optionnels ensuite
-    POSITIONAL_INT("buffer_size", "Taille du tampon", 
+    POSITIONAL_INT("buffer_size", HELP("Taille du tampon"), 
                    FLAGS(FLAG_OPTIONAL), DEFAULT(4096)),                  // Optionnel
-    POSITIONAL_STRING("log_file", "Fichier journal", FLAGS(FLAG_OPTIONAL)) // Optionnel
+    POSITIONAL_STRING("log_file", HELP("Fichier journal"), FLAGS(FLAG_OPTIONAL)) // Optionnel
 )
 ```
 
@@ -175,8 +175,8 @@ CARGS_OPTIONS(
 
 | Type | Définition | Format utilisateur | Code d'accès |
 |------|------------|-------------|-------------|
-| Nom court uniquement | `OPTION_INT('p', NULL, "Numéro de port")` | `-p 8080` | `cargs_get(cargs, "p").as_int` |
-| Nom long uniquement | `OPTION_FLAG('\0', "dry-run", "Exécuter sans appliquer de changements")` | `--dry-run` | `cargs_get(cargs, "dry-run").as_bool` |
+| Nom court uniquement | `OPTION_INT('p', NULL, HELP("Numéro de port"))` | `-p 8080` | `cargs_get(cargs, "p").as_int` |
+| Nom long uniquement | `OPTION_FLAG('\0', "dry-run", HELP("Exécuter sans appliquer de changements"))` | `--dry-run` | `cargs_get(cargs, "dry-run").as_bool` |
 
 !!! tip "Accéder aux options"
     Lors de l'accès aux valeurs d'options avec des fonctions comme `cargs_get()`, cargs utilise une règle spécifique :
@@ -194,14 +194,14 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     GROUP_START("Connection", GROUP_DESC("Options de connexion")),
-        OPTION_STRING('h', "host", "Nom d'hôte", DEFAULT("localhost")),
-        OPTION_INT('p', "port", "Numéro de port", DEFAULT(8080)),
+        OPTION_STRING('h', "host", HELP("Nom d'hôte"), DEFAULT("localhost")),
+        OPTION_INT('p', "port", HELP("Numéro de port"), DEFAULT(8080)),
     GROUP_END(),
     
     GROUP_START("Security", GROUP_DESC("Options de sécurité")),
-        OPTION_STRING('u', "username", "Nom d'utilisateur"),
-        OPTION_STRING('P', "password", "Mot de passe"),
-        OPTION_FLAG('s', "secure", "Utiliser une connexion sécurisée"),
+        OPTION_STRING('u', "username", HELP("Nom d'utilisateur")),
+        OPTION_STRING('P', "password", HELP("Mot de passe")),
+        OPTION_FLAG('s', "secure", HELP("Utiliser une connexion sécurisée")),
     GROUP_END()
 )
 ```
@@ -226,9 +226,9 @@ Vous pouvez créer des groupes d'options mutuellement exclusives :
 ```c
 GROUP_START("Compression", GROUP_DESC("Options de compression"), 
             FLAGS(FLAG_EXCLUSIVE)),
-    OPTION_FLAG('z', "gzip", "Utiliser la compression gzip"),
-    OPTION_FLAG('j', "bzip2", "Utiliser la compression bzip2"),
-    OPTION_FLAG('Z', "lzma", "Utiliser la compression lzma"),
+    OPTION_FLAG('z', "gzip", HELP("Utiliser la compression gzip")),
+    OPTION_FLAG('j', "bzip2", HELP("Utiliser la compression bzip2")),
+    OPTION_FLAG('Z', "lzma", HELP("Utiliser la compression lzma")),
 GROUP_END()
 ```
 
@@ -283,11 +283,11 @@ Vous pouvez définir des dépendances entre options :
 
 ```c
 // L'option username nécessite password
-OPTION_STRING('u', "username", "Nom d'utilisateur", 
+OPTION_STRING('u', "username", HELP("Nom d'utilisateur"), 
               REQUIRES("password"))
 
 // L'option password nécessite username
-OPTION_STRING('p', "password", "Mot de passe", 
+OPTION_STRING('p', "password", HELP("Mot de passe"), 
               REQUIRES("username"))
 ```
 
@@ -297,11 +297,11 @@ Vous pouvez définir des incompatibilités entre options :
 
 ```c
 // L'option verbose est incompatible avec quiet
-OPTION_FLAG('v', "verbose", "Mode verbeux", 
+OPTION_FLAG('v', "verbose", HELP("Mode verbeux"), 
             CONFLICTS("quiet"))
 
 // L'option quiet est incompatible avec verbose
-OPTION_FLAG('q', "quiet", "Mode silencieux", 
+OPTION_FLAG('q', "quiet", HELP("Mode silencieux"), 
             CONFLICTS("verbose"))
 ```
 
@@ -317,23 +317,23 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Options standard
-    OPTION_FLAG('v', "verbose", "Activer le mode verbeux"),
-    OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Numéro de port", RANGE(1, 65535), DEFAULT(8080)),
-    OPTION_FLOAT('s', "scale", "Facteur d'échelle", DEFAULT(1.0)),
+    OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux")),
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Numéro de port"), RANGE(1, 65535), DEFAULT(8080)),
+    OPTION_FLOAT('s', "scale", HELP("Facteur d'échelle"), DEFAULT(1.0)),
     
     // Options exclusives
     GROUP_START("Mode", GROUP_DESC("Options de mode"), FLAGS(FLAG_EXCLUSIVE)),
-        OPTION_FLAG('d', "debug", "Mode débogage"),
-        OPTION_FLAG('r', "release", "Mode production"),
+        OPTION_FLAG('d', "debug", HELP("Mode débogage")),
+        OPTION_FLAG('r', "release", HELP("Mode production")),
     GROUP_END(),
     
     // Options avec dépendances
-    OPTION_STRING('u', "username", "Nom d'utilisateur", REQUIRES("password")),
-    OPTION_STRING('P', "password", "Mot de passe", REQUIRES("username")),
+    OPTION_STRING('u', "username", HELP("Nom d'utilisateur"), REQUIRES("password")),
+    OPTION_STRING('P', "password", HELP("Mot de passe"), REQUIRES("username")),
     
     // Arguments positionnels
-    POSITIONAL_STRING("input", "Fichier d'entrée")
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
 )
 
 int main(int argc, char **argv)

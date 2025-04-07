@@ -29,32 +29,32 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Demo options to select processing approach
-    OPTION_INT('a', "approach", "Processing approach: 1=direct, 2=element, 3=iterator", 
+    OPTION_INT('a', "approach", HELP("Processing approach: 1=direct, 2=element, 3=iterator"), 
                DEFAULT(1), RANGE(1, 3)),
     
     // Array options with custom HINT()
-    OPTION_ARRAY_STRING('n', "names", "Array of user names (comma-separated)",
+    OPTION_ARRAY_STRING('n', "names", HELP("Array of user names (comma-separated)"),
                        HINT("NAME"),
                        FLAGS(FLAG_SORTED)),
                        
-    OPTION_ARRAY_INT('i', "ids", "Array of ID numbers or ranges (e.g., 1,2,3-5)",
+    OPTION_ARRAY_INT('i', "ids", HELP("Array of ID numbers or ranges (e.g., 1,2,3-5)"),
                     HINT("ID"),
                     FLAGS(FLAG_UNIQUE | FLAG_SORTED)),
     
     // Map options with custom HINT()
-    OPTION_MAP_STRING('\0', "env", "Environment variables (key=value pairs)",
+    OPTION_MAP_STRING('\0', "env", HELP("Environment variables (key=value pairs)"),
                     HINT("VALUE"),
                     FLAGS(FLAG_SORTED_KEY)),
                      
-    OPTION_MAP_INT('\0', "ports", "Port numbers for services",
+    OPTION_MAP_INT('\0', "ports", HELP("Port numbers for services"),
                     HINT("PORT"),
                     FLAGS(FLAG_UNIQUE_VALUE)),
                   
-    OPTION_MAP_FLOAT('\0', "scales", "Scaling factors for dimensions",
+    OPTION_MAP_FLOAT('\0', "scales", HELP("Scaling factors for dimensions"),
                     HINT("FACTOR"),
                     FLAGS(FLAG_SORTED_VALUE)),
                     
-    OPTION_MAP_BOOL('\0', "flags", "Feature flags configuration",
+    OPTION_MAP_BOOL('\0', "flags", HELP("Feature flags configuration"),
                     HINT("FLAG"))
 )
 

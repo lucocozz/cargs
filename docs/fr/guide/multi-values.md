@@ -32,13 +32,13 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Tableau de chaînes simple
-    OPTION_ARRAY_STRING('n', "names", "Liste de noms"),
+    OPTION_ARRAY_STRING('n', "names", HELP("Liste de noms")),
     
     // Tableau d'entiers
-    OPTION_ARRAY_INT('i', "ids", "Liste d'identifiants"),
+    OPTION_ARRAY_INT('i', "ids", HELP("Liste d'identifiants")),
     
     // Tableau de flottants
-    OPTION_ARRAY_FLOAT('f', "factors", "Facteurs d'échelle")
+    OPTION_ARRAY_FLOAT('f', "factors", HELP("Facteurs d'échelle"))
 )
 ```
 
@@ -97,16 +97,16 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Mapping de chaînes
-    OPTION_MAP_STRING('e', "env", "Variables d'environnement"),
+    OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement")),
     
     // Mapping d'entiers
-    OPTION_MAP_INT('p', "ports", "Numéros de port de service"),
+    OPTION_MAP_INT('p', "ports", HELP("Numéros de port de service")),
     
     // Mapping de flottants
-    OPTION_MAP_FLOAT('s', "scales", "Facteurs d'échelle"),
+    OPTION_MAP_FLOAT('s', "scales", HELP("Facteurs d'échelle")),
     
     // Mapping de booléens
-    OPTION_MAP_BOOL('f', "features", "Indicateurs de fonctionnalités")
+    OPTION_MAP_BOOL('f', "features", HELP("Indicateurs de fonctionnalités"))
 )
 ```
 
@@ -260,13 +260,13 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Options de type tableau
-    OPTION_ARRAY_STRING('n', "name", "Noms d'utilisateurs"),
-    OPTION_ARRAY_INT('i', "id", "Identifiants d'utilisateurs"),
+    OPTION_ARRAY_STRING('n', "name", HELP("Noms d'utilisateurs")),
+    OPTION_ARRAY_INT('i', "id", HELP("Identifiants d'utilisateurs")),
     
     // Options de type mapping
-    OPTION_MAP_STRING('e', "env", "Variables d'environnement"),
-    OPTION_MAP_INT('p', "port", "Mappages de ports"),
-    OPTION_MAP_BOOL('f', "feature", "Indicateurs de fonctionnalités")
+    OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement")),
+    OPTION_MAP_INT('p', "port", HELP("Mappages de ports")),
+    OPTION_MAP_BOOL('f', "feature", HELP("Indicateurs de fonctionnalités"))
 )
 
 int main(int argc, char **argv)

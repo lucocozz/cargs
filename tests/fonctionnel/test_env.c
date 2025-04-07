@@ -9,11 +9,11 @@
 CARGS_OPTIONS(
     env_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('H', "host", "Server hostname", ENV_VAR("HOST")),
-    OPTION_INT('p', "port", "Server port", FLAGS(FLAG_AUTO_ENV)),
-    OPTION_STRING('d', "database", "Database connection string",
+    OPTION_STRING('H', "host", HELP("Server hostname"), ENV_VAR("HOST")),
+    OPTION_INT('p', "port", HELP("Server port"), FLAGS(FLAG_AUTO_ENV)),
+    OPTION_STRING('d', "database", HELP("Database connection string"),
                 ENV_VAR("DATABASE_URL"), FLAGS(FLAG_NO_ENV_PREFIX)),
-    OPTION_INT('t', "timeout", "Connection timeout in seconds",
+    OPTION_INT('t', "timeout", HELP("Connection timeout in seconds"),
                 DEFAULT(30), ENV_VAR("FORCE_TIMEOUT"), FLAGS(FLAG_ENV_OVERRIDE))
 )
 

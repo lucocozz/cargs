@@ -33,14 +33,14 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Simple string array without flags
-    OPTION_ARRAY_STRING('n', "names", "List of names"),
+    OPTION_ARRAY_STRING('n', "names", HELP("List of names")),
     
     // Integer array with sorting and uniqueness
-    OPTION_ARRAY_INT('i', "ids", "List of IDs",
+    OPTION_ARRAY_INT('i', "ids", HELP("List of IDs"),
                     FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
     
     // Float array with custom hint
-    OPTION_ARRAY_FLOAT('f', "factors", "Scaling factors",
+    OPTION_ARRAY_FLOAT('f', "factors", HELP("Scaling factors"),
                       HINT("FLOAT"))
 )
 ```
@@ -320,7 +320,7 @@ CARGS_OPTIONS(
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
     // Feature flags with sorted keys for consistent display
-    OPTION_MAP_BOOL('f', "feature", "Feature flags",
+    OPTION_MAP_BOOL('f', "feature", HELP("Feature flags"),
                    FLAGS(FLAG_SORTED_KEY))
 )
 

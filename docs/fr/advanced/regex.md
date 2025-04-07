@@ -25,15 +25,15 @@ cargs fournit une large gamme de motifs prédéfinis dans `cargs/regex.h` qui co
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Validation d'email
-        OPTION_STRING('e', "email", "Adresse email",
+        OPTION_STRING('e', "email", HELP("Adresse email"),
                     REGEX(CARGS_RE_EMAIL)),
         
         // Validation d'adresse IP
-        OPTION_STRING('i', "ip", "Adresse IP",
+        OPTION_STRING('i', "ip", HELP("Adresse IP"),
                     REGEX(CARGS_RE_IPV4)),
         
         // Validation d'URL
-        OPTION_STRING('u', "url", "URL",
+        OPTION_STRING('u', "url", HELP("URL"),
                     REGEX(CARGS_RE_URL))
     )
     ```
@@ -46,17 +46,17 @@ cargs fournit une large gamme de motifs prédéfinis dans `cargs/regex.h` qui co
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Date au format ISO (AAAA-MM-JJ)
-        OPTION_STRING('d', "date", "Date (AAAA-MM-JJ)",
+        OPTION_STRING('d', "date", HELP("Date (AAAA-MM-JJ)"),
                     REGEX(CARGS_RE_ISO_DATE),
                     HINT("AAAA-MM-JJ")),
         
         // Mot de passe avec validation forte
-        OPTION_STRING('p', "password", "Mot de passe (8+ caractères, casse mixte, chiffres, symboles)",
+        OPTION_STRING('p', "password", HELP("Mot de passe (8+ caractères, casse mixte, chiffres, symboles)"),
                     REGEX(CARGS_RE_PASSWD_STRONG),
                     HINT("MotDePasse1@")),
         
         // Numéro de version sémantique
-        OPTION_STRING('v', "version", "Version sémantique",
+        OPTION_STRING('v', "version", HELP("Version sémantique"),
                     REGEX(CARGS_RE_SEMVER),
                     HINT("X.Y.Z"),
                     FLAGS(FLAG_REQUIRED))
@@ -87,10 +87,10 @@ La macro `MAKE_REGEX` crée un nouveau motif d'expression régulière avec une i
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Utiliser des motifs personnalisés
-        OPTION_STRING('p', "product", "ID du produit",
+        OPTION_STRING('p', "product", HELP("ID du produit"),
                     REGEX(RE_PRODUCT_ID)),
         
-        OPTION_STRING('n', "name", "Nom d'utilisateur",
+        OPTION_STRING('n', "name", HELP("Nom d'utilisateur"),
                     REGEX(RE_SIMPLE_NAME))
     )
     ```
@@ -100,7 +100,7 @@ La macro `MAKE_REGEX` crée un nouveau motif d'expression régulière avec une i
 Vous pouvez également définir des motifs en ligne sans créer de constante :
 
 ```c
-OPTION_STRING('z', "zipcode", "Code postal US",
+OPTION_STRING('z', "zipcode", HELP("Code postal US"),
             REGEX(MAKE_REGEX("^\\d{5}(-\\d{4})?$", "Format : 12345 ou 12345-6789")))
 ```
 
@@ -249,31 +249,31 @@ CARGS_OPTIONS(
 
     // Utilisation de motifs prédéfinis
     GROUP_START("Réseau et Communication", GROUP_DESC("Options liées au réseau")),
-       OPTION_STRING('i', "ip", "Adresse IPv4",
+       OPTION_STRING('i', "ip", HELP("Adresse IPv4"),
                     REGEX(CARGS_RE_IPV4)),
 
-       OPTION_STRING('e', "email", "Adresse email",
+       OPTION_STRING('e', "email", HELP("Adresse email"),
                     REGEX(CARGS_RE_EMAIL)),
 
-        OPTION_STRING('u', "url", "URL avec n'importe quel protocole",
+        OPTION_STRING('u', "url", HELP("URL avec n'importe quel protocole"),
                     REGEX(CARGS_RE_URL)),
     GROUP_END(),
 
     // Motifs personnalisés définis ci-dessus
     GROUP_START("Formats personnalisés", GROUP_DESC("Options avec des motifs d'expressions régulières personnalisés")),
-        OPTION_STRING('p', "product", "ID de produit (format : XX0000-XXXXXX)",
+        OPTION_STRING('p', "product", HELP("ID de produit (format : XX0000-XXXXXX)"),
                     REGEX(RE_PRODUCT_ID)),
 
-        OPTION_STRING('n', "name", "Nom d'utilisateur (lettres, chiffres, underscore, tiret)",
+        OPTION_STRING('n', "name", HELP("Nom d'utilisateur (lettres, chiffres, underscore, tiret)"),
                     REGEX(RE_SIMPLE_NAME)),
     GROUP_END(),
 
     // Motifs en ligne
     GROUP_START("Motifs en ligne", GROUP_DESC("Options avec des motifs d'expressions régulières en ligne")),
-        OPTION_STRING('z', "zipcode", "Code postal US",
+        OPTION_STRING('z', "zipcode", HELP("Code postal US"),
                     REGEX(MAKE_REGEX("^\\d{5}(-\\d{4})?$", "Format : 12345 ou 12345-6789"))),
 
-        OPTION_STRING('t', "time", "Heure (format : HH:MM)",
+        OPTION_STRING('t', "time", HELP("Heure (format : HH:MM)"),
                     REGEX(MAKE_REGEX("^([01]?[0-9]|2[0-3]):[0-5][0-9]$", "Format : HH:MM"))),
     GROUP_END()
 )

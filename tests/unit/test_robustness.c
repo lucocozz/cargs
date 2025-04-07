@@ -5,11 +5,11 @@
 CARGS_OPTIONS(
     robust_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_INT('i', "int", "Integer option", RANGE(1, 100)),
-    OPTION_STRING('r', "required", "Required option", FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('c', "choice", "Choice option", CHOICES_STRING("one", "two", "three")),
-    OPTION_FLAG('a', "flag-a", "Flag A", CONFLICTS("flag-b")),
-    OPTION_FLAG('b', "flag-b", "Flag B", CONFLICTS("flag-a"))
+    OPTION_INT('i', "int", HELP("Integer option"), RANGE(1, 100)),
+    OPTION_STRING('r', "required", HELP("Required option"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('c', "choice", HELP("Choice option"), CHOICES_STRING("one", "two", "three")),
+    OPTION_FLAG('a', "flag-a", HELP("Flag A"), CONFLICTS("flag-b")),
+    OPTION_FLAG('b', "flag-b", HELP("Flag B"), CONFLICTS("flag-a"))
 )
 
 void setup_error_capture(void) {

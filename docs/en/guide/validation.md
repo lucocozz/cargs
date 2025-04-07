@@ -21,7 +21,7 @@ The `RANGE` validator ensures numeric values fall within a specified range:
 
 === "Definition"
     ```c
-    OPTION_INT('p', "port", "Port number",
+    OPTION_INT('p', "port", HELP("Port number"),
                RANGE(1, 65535),  // Must be between 1 and 65535
                DEFAULT(8080))
     ```
@@ -38,21 +38,21 @@ The `CHOICES` validator ensures the value is one of a specific set:
 
 === "String Choices"
     ```c
-    OPTION_STRING('l', "level", "Log level",
+    OPTION_STRING('l', "level", HELP("Log level"),
                   CHOICES_STRING("debug", "info", "warning", "error"),
                   DEFAULT("info"))
     ```
 
 === "Integer Choices"
     ```c
-    OPTION_INT('m', "mode", "Operating mode",
+    OPTION_INT('m', "mode", HELP("Operating mode"),
                CHOICES_INT(1, 2, 3),
                DEFAULT(1))
     ```
 
 === "Float Choices"
     ```c
-    OPTION_FLOAT('s', "scale", "Scale factor",
+    OPTION_FLOAT('s', "scale", HELP("Scale factor"),
                 CHOICES_FLOAT(0.5, 1.0, 2.0),
                 DEFAULT(1.0))
     ```
@@ -63,13 +63,13 @@ cargs uses PCRE2 for powerful regular expression validation:
 
 === "Basic Usage"
     ```c
-    OPTION_STRING('e', "email", "Email address",
+    OPTION_STRING('e', "email", HELP("Email address"),
                   REGEX(CARGS_RE_EMAIL))  // Must be a valid email
     ```
 
 === "Custom Pattern"
     ```c
-    OPTION_STRING('i', "id", "Product ID",
+    OPTION_STRING('i', "id", HELP("Product ID"),
                   REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000")))
     ```
 
@@ -103,7 +103,7 @@ For more complex validation logic, you can create your own validators:
     }
     
     // Usage
-    OPTION_INT('n', "number", "An even number", 
+    OPTION_INT('n', "number", HELP("An even number"), 
               VALIDATOR(even_validator, NULL))
     ```
 
@@ -122,7 +122,7 @@ For more complex validation logic, you can create your own validators:
     
     // Usage
     size_t min_length = 8;
-    OPTION_STRING('p', "password", "Password",
+    OPTION_STRING('p', "password", HELP("Password"),
                  PRE_VALIDATOR(length_pre_validator, &min_length))
     ```
 
@@ -140,7 +140,7 @@ For more complex validation logic, you can create your own validators:
 You can apply multiple validators to a single option for more comprehensive validation:
 
 ```c
-OPTION_INT('p', "port", "Port number", 
+OPTION_INT('p', "port", HELP("Port number"), 
           RANGE(1, 65535),                   // Range validator
           VALIDATOR(even_validator, NULL),   // Custom validator
           DEFAULT(8080))

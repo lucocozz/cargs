@@ -15,7 +15,7 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Activer le mode verbeux")
+    OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux"))
 )
 
 int main(int argc, char **argv)
@@ -61,15 +61,15 @@ Cargs prend en charge plusieurs types d'options que vous pouvez utiliser dans vo
 
 | Type | Macro | Description | Exemple |
 |------|-------|-------------|---------|
-| **Flag** | `OPTION_FLAG` | Option booléenne (présence/absence) | `OPTION_FLAG('v', "verbose", "Mode verbeux")` |
-| **Bool** | `OPTION_BOOL` | Option booléenne avec valeur saisisable | `OPTION_BOOL('d', "debug", "Mode débogage")` |
-| **String** | `OPTION_STRING` | Option avec valeur de chaîne | `OPTION_STRING('o', "output", "Fichier de sortie")` |
-| **Integer** | `OPTION_INT` | Option avec valeur entière | `OPTION_INT('p', "port", "Numéro de port")` |
-| **Float** | `OPTION_FLOAT` | Option avec valeur à virgule flottante | `OPTION_FLOAT('f', "factor", "Facteur d'échelle")` |
-| **Positional** | `POSITIONAL_*` | Argument positionnel | `POSITIONAL_STRING("input", "Fichier d'entrée")` |
+| **Flag** | `OPTION_FLAG` | Option booléenne (présence/absence) | `OPTION_FLAG('v', "verbose", HELP("Mode verbeux"))` |
+| **Bool** | `OPTION_BOOL` | Option booléenne avec valeur saisisable | `OPTION_BOOL('d', "debug", HELP("Mode débogage"))` |
+| **String** | `OPTION_STRING` | Option avec valeur de chaîne | `OPTION_STRING('o', "output", HELP("Fichier de sortie"))` |
+| **Integer** | `OPTION_INT` | Option avec valeur entière | `OPTION_INT('p', "port", HELP("Numéro de port"))` |
+| **Float** | `OPTION_FLOAT` | Option avec valeur à virgule flottante | `OPTION_FLOAT('f', "factor", HELP("Facteur d'échelle"))` |
+| **Positional** | `POSITIONAL_*` | Argument positionnel | `POSITIONAL_STRING("input", HELP("Fichier d'entrée"))` |
 | **Subcommand** | `SUBCOMMAND` | Sous-commande avec ses propres options | `SUBCOMMAND("add", add_options, ...)` |
-| **Array** | `OPTION_ARRAY_*` | Option avec plusieurs valeurs | `OPTION_ARRAY_INT('a', "add", "Ajouter des éléments")` |
-| **Map** | `OPTION_MAP_*` | Option avec valeurs sous forme de paires clé-valeur | `OPTION_MAP_STRING('m', "map", "Mapper des valeurs")` |
+| **Array** | `OPTION_ARRAY_*` | Option avec plusieurs valeurs | `OPTION_ARRAY_INT('a', "add", HELP("Ajouter des éléments"))` |
+| **Map** | `OPTION_MAP_*` | Option avec valeurs sous forme de paires clé-valeur | `OPTION_MAP_STRING('m', "map", HELP("Mapper des valeurs"))` |
 
 ## Exemple complet
 
@@ -81,11 +81,11 @@ Voici un exemple plus complet incluant différents types d'options :
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
-        OPTION_FLAG('v', "verbose", "Activer le mode verbeux"),
-        OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.txt")),
-        OPTION_INT('c', "count", "Nombre d'itérations", RANGE(1, 100), DEFAULT(10)),
-        OPTION_FLOAT('f', "factor", "Facteur d'échelle", DEFAULT(1.0)),
-        POSITIONAL_STRING("input", "Fichier d'entrée")
+        OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux")),
+        OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
+        OPTION_INT('c', "count", HELP("Nombre d'itérations"), RANGE(1, 100), DEFAULT(10)),
+        OPTION_FLOAT('f', "factor", HELP("Facteur d'échelle"), DEFAULT(1.0)),
+        POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
     )
     ```
 

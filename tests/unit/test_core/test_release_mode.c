@@ -12,26 +12,26 @@ CARGS_OPTIONS(
     valid_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('o', "output", "Output file", DEFAULT("output.txt")),
-    OPTION_INT('c', "count", "Counter value", RANGE(1, 100), DEFAULT(1)),
-    POSITIONAL_STRING("input", "Input file", FLAGS(FLAG_REQUIRED))
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('c', "count", HELP("Counter value"), RANGE(1, 100), DEFAULT(1)),
+    POSITIONAL_STRING("input", HELP("Input file"), FLAGS(FLAG_REQUIRED))
 )
 
 // Invalid options definition (missing help option - should fail validation)
 CARGS_OPTIONS(
     invalid_options,
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('o', "output", "Output file"),
-    POSITIONAL_STRING("input", "Input file")
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file")),
+    POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 // Invalid options with duplicated option names
 CARGS_OPTIONS(
     duplicate_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Verbose output"),
-    OPTION_STRING('v', "verbose", "Duplicate option")  // Same names
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('v', "verbose", HELP("Duplicate option"))  // Same names
 )
 
 // Helper function for measuring initialization time

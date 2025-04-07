@@ -463,9 +463,9 @@ CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse"),
-    OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.txt")),
-    POSITIONAL_STRING("input", "Fichier d'entrée")
+    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
 )
 
 int main(int argc, char **argv)

@@ -306,20 +306,23 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // URL parsing with custom structure
-    OPTION_BASE('u', "url", "Target URL (transforms into a structured URL object)", 
-                VALUE_TYPE_CUSTOM, 
+    OPTION_BASE('u', "url", 
+                VALUE_TYPE_CUSTOM,
+                HELP("Target URL (transforms into a structured URL object)"),
                 HANDLER(url_handler),
                 FREE_HANDLER(url_free_handler)),
     
     // Color parsing with different formats
-    OPTION_BASE('c', "color", "Color in hex (#RRGGBB), rgb(r,g,b) or named format", 
-                VALUE_TYPE_CUSTOM, 
+    OPTION_BASE('c', "color", 
+                VALUE_TYPE_CUSTOM,
+                HELP("Color in hex (#RRGGBB), rgb(r,g,b) or named format"),
                 HANDLER(color_handler),
                 FREE_HANDLER(color_free_handler)),
     
     // Coordinate parsing
-    OPTION_BASE('l', "location", "Geographic coordinates in decimal or DMS format", 
-                VALUE_TYPE_CUSTOM, 
+    OPTION_BASE('l', "location", 
+                VALUE_TYPE_CUSTOM,
+                HELP("Geographic coordinates in decimal or DMS format"),
                 HANDLER(coordinate_handler),
                 FREE_HANDLER(coordinate_free_handler))
 )

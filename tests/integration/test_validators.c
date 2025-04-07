@@ -7,12 +7,12 @@
 CARGS_OPTIONS(
     test_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_INT('p', "port", "Port number", 
+    OPTION_INT('p', "port", HELP("Port number"), 
                 DEFAULT(8080), RANGE(1, 65535)),
-    OPTION_STRING('l', "level", "Log level", 
+    OPTION_STRING('l', "level", HELP("Log level"), 
                 DEFAULT("info"), 
                 CHOICES_STRING("debug", "info", "warning", "error")),
-    OPTION_STRING('e', "email", "Email address", 
+    OPTION_STRING('e', "email", HELP("Email address"), 
                 REGEX(MAKE_REGEX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
                     "Enter email format")))
 )

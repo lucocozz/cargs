@@ -14,23 +14,23 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
 
     // Optional flag
-    OPTION_FLAG('v', "verbose", "Enable verbose output"),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
 
     // Required positional arguments must come before optional ones
-    POSITIONAL_STRING("source", "Source file", 
+    POSITIONAL_STRING("source", HELP("Source file"), 
                     HINT("SRC")),
     
-    POSITIONAL_STRING("destination", "Destination file", 
+    POSITIONAL_STRING("destination", HELP("Destination file"), 
                     HINT("DEST")),
     
     // Optional positional argument with default value
-    POSITIONAL_INT("buffer_size", "Buffer size in KB",
+    POSITIONAL_INT("buffer_size", HELP("Buffer size in KB"),
                     FLAGS(FLAG_OPTIONAL),
                     DEFAULT(64),
                     RANGE(1, 8192)),
     
     // Optional positional argument without default value
-    POSITIONAL_STRING("log_file", "Log file",
+    POSITIONAL_STRING("log_file", HELP("Log file"),
                     FLAGS(FLAG_OPTIONAL),
                     HINT("LOG"))
 )
