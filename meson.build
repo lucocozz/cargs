@@ -24,14 +24,21 @@ inc_dirs = include_directories('includes')
 # Build library
 subdir('source')
 
-pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
+# Handle regex dependency
+disable_regex = get_option('disable_regex')
+if disable_regex
+  add_project_arguments('-DCARGS_NO_REGEX', language: 'c')
+  pcre2_dep = dependency('', required: false)
+else
+  pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
+endif
 
 # Create both static and shared libraries from sources
 cargs_lib = both_libraries(
     'cargs',
     cargs_sources,
     include_directories: inc_dirs,
-    dependencies: [pcre2_dep],
+    dependencies: disable_regex ? [] : [pcre2_dep],
     version: meson.project_version(),
     soversion: '0',
     install: true,
@@ -41,7 +48,7 @@ cargs_lib = both_libraries(
 cargs_dep = declare_dependency(
     link_with: cargs_lib,
     include_directories: inc_dirs,
-    dependencies: [pcre2_dep],
+    dependencies: disable_regex ? [] : [pcre2_dep],
 )
 
 # Install headers (public API only)

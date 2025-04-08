@@ -7,7 +7,7 @@ Cette page explique comment installer la bibliothèque cargs dans différents en
 cargs n'a qu'une seule dépendance externe :
 
 !!! info "Dépendance PCRE2"
-    **PCRE2** : Requis pour la prise en charge de la validation par expressions régulières
+    **PCRE2** : Requis pour la prise en charge de la validation par expressions régulières (la prise en charge des regex est facultative).
     
     === "Ubuntu/Debian"
         ```bash
@@ -70,6 +70,32 @@ cargs n'a qu'une seule dépendance externe :
     ```bash
     just install
     ```
+
+## Construction sans PCRE2 (Désactivation du support des regex)
+
+Si vous n'avez pas besoin de la validation par expressions régulières, vous pouvez construire cargs sans la dépendance PCRE2 :
+
+=== "Avec Meson"
+    ```bash
+    meson setup -Ddisable_regex=true .build
+    meson compile -C .build
+    ```
+
+=== "Avec Just"
+    ```bash
+    just disable_regex=true build
+    ```
+
+=== "Avec le script d'installation"
+    ```bash
+    ./install.sh --disable-regex
+    ```
+
+Lorsque le support des regex est désactivé :
+- Aucune dépendance PCRE2 n'est requise
+- Le validateur `REGEX()` sera un stub qui générera une erreur s'il est utilisé
+- Tous les modèles regex prédéfinis dans `cargs/regex.h` seront définis mais non fonctionnels
+- La macro `CARGS_NO_REGEX` sera définie, que votre code peut vérifier avec `#ifdef`
 
 ## Optimisation des performances
 

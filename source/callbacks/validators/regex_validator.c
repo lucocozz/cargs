@@ -1,8 +1,11 @@
 #include <stddef.h>
-#define PCRE2_CODE_UNIT_WIDTH 8
+#ifndef CARGS_NO_REGEX
+    #define PCRE2_CODE_UNIT_WIDTH 8
+    #include <pcre2.h>
+#endif
 #include "cargs/errors.h"
+#include "cargs/internal/utils.h"
 #include "cargs/types.h"
-#include <pcre2.h>
 
 /**
  * regex_validator - Validate a string value against a regular expression
@@ -15,6 +18,16 @@
  */
 int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
 {
+#ifdef CARGS_NO_REGEX
+    // Regex support is disabled
+    UNUSED(value);
+    UNUSED(data);
+    CARGS_REPORT_ERROR(
+        cargs, CARGS_ERROR_INVALID_VALUE,
+        "Regex validation is not supported in this build (compiled with CARGS_NO_REGEX)");
+    return CARGS_ERROR_INVALID_VALUE;
+#else
+
     const char *pattern = data.regex.pattern;
     if (!pattern) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
@@ -58,4 +71,5 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
         }
     }
     return (CARGS_SUCCESS);
+#endif
 }

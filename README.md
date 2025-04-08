@@ -33,10 +33,23 @@
 
 ### ⚙️ Dependencies
 
+By default, cargs requires:
 - **PCRE2**: Required for regex validation support
   - Ubuntu/Debian: `apt install libpcre2-dev`
   - Fedora/CentOS: `dnf install pcre2-devel`
   - macOS: `brew install pcre2`
+
+To build without PCRE2 dependency (disabling regex support):
+```bash
+# Using Meson
+meson setup -Ddisable_regex=true builddir
+
+# Using Just
+just disable_regex=true build
+
+# Using install script
+./install.sh --disable-regex
+``
 
 ### 💻 From Source
 
