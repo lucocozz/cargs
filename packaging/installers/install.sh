@@ -26,6 +26,7 @@ show_help() {
     echo "  --libdir=PATH      Library directory (default: \$prefix/lib)"
     echo "  --includedir=PATH  Include directory (default: \$prefix/include)"
     echo "  --local            Install to ~/.local instead of system directories"
+    echo "  --disable-regex    Disable regex support"
     echo "  --uninstall        Uninstall the library"
     echo "  --verbose          Show detailed output"
     echo "  --help             Display this help message"
@@ -35,6 +36,9 @@ show_help() {
 
 for arg in "$@"; do
     case $arg in
+        --disable-regex)
+            DISABLE_REGEX=1
+            ;;
         --prefix=*)
             PREFIX="${arg#*=}"
             ;;
@@ -76,15 +80,17 @@ log() {
 
 check_dependencies() {
     log "${BLUE}Checking dependencies...${NC}"
-    
-    # Vérifier pcre2
-    if ! pkg-config --exists libpcre2-8; then
-        echo -e "${RED}Error:${NC} pcre2 library not found"
-        echo "Please install pcre2 development files:"
-        echo "  - Ubuntu/Debian: sudo apt install libpcre2-dev"
-        echo "  - Fedora/RHEL:   sudo dnf install pcre2-devel"
-        echo "  - macOS:         brew install pcre2"
-        exit 1
+
+    # Skip PCRE2 check if regex is disabled
+    if [ "$DISABLE_REGEX" -ne 1 ]; then    
+        if ! pkg-config --exists libpcre2-8; then
+            echo -e "${RED}Error:${NC} pcre2 library not found"
+            echo "Please install pcre2 development files:"
+            echo "  - Ubuntu/Debian: sudo apt install libpcre2-dev"
+            echo "  - Fedora/RHEL:   sudo dnf install pcre2-devel"
+            echo "  - macOS:         brew install pcre2"
+            exit 1
+        fi
     fi
     
     log "${GREEN}All dependencies satisfied.${NC}"
