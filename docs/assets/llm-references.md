@@ -324,9 +324,9 @@ cargs.env_prefix = "APP";  // Variables will start with APP_
 
 ```c
 // Validator that checks if a number is even
-int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    if (value.as_int % 2 != 0) {
+    if (option->value.as_int % 2 != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                          "Value must be an even number");
     }

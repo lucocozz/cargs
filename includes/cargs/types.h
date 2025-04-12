@@ -194,7 +194,7 @@ union validator_data_u {
 /* Callback function types */
 typedef int (*cargs_handler_t)(cargs_t *, cargs_option_t *, char *);
 typedef int (*cargs_free_handler_t)(cargs_option_t *);
-typedef int (*cargs_validator_t)(cargs_t *, cargs_value_t, validator_data_t);
+typedef int (*cargs_validator_t)(cargs_t *, cargs_option_t *, validator_data_t);
 typedef int (*cargs_pre_validator_t)(cargs_t *, const char *, validator_data_t);
 typedef int (*cargs_action_t)(cargs_t *, void *);
 

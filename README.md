@@ -49,7 +49,7 @@ just disable_regex=true build
 
 # Using install script
 ./install.sh --disable-regex
-``
+```
 
 ### 💻 From Source
 
@@ -238,13 +238,9 @@ Check the `examples/` directory for more practical examples.
 Future planned features:
 
 - 📄 **Configuration files support**: Parse options from JSON, YAML, or other config file formats
-- 🪶 **Lightweight version**: Reduced footprint version for constrained systems 
+- 🪶 **Lightweight version**: Reduced footprint version for constrained systems
 - 🎨 **Themed help output**: Customizable colored help display with theme support
 - ✅ **Advanced validators**:
-  - Date/time format validation
-  - File existence and type checking
-  - String length and array size constraints
-  - Semantic versioning validation
   - Contextual validation (based on other option values)
 - 📦 **Packaging**: Official packages for various distributions
 - Shell completion scripts generation
