@@ -37,7 +37,9 @@ int free_map_int_handler(cargs_option_t *option);
 int free_map_float_handler(cargs_option_t *option);
 int free_map_bool_handler(cargs_option_t *option);
 
-int range_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
+int range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+int length_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+int count_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
 int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 
 /*
@@ -77,6 +79,14 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 
 #define RANGE(min, max) \
     .validator = (cargs_validator_t)range_validator, \
+    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
+
+#define LENGTH(min, max) \
+    .validator = (cargs_validator_t)length_validator, \
+    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
+
+#define COUNT(min, max) \
+    .validator = (cargs_validator_t)count_validator, \
     .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
 
 #define REGEX(re) \

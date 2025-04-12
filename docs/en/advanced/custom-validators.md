@@ -21,7 +21,7 @@ cargs supports two types of custom validation functions:
 Validators check the **processed** value after the handler has converted it to its final type:
 
 ```c
-int validator_function(cargs_t *cargs, cargs_value_t value, validator_data_t data);
+int validator_function(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
 ```
 
 Use validators when you need to validate based on the processed value's type (int, float, etc.).
@@ -46,13 +46,13 @@ Use pre-validators when you need to:
 Let's create a simple validator that ensures an integer is even:
 
 ```c
-int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     UNUSED(data);  // Not using custom data in this example
     
-    if (value.as_int % 2 != 0) {
+    if (option->value.as_int % 2 != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                         "Value must be an even number, got %d", value.as_int);
+                         "Value must be an even number, got %d", option->value.as_int);
     }
     return CARGS_SUCCESS;
 }
@@ -112,20 +112,20 @@ typedef struct {
 Create a validator that uses this structure:
 
 ```c
-int custom_number_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int custom_number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     // Get constraints from validator data
     number_constraints_t *constraints = (number_constraints_t *)data.custom;
     
     // Validate range
-    if (value.as_int < constraints->min_value || value.as_int > constraints->max_value) {
+    if (option->value.as_int < constraints->min_value || option->value.as_int > constraints->max_value) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_RANGE,
                           "Value must be between %d and %d", 
                           constraints->min_value, constraints->max_value);
     }
     
     // Validate odd/even if required
-    if (!constraints->allow_odd && (value.as_int % 2 != 0)) {
+    if (!constraints->allow_odd && (option->value.as_int % 2 != 0)) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                           "Value must be an even number");
     }
@@ -157,10 +157,10 @@ For simple configurations, you can use static variables:
 static size_t USERNAME_MIN_LENGTH = 3;
 static size_t USERNAME_MAX_LENGTH = 20;
 
-int username_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int username_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     UNUSED(data);
-    const char *username = value.as_string;
+    const char *username = option->value.as_string;
     
     if (username == NULL) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Username cannot be NULL");
@@ -199,12 +199,12 @@ typedef struct {
     const char *related_option;
 } option_relation_t;
 
-int greater_than_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int greater_than_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     option_relation_t *relation = (option_relation_t *)data.custom;
     cargs_value_t other_value = cargs_get(*cargs, relation->related_option);
     
-    if (value.as_int <= other_value.as_int) {
+    if (option->value.as_int <= other_value.as_int) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                           "Value must be greater than '%s' (%d)",
                           relation->related_option, other_value.as_int);
@@ -278,9 +278,9 @@ Each validator should focus on one validation concern:
 
 === "Good: Focused Validators"
     ```c
-    int is_even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
-    int in_range_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data);
-    
+    int is_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+    int in_range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+
     // Use both validators together
     OPTION_INT('n', "number", "Number", 
               VALIDATOR(is_even_validator, NULL),
@@ -289,7 +289,7 @@ Each validator should focus on one validation concern:
 
 === "Bad: Monolithic Validator"
     ```c
-    int complex_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+    int complex_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
     {
         // Does too many things in one function
         // - Checks if value is even
@@ -320,10 +320,10 @@ Provide clear, actionable error messages:
 Always validate parameters and handle edge cases:
 
 ```c
-int string_length_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     // Check if value is NULL
-    if (value.as_string == NULL) {
+    if (option->value.as_string == NULL) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "String cannot be NULL");
     }
     
@@ -337,7 +337,7 @@ int string_length_validator(cargs_t *cargs, cargs_value_t value, validator_data_
 Avoid excessive allocations in validators:
 
 ```c
-int efficient_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     // Use stack-based buffers for temporary operations
     char buffer[256];
@@ -354,11 +354,11 @@ Design validators to be reusable across multiple options:
 
 ```c
 // Generic validator for checking if a number is divisible by n
-int divisible_by_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int divisible_by_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     int divisor = *(int *)data.custom;
     
-    if (value.as_int % divisor != 0) {
+    if (option->value.as_int % divisor != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                           "Value must be divisible by %d", divisor);
     }
@@ -386,11 +386,11 @@ Here's a comprehensive example demonstrating various custom validator techniques
 #include <ctype.h>
 
 // Custom validator for email addresses
-int email_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int email_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     (void)data; // Unused parameter
     
-    const char* email = value.as_string;
+    const char* email = option->value.as_string;
     if (!email) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                           "Email address cannot be NULL");
@@ -414,11 +414,11 @@ int email_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
 }
 
 // Custom validator for even numbers
-int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     (void)data; // Unused parameter
     
-    int number = value.as_int;
+    int number = option->value.as_int;
     if (number % 2 != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                           "Value must be an even number");

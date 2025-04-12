@@ -14,7 +14,13 @@ CARGS_OPTIONS(
                 CHOICES_STRING("debug", "info", "warning", "error")),
     OPTION_STRING('e', "email", HELP("Email address"), 
                 REGEX(MAKE_REGEX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
-                    "Enter email format")))
+                    "Enter email format"))),
+    // Add LENGTH validator test option
+    OPTION_STRING('u', "username", HELP("Username"), 
+                LENGTH(3, 16)),
+    // Add COUNT validator test option
+    OPTION_ARRAY_STRING('t', "tags", HELP("Tags"), 
+                COUNT(2, 5))
 )
 
 // Test for range validation
@@ -103,6 +109,95 @@ Test(validators_integration, regex_validation_failure)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_neq(status, CARGS_SUCCESS, "Invalid email should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+// Test for length validation
+Test(validators_integration, length_validation_success)
+{
+    // Valid username length
+    char *argv[] = {"test", "-u", "johndoe"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_eq(status, CARGS_SUCCESS, "Valid username length should pass validation");
+    cr_assert_str_eq(cargs_get(cargs, "username").as_string, "johndoe");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, length_validation_failure_too_short)
+{
+    // Username too short
+    char *argv[] = {"test", "-u", "jo"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Too short username should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, length_validation_failure_too_long)
+{
+    // Username too long
+    char *argv[] = {"test", "-u", "johndoethisiswaytoolong"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Too long username should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+// Test for count validation
+Test(validators_integration, count_validation_success)
+{
+    // Valid number of tags
+    char *argv[] = {"test", "-t", "tag1", "-t", "tag2", "-t", "tag3"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_eq(status, CARGS_SUCCESS, "Valid number of tags should pass validation");
+    cr_assert_eq(cargs_count(cargs, "tags"), 3, "Should have 3 tags");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, count_validation_failure_too_few)
+{
+    // No tags (too few)
+    char *argv[] = {"test", "-t", "tag1"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Too few tags should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, count_validation_failure_too_many)
+{
+    // Too many tags
+    char *argv[] = {"test", "-t", "tag1", "-t", "tag2", "-t", "tag3", 
+                    "-t", "tag4", "-t", "tag5", "-t", "tag6"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Too many tags should fail validation");
     
     cargs_free(&cargs);
 }

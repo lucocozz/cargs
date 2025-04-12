@@ -19,20 +19,33 @@ cargs provides several built-in validators to simplify common validation scenari
 
 The `RANGE` validator ensures numeric values fall within a specified range:
 
-=== "Definition"
-    ```c
-    OPTION_INT('p', "port", HELP("Port number"),
-               RANGE(1, 65535),  // Must be between 1 and 65535
-               DEFAULT(8080))
-    ```
+```c
+OPTION_INT('p', "port", HELP("Port number"),
+           RANGE(1, 65535),  // Must be between 1 and 65535
+           DEFAULT(8080))
+```
 
-=== "Usage Example"
-    ```bash
-    $ ./my_program --port=9000  # Valid
-    $ ./my_program --port=100000  # Error: Value 100000 is out of range [1, 65535]
-    ```
+### Length Validation
 
-### Choices Validation
+The `LENGTH` validator ensures string values have an appropriate length:
+
+```c
+OPTION_STRING('u', "username", HELP("Username"),
+              LENGTH(3, 20),  // Must be between 3 and 20 characters
+              DEFAULT("user"))
+```
+
+### Count Validation
+
+The `COUNT` validator ensures collections (arrays and maps) have an appropriate number of elements:
+
+```c
+OPTION_ARRAY_STRING('t', "tags", HELP("Tags for the resource"),
+                   COUNT(1, 5),  // Must have between 1 and 5 tags
+                   FLAGS(FLAG_UNIQUE))
+```
+
+## Choices Validation
 
 The `CHOICES` validator ensures the value is one of a specific set:
 
@@ -93,9 +106,9 @@ For more complex validation logic, you can create your own validators:
 
 === "Simple Validator"
     ```c
-    int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+    int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
     {
-        if (value.as_int % 2 != 0) {
+        if (option->value.as_int % 2 != 0) {
             CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                              "Value must be an even number");
         }

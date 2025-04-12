@@ -1,748 +1,182 @@
-# Référence des macros
+# Référence des Macros
 
-Cette page fournit une référence complète pour toutes les macros disponibles dans cargs pour définir des options et personnaliser leur comportement.
+Cette référence fournit un guide complet de toutes les macros disponibles dans cargs, organisées par fonction et objectif.
 
-!!! abstract "Aperçu"
-    cargs utilise une approche basée sur des macros pour définir les options de ligne de commande, ce qui permet de spécifier les propriétés des options dans un style déclaratif concis. Les macros sont organisées en plusieurs catégories :
-    
-    - **Macros de définition** - Définissent des options de différents types
-    - **Propriétés d'options** - Personnalisent le comportement des options
-    - **Groupes et sous-commandes** - Organisent les options et créent des hiérarchies de commandes
-    - **Macros de validation** - Ajoutent des contraintes de validation
-    - **Combinaisons de drapeaux** - Configurent les drapeaux d'options
+## Macros de Définition d'Options
 
-## Macro de définition principale
+Ces macros sont les éléments de base pour définir les options de ligne de commande et leur comportement.
 
-### CARGS_OPTIONS
+### Définitions Fondamentales
 
-C'est la macro principale qui définit un ensemble d'options de ligne de commande :
+| Macro | Objectif | Exemple |
+|-------|----------|---------|
+| `CARGS_OPTIONS(name, ...)` | Définir un ensemble d'options de ligne de commande | `CARGS_OPTIONS(options, HELP_OPTION(), ...)` |
+| `OPTION_END()` | Terminer un tableau d'options | Généralement ajouté automatiquement |
 
-```c
-CARGS_OPTIONS(nom, ...)
-```
+### Options Standard
 
-**Paramètres :**
-- `nom` : Nom de la variable qui contiendra le tableau d'options
-- `...` : Liste d'options définies avec les macros ci-dessous
+Ces macros définissent des options qui acceptent différents types de valeurs :
 
-**Exemple :**
-```c
-CARGS_OPTIONS(
-    options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
-    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse"))
-)
-```
+| Type d'Option | Macro | Description | Exemple |
+|---------------|-------|-------------|---------|
+| **Chaîne** | `OPTION_STRING(short, long, help, ...)` | Option avec valeur chaîne | `OPTION_STRING('o', "output", HELP("Fichier de sortie"))` |
+| **Entier** | `OPTION_INT(short, long, help, ...)` | Option avec valeur entière | `OPTION_INT('p', "port", HELP("Port"))` |
+| **Flottant** | `OPTION_FLOAT(short, long, help, ...)` | Option avec valeur flottante | `OPTION_FLOAT('s', "echelle", HELP("Échelle"))` |
+| **Booléen** | `OPTION_BOOL(short, long, help, ...)` | Option avec valeur vrai/faux | `OPTION_BOOL('d', "debug", HELP("Mode debug"))` |
+| **Drapeau** | `OPTION_FLAG(short, long, help, ...)` | Drapeau booléen (sans valeur) | `OPTION_FLAG('v', "verbose", HELP("Verbose"))` |
 
-## Macros de définition d'options
+### Options de Tableau
 
-### Options standard
+Ces macros définissent des options qui peuvent accepter plusieurs valeurs :
 
-#### OPTION_STRING
+| Type de Tableau | Macro | Description | Exemple |
+|-----------------|-------|-------------|---------|
+| **Tableau de Chaînes** | `OPTION_ARRAY_STRING(short, long, help, ...)` | Plusieurs valeurs chaîne | `OPTION_ARRAY_STRING('t', "tags", HELP("Tags"))` |
+| **Tableau d'Entiers** | `OPTION_ARRAY_INT(short, long, help, ...)` | Plusieurs valeurs entières | `OPTION_ARRAY_INT('p', "ports", HELP("Ports"))` |
+| **Tableau de Flottants** | `OPTION_ARRAY_FLOAT(short, long, help, ...)` | Plusieurs valeurs flottantes | `OPTION_ARRAY_FLOAT('f', "facteurs", HELP("Facteurs"))` |
 
-Définit une option de type chaîne :
+### Options de Map
 
-```c
-OPTION_STRING(nom_court, nom_long, aide, ...)
-```
+Ces macros définissent des options qui acceptent des paires clé-valeur :
 
-**Paramètres :**
-- `nom_court` : Caractère pour le nom court (ex., 'o' pour -o), ou '\0' si aucun
-- `nom_long` : Chaîne pour le nom long (ex., "output" pour --output), ou NULL si aucun
-- `aide` : Texte d'aide décrivant l'option
-- `...` : Modificateurs optionnels (DEFAULT, HINT, FLAGS, etc.)
+| Type de Map | Macro | Description | Exemple |
+|-------------|-------|-------------|---------|
+| **Map de Chaînes** | `OPTION_MAP_STRING(short, long, help, ...)` | Clé-valeur avec valeurs chaîne | `OPTION_MAP_STRING('e', "env", HELP("Environnement"))` |
+| **Map d'Entiers** | `OPTION_MAP_INT(short, long, help, ...)` | Clé-valeur avec valeurs entières | `OPTION_MAP_INT('p', "port", HELP("Mapping de ports"))` |
+| **Map de Flottants** | `OPTION_MAP_FLOAT(short, long, help, ...)` | Clé-valeur avec valeurs flottantes | `OPTION_MAP_FLOAT('s', "echelle", HELP("Échelles"))` |
+| **Map de Booléens** | `OPTION_MAP_BOOL(short, long, help, ...)` | Clé-valeur avec valeurs booléennes | `OPTION_MAP_BOOL('f', "fonction", HELP("Fonctionnalités"))` |
 
-**Exemple :**
-```c
-OPTION_STRING('o', "output", HELP("Fichier de sortie"), 
-             DEFAULT("output.txt"), 
-             HINT("FILE"))
-```
+### Arguments Positionnels
 
-#### OPTION_INT
+Ces macros définissent des arguments positionnels (sans tirets) :
 
-Définit une option de type entier :
+| Type Positionnel | Macro | Description | Exemple |
+|------------------|-------|-------------|---------|
+| **Chaîne** | `POSITIONAL_STRING(name, help, ...)` | Positionnel avec valeur chaîne | `POSITIONAL_STRING("input", HELP("Fichier d'entrée"))` |
+| **Entier** | `POSITIONAL_INT(name, help, ...)` | Positionnel avec valeur entière | `POSITIONAL_INT("compte", HELP("Nombre"))` |
+| **Flottant** | `POSITIONAL_FLOAT(name, help, ...)` | Positionnel avec valeur flottante | `POSITIONAL_FLOAT("facteur", HELP("Facteur"))` |
+| **Booléen** | `POSITIONAL_BOOL(name, help, ...)` | Positionnel avec valeur booléenne | `POSITIONAL_BOOL("actif", HELP("Activer"))` |
 
-```c
-OPTION_INT(nom_court, nom_long, aide, ...)
-```
+### Options Communes
 
-**Paramètres :** Identiques à `OPTION_STRING`
+Options prédéfinies pour les fonctionnalités standard :
 
-**Exemple :**
-```c
-OPTION_INT('p', "port", HELP("Numéro de port"), 
-           DEFAULT(8080), 
-           RANGE(1, 65535))
-```
+| Option | Macro | Description | Exemple |
+|--------|-------|-------------|---------|
+| **Aide** | `HELP_OPTION(...)` | Ajoute l'option `-h/--help` | `HELP_OPTION(FLAGS(FLAG_EXIT))` |
+| **Version** | `VERSION_OPTION(...)` | Ajoute l'option `-V/--version` | `VERSION_OPTION(FLAGS(FLAG_EXIT))` |
 
-#### OPTION_FLOAT
+### Options de Base
 
-Définit une option de type flottant :
+Macros avancées pour les types d'options personnalisés :
 
-```c
-OPTION_FLOAT(nom_court, nom_long, aide, ...)
-```
+| Type de Base | Macro | Objectif | Exemple |
+|--------------|-------|----------|---------|
+| **Base d'Option** | `OPTION_BASE(short, long, type, ...)` | Type d'option personnalisé | `OPTION_BASE('i', "ip", VALUE_TYPE_CUSTOM, ...)` |
+| **Base Positionnelle** | `POSITIONAL_BASE(name, type, ...)` | Type positionnel personnalisé | `POSITIONAL_BASE("coord", VALUE_TYPE_CUSTOM, ...)` |
 
-**Paramètres :** Identiques à `OPTION_STRING`
+## Macros de Validation
 
-**Exemple :**
-```c
-OPTION_FLOAT('f', "factor", HELP("Facteur d'échelle"), 
-             DEFAULT(1.0))
-```
+Ces macros ajoutent des contraintes de validation aux options :
 
-#### OPTION_BOOL
-Définit une option de type booléen :
+| Validateur | Macro | Objectif | Exemple |
+|------------|-------|----------|---------|
+| **Plage** | `RANGE(min, max)` | Valide les valeurs numériques dans une plage | `OPTION_INT('p', "port", HELP("Port"), RANGE(1, 65535))` |
+| **Longueur** | `LENGTH(min, max)` | Valide la longueur d'une chaîne dans une plage | `OPTION_STRING('u', "user", HELP("Nom d'utilisateur"), LENGTH(3, 20))` |
+| **Nombre** | `COUNT(min, max)` | Valide la taille d'une collection dans une plage | `OPTION_ARRAY_INT('n', "nums", HELP("Nombres"), COUNT(1, 5))` |
+| **Regex** | `REGEX(pattern)` | Valide un texte selon un modèle | `OPTION_STRING('e', "email", HELP("Email"), REGEX(CARGS_RE_EMAIL))` |
+| **Modèle Personnalisé** | `MAKE_REGEX(pattern, hint)` | Crée un modèle regex avec explication | `REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000"))` |
+| **Validateur Personnalisé** | `VALIDATOR(function, data)` | Logique de validation personnalisée | `VALIDATOR(validateur_pair, NULL)` |
+| **Pré-validateur** | `PRE_VALIDATOR(function, data)` | Valide la chaîne brute avant traitement | `PRE_VALIDATOR(validateur_longueur, &longueur_min)` |
 
-```c
-OPTION_BOOL(nom_court, nom_long, aide, ...)
-```
-**Paramètres :** Identiques à `OPTION_STRING`
-**Exemple :**
-```c
-OPTION_BOOL('d', "debug", HELP("Activer le mode débogage"), 
-            DEFAULT(false))
-```
+### Validateurs de Choix
 
-#### OPTION_FLAG
+Ces macros valident par rapport à un ensemble de valeurs autorisées :
 
-Définit une option booléenne (drapeau) qui ne prend pas de valeur :
+| Type de Choix | Macro | Objectif | Exemple |
+|---------------|-------|----------|---------|
+| **Choix de Chaînes** | `CHOICES_STRING(...)` | Autorise des valeurs de chaîne spécifiques | `CHOICES_STRING("debug", "info", "warning", "error")` |
+| **Choix d'Entiers** | `CHOICES_INT(...)` | Autorise des valeurs entières spécifiques | `CHOICES_INT(1, 2, 3, 4)` |
+| **Choix de Flottants** | `CHOICES_FLOAT(...)` | Autorise des valeurs flottantes spécifiques | `CHOICES_FLOAT(0.5, 1.0, 2.0)` |
 
-```c
-OPTION_FLAG(nom_court, nom_long, aide, ...)
-```
+## Macros de Propriété d'Option
 
-**Paramètres :** Identiques à `OPTION_STRING`
+Ces macros modifient les propriétés des options :
 
-**Exemple :**
-```c
-OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse"))
-```
+| Propriété | Macro | Objectif | Exemple |
+|-----------|-------|----------|---------|
+| **Valeur par Défaut** | `DEFAULT(value)` | Définit la valeur par défaut | `DEFAULT("output.txt")` |
+| **Texte d'Aide** | `HELP(text)` | Définit la description d'aide | `HELP("Chemin du fichier de sortie")` |
+| **Indice de Valeur** | `HINT(text)` | Définit l'indice pour l'affichage d'aide | `HINT("FICHIER")` |
+| **Drapeaux** | `FLAGS(flags)` | Définit les drapeaux de comportement | `FLAGS(FLAG_REQUIRED)` |
+| **Exigences** | `REQUIRES(...)` | Définit les options dépendantes | `REQUIRES("nom_utilisateur", "mot_de_passe")` |
+| **Conflits** | `CONFLICTS(...)` | Définit les options incompatibles | `CONFLICTS("silencieux")` |
+| **Variable d'Environnement** | `ENV_VAR(name)` | Définit la variable d'environnement | `ENV_VAR("SORTIE")` |
 
-### Options de type tableau
+## Macros de Groupe et de Sous-commande
 
-#### OPTION_ARRAY_STRING
+Ces macros organisent les options et définissent des hiérarchies de commandes :
 
-Définit une option acceptant un tableau de chaînes :
+| Macro | Objectif | Exemple |
+|-------|----------|---------|
+| `GROUP_START(name, ...)` | Commence un groupe d'options | `GROUP_START("Connexion", GROUP_DESC("Options de connexion"))` |
+| `GROUP_END()` | Termine un groupe d'options | `GROUP_END()` |
+| `GROUP_DESC(text)` | Définit la description du groupe | `GROUP_DESC("Paramètres avancés")` |
+| `SUBCOMMAND(name, options, ...)` | Définit une sous-commande | `SUBCOMMAND("ajouter", options_ajout, HELP("Ajouter des fichiers"))` |
+| `ACTION(function)` | Définit l'action de la sous-commande | `ACTION(commande_ajout)` |
 
-```c
-OPTION_ARRAY_STRING(nom_court, nom_long, aide, ...)
-```
+## Macros de Gestionnaire
 
-**Paramètres :** Identiques à `OPTION_STRING`
+Ces macros définissent comment les options traitent les entrées :
 
-**Exemple :**
-```c
-OPTION_ARRAY_STRING('t', "tags", HELP("Tags pour la ressource"), 
-                   FLAGS(FLAG_SORTED | FLAG_UNIQUE))
-```
+| Macro | Objectif | Exemple |
+|-------|----------|---------|
+| `HANDLER(function)` | Logique de traitement personnalisée | `HANDLER(gestionnaire_ip)` |
+| `FREE_HANDLER(function)` | Nettoyage des ressources | `FREE_HANDLER(gestionnaire_liberation_ip)` |
 
-#### OPTION_ARRAY_INT
-
-Définit une option acceptant un tableau d'entiers :
-
-```c
-OPTION_ARRAY_INT(nom_court, nom_long, aide, ...)
-```
-
-**Paramètres :** Identiques à `OPTION_STRING`
-
-**Exemple :**
-```c
-OPTION_ARRAY_INT('p', "ports", HELP("Numéros de ports"), 
-                FLAGS(FLAG_UNIQUE))
-```
-
-#### OPTION_ARRAY_FLOAT
-
-Définit une option acceptant un tableau de valeurs flottantes :
-
-```c
-OPTION_ARRAY_FLOAT(nom_court, nom_long, aide, ...)
-```
-
-**Paramètres :** Identiques à `OPTION_STRING`
-
-**Exemple :**
-```c
-OPTION_ARRAY_FLOAT('f', "factors", HELP("Facteurs d'échelle"))
-```
-
-### Options de type map
-
-#### OPTION_MAP_STRING
-
-Définit une option acceptant une map de chaînes :
-
-```c
-OPTION_MAP_STRING(nom_court, nom_long, aide, ...)
-```
-
-**Paramètres :** Identiques à `OPTION_STRING`
-
-**Exemple :**
-```c
-OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement"), 
-                 FLAGS(FLAG_SORTED_KEY))
-```
-
-#### OPTION_MAP_INT
-
-Définit une option acceptant une map d'entiers :
-
-```c
-OPTION_MAP_INT(nom_court, nom_long, aide, ...)
-```
-
-**Paramètres :** Identiques à `OPTION_STRING`
-
-**Exemple :**
-```c
-OPTION_MAP_INT('p', "ports", HELP("Ports de service"), 
-              FLAGS(FLAG_SORTED_KEY))
-```
-
-#### OPTION_MAP_FLOAT
-
-Définit une option acceptant une map de valeurs flottantes :
-
-```c
-OPTION_MAP_FLOAT(nom_court, nom_long, aide, ...)
-```
-
-**Paramètres :** Identiques à `OPTION_STRING`
-
-**Exemple :**
-```c
-OPTION_MAP_FLOAT('s', "scales", HELP("Facteurs d'échelle par dimension"))
-```
-
-#### OPTION_MAP_BOOL
-
-Définit une option acceptant une map de booléens :
-
-```c
-OPTION_MAP_BOOL(nom_court, nom_long, aide, ...)
-```
-
-**Paramètres :** Identiques à `OPTION_STRING`
-
-**Exemple :**
-```c
-OPTION_MAP_BOOL('f', "features", HELP("Bascules de fonctionnalités"))
-```
-
-### Arguments positionnels
-
-#### POSITIONAL_STRING
-
-Définit un argument positionnel de type chaîne :
-
-```c
-POSITIONAL_STRING(nom, aide, ...)
-```
-
-**Paramètres :**
-- `nom` : Nom de l'argument (pour les références et l'affichage d'aide)
-- `aide` : Texte d'aide décrivant l'argument
-- `...` : Modificateurs optionnels (FLAGS, DEFAULT, etc.)
-
-**Exemple :**
-```c
-POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
-```
-
-#### POSITIONAL_INT
-
-Définit un argument positionnel de type entier :
-
-```c
-POSITIONAL_INT(nom, aide, ...)
-```
-
-**Paramètres :** Identiques à `POSITIONAL_STRING`
-
-**Exemple :**
-```c
-POSITIONAL_INT("count", HELP("Nombre d'itérations"), 
-               DEFAULT(1))
-```
-
-#### POSITIONAL_FLOAT
-
-Définit un argument positionnel de type flottant :
-
-```c
-POSITIONAL_FLOAT(nom, aide, ...)
-```
-
-**Paramètres :** Identiques à `POSITIONAL_STRING`
-
-**Exemple :**
-```c
-POSITIONAL_FLOAT("threshold", HELP("Seuil de détection"), 
-                 DEFAULT(0.5))
-```
-
-#### POSITIONAL_BOOL
-
-Définit un argument positionnel de type booléen :
-
-```c
-POSITIONAL_BOOL(nom, aide, ...)
-```
-
-**Paramètres :** Identiques à `POSITIONAL_STRING`
-
-**Exemple :**
-```c
-POSITIONAL_BOOL("enabled", HELP("Activer la fonctionnalité"))
-```
-
-### Options courantes
-
-#### HELP_OPTION
-
-Définit une option d'aide (-h, --help) :
-
-```c
-HELP_OPTION(...)
-```
-
-**Paramètres :**
-- `...` : Modificateurs optionnels (typiquement FLAGS(FLAG_EXIT))
-
-**Exemple :**
-```c
-HELP_OPTION(FLAGS(FLAG_EXIT))
-```
-
-#### VERSION_OPTION
-
-Définit une option de version (-V, --version) :
-
-```c
-VERSION_OPTION(...)
-```
-
-**Paramètres :**
-- `...` : Modificateurs optionnels (typiquement FLAGS(FLAG_EXIT))
-
-**Exemple :**
-```c
-VERSION_OPTION(FLAGS(FLAG_EXIT))
-```
-
-### Options de base
-
-#### OPTION_BASE
-
-Définit une option personnalisée avec plus de contrôle :
-
-```c
-OPTION_BASE(nom_court, nom_long, aide, type_valeur, ...)
-```
-
-**Paramètres :**
-- `nom_court` : Caractère pour le nom court (ex., 'o' pour -o), ou '\0' si aucun
-- `nom_long` : Chaîne pour le nom long (ex., "output" pour --output), ou NULL si aucun
-- `aide` : Texte d'aide décrivant l'option
-- `type_valeur` : Type de valeur (VALUE_TYPE_STRING, VALUE_TYPE_INT, etc.)
-- `...` : Modificateurs optionnels (HANDLER, FREE_HANDLER, etc.)
-
-**Exemple :**
-```c
-OPTION_BASE('i', "ip", HELP("Adresse IP"), VALUE_TYPE_CUSTOM,
-            HANDLER(ip_handler),
-            FREE_HANDLER(ip_free_handler))
-```
-
-#### POSITIONAL_BASE
-
-Définit un argument positionnel personnalisé :
-
-```c
-POSITIONAL_BASE(nom, aide, type_valeur, ...)
-```
-
-**Paramètres :**
-- `nom` : Nom de l'argument
-- `aide` : Texte d'aide décrivant l'argument
-- `type_valeur` : Type de valeur
-- `...` : Modificateurs optionnels
-
-**Exemple :**
-```c
-POSITIONAL_BASE("coordinate", HELP("Coordonnées du point"), VALUE_TYPE_CUSTOM,
-                HANDLER(coordinate_handler),
-                FREE_HANDLER(coordinate_free_handler))
-```
-
-## Macros de groupe et de sous-commande
-
-### GROUP_START
-
-Commence un groupe d'options :
-
-```c
-GROUP_START(nom, ...)
-```
-
-**Paramètres :**
-- `nom` : Nom du groupe
-- `...` : Modificateurs optionnels (GROUP_DESC, FLAGS, etc.)
-
-**Exemple :**
-```c
-GROUP_START("Connection", GROUP_DESC("Options de connexion"))
-```
-
-### GROUP_END
-
-Termine un groupe d'options :
-
-```c
-GROUP_END()
-```
-
-**Exemple :**
-```c
-GROUP_END()
-```
-
-### SUBCOMMAND
-
-Définit une sous-commande avec ses propres options :
-
-```c
-SUBCOMMAND(nom, sous_options, ...)
-```
-
-**Paramètres :**
-- `nom` : Nom de la sous-commande
-- `sous_options` : Tableau d'options pour la sous-commande
-- `...` : Modificateurs optionnels (HELP, ACTION, etc.)
-
-**Exemple :**
-```c
-SUBCOMMAND("add", add_options, 
-           HELP("Ajouter des fichiers"), 
-           ACTION(add_command))
-```
-
-## Macros de propriétés
-
-### DEFAULT
-
-Définit une valeur par défaut pour une option :
-
-```c
-DEFAULT(valeur)
-```
-
-**Exemple :**
-```c
-OPTION_INT('p', "port", "Numéro de port", DEFAULT(8080))
-```
-
-### HINT
-
-Définit un indice affiché dans l'aide pour le format de la valeur :
-
-```c
-HINT(texte)
-```
-
-**Exemple :**
-```c
-OPTION_STRING('o', "output", "Fichier de sortie", HINT("FICHIER"))
-```
-
-### HELP
-
-Définit le texte d'aide pour une sous-commande :
-
-```c
-HELP(texte)
-```
-
-**Exemple :**
-```c
-SUBCOMMAND("add", add_options, HELP("Ajouter des fichiers au dépôt"))
-```
-
-### GROUP_DESC
-
-Définit la description pour un groupe d'options :
-
-```c
-GROUP_DESC(texte)
-```
-
-**Exemple :**
-```c
-GROUP_START("Advanced", GROUP_DESC("Options de configuration avancées"))
-```
-
-### FLAGS
-
-Définit des drapeaux pour modifier le comportement d'une option :
-
-```c
-FLAGS(drapeaux)
-```
-
-**Exemple :**
-```c
-OPTION_STRING('o', "output", "Fichier de sortie", FLAGS(FLAG_REQUIRED))
-```
-
-### REQUIRES
-
-Définit des dépendances entre options :
-
-```c
-REQUIRES(...)
-```
-
-**Exemple :**
-```c
-OPTION_STRING('u', "username", "Nom d'utilisateur", REQUIRES("password"))
-```
-
-### CONFLICTS
-
-Définit des incompatibilités entre options :
-
-```c
-CONFLICTS(...)
-```
-
-**Exemple :**
-```c
-OPTION_FLAG('v', "verbose", "Mode verbeux", CONFLICTS("quiet"))
-```
-
-### ENV_VAR
-
-Spécifie une variable d'environnement associée à l'option :
-
-```c
-ENV_VAR(nom)
-```
-
-**Exemple :**
-```c
-OPTION_STRING('H', "host", "Nom d'hôte", ENV_VAR("HOST"))
-```
-
-### ACTION
-
-Associe une fonction d'action à une sous-commande :
-
-```c
-ACTION(fonction)
-```
-
-**Exemple :**
-```c
-SUBCOMMAND("add", add_options, ACTION(add_command))
-```
-
-### HANDLER
-
-Spécifie un gestionnaire personnalisé pour une option :
-
-```c
-HANDLER(fonction)
-```
-
-**Exemple :**
-```c
-HANDLER(ip_handler)
-```
-
-### FREE_HANDLER
-
-Spécifie un gestionnaire de libération personnalisé pour une option :
-
-```c
-FREE_HANDLER(fonction)
-```
-
-**Exemple :**
-```c
-FREE_HANDLER(ip_free_handler)
-```
-
-## Macros de validation
-
-### RANGE
-
-Définit une plage valide de valeurs pour une option numérique :
-
-```c
-RANGE(min, max)
-```
-
-**Exemple :**
-```c
-OPTION_INT('p', "port", "Numéro de port", RANGE(1, 65535))
-```
-
-### CHOICES_STRING, CHOICES_INT, CHOICES_FLOAT
-
-Définit des choix valides pour une option :
-
-```c
-CHOICES_STRING(...)
-CHOICES_INT(...)
-CHOICES_FLOAT(...)
-```
-
-**Exemple :**
-```c
-OPTION_STRING('l', "level", "Niveau de journalisation", 
-             CHOICES_STRING("debug", "info", "warning", "error"))
-```
-
-### REGEX
-
-Applique une validation par expression régulière :
-
-```c
-REGEX(modèle)
-```
-
-**Exemple :**
-```c
-OPTION_STRING('e', "email", "Adresse email", REGEX(CARGS_RE_EMAIL))
-```
-
-### MAKE_REGEX
-
-Crée un modèle d'expression régulière avec explication :
-
-```c
-MAKE_REGEX(modèle, indice)
-```
-
-**Exemple :**
-```c
-REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000"))
-```
-
-### VALIDATOR
-
-Associe un validateur personnalisé à une option :
-
-```c
-VALIDATOR(fonction, données)
-```
-
-**Exemple :**
-```c
-VALIDATOR(even_validator, NULL)
-```
-
-### PRE_VALIDATOR
-
-Associe un pré-validateur personnalisé à une option :
-
-```c
-PRE_VALIDATOR(fonction, données)
-```
-
-**Exemple :**
-```c
-PRE_VALIDATOR(length_validator, &min_length)
-```
-
-## Constantes de drapeaux
-
-Ces constantes peuvent être combinées avec la macro `FLAGS()` :
-
-### Drapeaux d'options
-
-| Drapeau | Description |
-|------|-------------|
-| `FLAG_REQUIRED` | L'option doit être spécifiée |
-| `FLAG_HIDDEN` | L'option est masquée dans l'aide |
-| `FLAG_ADVANCED` | L'option est marquée comme avancée |
-| `FLAG_DEPRECATED` | L'option est marquée comme obsolète |
-| `FLAG_EXPERIMENTAL` | L'option est marquée comme expérimentale |
-| `FLAG_EXIT` | Le programme se termine après le traitement de cette option |
-| `FLAG_ENV_OVERRIDE` | La variable d'environnement peut remplacer la valeur de la ligne de commande |
-| `FLAG_AUTO_ENV` | Générer automatiquement le nom de la variable d'environnement |
-| `FLAG_NO_ENV_PREFIX` | Ne pas utiliser le préfixe de variable d'environnement |
-
-### Drapeaux de tableau et de map
-
-| Drapeau | Description |
-|------|-------------|
-| `FLAG_SORTED` | Trier les valeurs du tableau |
-| `FLAG_UNIQUE` | Supprimer les valeurs dupliquées du tableau |
-| `FLAG_SORTED_KEY` | Trier les entrées de la map par clé |
-| `FLAG_SORTED_VALUE` | Trier les entrées de la map par valeur |
-| `FLAG_UNIQUE_VALUE` | S'assurer que la map n'a pas de valeurs dupliquées |
-
-### Drapeaux de groupe
-
-| Drapeau | Description |
-|------|-------------|
-| `FLAG_EXCLUSIVE` | Une seule option du groupe peut être sélectionnée |
-
-### Drapeau d'aide
-
-| Drapeau | Description |
-|------|-------------|
-| `FLAG_OPTIONAL` | Pour les arguments positionnels uniquement, les marque comme optionnels |
-
-## Exemple complet
+## Exemple Complet
 
 Voici un exemple complet montrant diverses macros en utilisation :
 
 ```c
-// Définir les options pour la sous-commande "add"
+// Définir les options pour la sous-commande "ajouter"
 CARGS_OPTIONS(
-    add_options,
+    options_ajout,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout"), 
-               CONFLICTS("dry-run")),
-    POSITIONAL_STRING("file", HELP("Fichier à ajouter"))
+               CONFLICTS("simulation")),
+    POSITIONAL_STRING("fichier", HELP("Fichier à ajouter"))
 )
 
-// Définir les options pour la sous-commande "remove"
-CARGS_OPTIONS(
-    remove_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('r', "recursive", HELP("Supprimer récursivement les répertoires")),
-    POSITIONAL_STRING("file", HELP("Fichier à supprimer"))
-)
-
-// Définir les options principales avec sous-commandes et groupes d'options
+// Définir les options principales
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
-    // Options globales
-    OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
-    OPTION_STRING('o', "output", HELP("Fichier journal"), 
-                 DEFAULT("output.log"), 
-                 HINT("FICHIER")),
+    // Options standard avec validation
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), 
+                 DEFAULT("output.txt"), 
+                 HINT("FICHIER"),
+                 LENGTH(1, 100)),  // Valider la longueur de la chaîne
     
-    // Options dans un groupe
-    GROUP_START("Display", GROUP_DESC("Options d'affichage")),
-        OPTION_FLAG('q', "quiet", HELP("Supprimer la sortie"), 
+    OPTION_INT('p', "port", HELP("Numéro de port"), 
+              RANGE(1, 65535),     // Valider la plage numérique
+              DEFAULT(8080)),
+    
+    // Tableau avec validation de nombre
+    OPTION_ARRAY_INT('n', "nombres", HELP("Liste de nombres"),
+                    COUNT(1, 10),   // Valider la taille de la collection
+                    FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
+    
+    // Groupes d'options
+    GROUP_START("Affichage", GROUP_DESC("Options d'affichage")),
+        OPTION_FLAG('q', "silencieux", HELP("Supprimer la sortie"), 
                    CONFLICTS("verbose")),
-        OPTION_FLAG('c', "color", HELP("Coloriser la sortie")),
+        OPTION_FLAG('c', "couleur", HELP("Coloriser la sortie")),
     GROUP_END(),
     
-    // Options dans un groupe exclusif (une seule peut être sélectionnée)
+    // Groupe exclusif
     GROUP_START("Format", GROUP_DESC("Format de sortie"), 
                 FLAGS(FLAG_EXCLUSIVE)),
         OPTION_FLAG('j', "json", HELP("Sortie JSON")),
@@ -751,18 +185,10 @@ CARGS_OPTIONS(
     GROUP_END(),
     
     // Sous-commandes
-    SUBCOMMAND("add", add_options, 
+    SUBCOMMAND("ajouter", options_ajout, 
                HELP("Ajouter des fichiers à l'index"), 
-               ACTION(add_command)),
-    
-    SUBCOMMAND("rm", remove_options, 
-               HELP("Supprimer des fichiers de l'index"), 
-               ACTION(remove_command))
+               ACTION(commande_ajout))
 )
 ```
 
-## Documentation associée
-
-- [Référence des fonctions](functions.md) - Référence complète des fonctions de l'API
-- [Référence des types](types.md) - Informations détaillées sur les types de données
-- [Motifs Regex](regex_patterns.md) - Motifs d'expressions régulières prédéfinis
+Pour des informations plus détaillées sur des macros spécifiques, consultez les sections pertinentes de ce guide.

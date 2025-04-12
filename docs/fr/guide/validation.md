@@ -87,15 +87,35 @@ cargs utilise PCRE2 pour une validation puissante par expression régulière :
     
     Pour une utilisation avancée des regex, consultez le [guide des expressions régulières](../advanced/regex.md).
 
+### Validation de longueur
+
+Le validateur `LENGTH` garantit que les chaînes de caractères ont une longueur appropriée :
+
+```c
+OPTION_STRING('u', "username", HELP("Nom d'utilisateur"),
+              LENGTH(3, 20),  // Doit comporter entre 3 et 20 caractères
+              DEFAULT("utilisateur"))
+```
+
+### Validation de nombre d'éléments
+
+Le validateur `COUNT` garantit que les collections (tableaux et maps) ont un nombre approprié d'éléments :
+
+```c
+OPTION_ARRAY_STRING('t', "tags", HELP("Tags pour la ressource"),
+                   COUNT(1, 5),  // Doit avoir entre 1 et 5 tags
+                   FLAGS(FLAG_UNIQUE))
+```
+
 ## Validateurs personnalisés
 
 Pour une logique de validation plus complexe, vous pouvez créer vos propres validateurs :
 
 === "Validateur simple"
     ```c
-    int even_validator(cargs_t *cargs, cargs_value_t value, validator_data_t data)
+    int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
     {
-        if (value.as_int % 2 != 0) {
+        if (option->value.as_int % 2 != 0) {
             CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                              "La valeur doit être un nombre pair");
         }
