@@ -1,73 +1,79 @@
 # Validateurs personnalisés
 
-Les validateurs personnalisés étendent les capacités de cargs en vous permettant d'implémenter une logique de validation spécialisée pour les options de ligne de commande.
+Ce guide explique comment créer et utiliser des validateurs personnalisés avec cargs pour implémenter une logique de validation spécialisée pour les options de ligne de commande.
 
-!!! abstract "Aperçu"
-    Ce guide couvre les techniques de validation avancées avec des validateurs personnalisés :
-    
-    - **Validateurs** et **Pré-validateurs** - Deux types de fonctions de validation personnalisées
-    - **Validation pilotée par les données** - Transmission de configuration aux validateurs
-    - **Macros d'aide** - Création de composants de validation réutilisables
-    - **Bonnes pratiques** - Directives pour une implémentation efficace des validateurs
-    
-    Pour les concepts de validation de base, consultez le [guide de validation](../guide/validation.md).
+## Vue d'ensemble
 
-## Types de validateurs
+La validation est essentielle pour s'assurer que les entrées en ligne de commande répondent aux exigences de votre application. Bien que cargs fournisse des validateurs intégrés comme `RANGE()` et `REGEX()`, les validateurs personnalisés vous permettent d'implémenter une logique de validation spécifique à votre application.
 
-cargs prend en charge deux types de fonctions de validation personnalisées :
+Dans ce guide, vous apprendrez :
 
-### 1. Validateurs
+- Les deux types de validateurs : **validateurs** et **pré-validateurs**
+- Comment créer et utiliser des validateurs personnalisés
+- Les techniques pour transmettre des données de configuration aux validateurs
+- Les bonnes pratiques pour l'implémentation des validateurs
 
-Les validateurs vérifient la valeur **traitée** après que le gestionnaire l'a convertie en son type final :
+## Comprendre les types de validateurs
 
+Cargs prend en charge deux types distincts de fonctions de validation personnalisées, chacune ayant un objectif spécifique :
+
+### Validateurs
+
+**Objectif** : Vérifier la valeur **traitée** après conversion de type
+
+**Quand utiliser** : Lors de la validation basée sur le type de données final (int, float, string, etc.)
+
+**Signature de fonction** :
 ```c
 int validator_function(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
 ```
 
-Utilisez les validateurs lorsque vous devez valider en fonction du type de la valeur traitée (int, float, etc.).
+### Pré-validateurs
 
-### 2. Pré-validateurs
+**Objectif** : Vérifier la **chaîne brute** avant qu'elle ne soit traitée
 
-Les pré-validateurs vérifient la **chaîne brute** avant qu'elle ne soit traitée par le gestionnaire :
+**Quand utiliser** : Quand vous avez besoin de :
+- Valider le format de chaîne avant les tentatives d'analyse
+- Effectuer une validation complexe de chaîne
+- Prévenir les erreurs de conversion de type
 
+**Signature de fonction** :
 ```c
 int pre_validator_function(cargs_t *cargs, const char *value, validator_data_t data);
 ```
 
-Utilisez les pré-validateurs lorsque vous devez :
-- Examiner le format de la chaîne brute avant l'analyse
-- Effectuer une validation complexe de chaîne
-- Valider avant de tenter la conversion
+## Création de validateurs basiques
 
-## Création de validateurs personnalisés
+Commençons par des exemples simples des deux types de validateurs.
 
-### Validateur de base
+### Exemple : Validateur de nombres pairs
 
-Créons un validateur simple qui garantit qu'un entier est pair :
+Ce validateur s'assure que les options entières ont des valeurs paires :
 
 ```c
 int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    UNUSED(data);  // Pas d'utilisation de données personnalisées dans cet exemple
+    // Pas d'utilisation de données personnalisées dans cet exemple
+    UNUSED(data);
     
     if (option->value.as_int % 2 != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                         "La valeur doit être un nombre pair, obtenu %d", option->value.as_int);
+                         "Value must be an even number, got %d", option->value.as_int);
     }
     return CARGS_SUCCESS;
 }
 ```
 
-Pour utiliser ce validateur :
+**Utilisation du validateur** :
 
 ```c
-OPTION_INT('n', "number", HELP("Un nombre pair"), 
+OPTION_INT('n', "number", HELP("An even number"), 
           VALIDATOR(even_validator, NULL))
 ```
 
-### Pré-validateur de base
+### Exemple : Pré-validateur de longueur de chaîne
 
-Voici un pré-validateur qui vérifie la longueur de la chaîne avant le traitement :
+Ce pré-validateur vérifie si une chaîne répond à une exigence de longueur minimale :
 
 ```c
 int string_length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
@@ -77,29 +83,29 @@ int string_length_pre_validator(cargs_t *cargs, const char *value, validator_dat
     
     if (strlen(value) < min_length) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "La chaîne doit comporter au moins %zu caractères", min_length);
+                          "String must be at least %zu characters long", min_length);
     }
     return CARGS_SUCCESS;
 }
 ```
 
-Pour utiliser ce pré-validateur :
+**Utilisation du pré-validateur** :
 
 ```c
 // Définir la contrainte de validation
 size_t min_length = 8;
 
-OPTION_STRING('p', "password", HELP("Mot de passe"), 
-            PRE_VALIDATOR(string_length_pre_validator, &min_length))
+OPTION_STRING('p', "password", HELP("Password"),
+             PRE_VALIDATOR(string_length_pre_validator, &min_length))
 ```
 
 ## Transmission de données aux validateurs
 
-Le paramètre `validator_data_t` vous permet de transmettre des données personnalisées à vos validateurs pour une validation plus flexible.
+Le paramètre `validator_data_t` vous permet de transmettre des données de configuration à vos validateurs, les rendant plus flexibles et réutilisables.
 
 ### Utilisation de structures de données personnalisées
 
-Créez une structure pour contenir les paramètres de validation :
+Pour des règles de validation complexes, vous pouvez créer une structure pour contenir plusieurs paramètres :
 
 ```c
 typedef struct {
@@ -107,34 +113,31 @@ typedef struct {
     int max_value;
     bool allow_odd;
 } number_constraints_t;
-```
 
-Créez un validateur qui utilise cette structure :
-
-```c
-int custom_number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    // Obtenir les contraintes des données du validateur
+    // Obtenir les contraintes à partir des données du validateur
     number_constraints_t *constraints = (number_constraints_t *)data.custom;
     
-    // Valider la plage
-    if (option->value.as_int < constraints->min_value || option->value.as_int > constraints->max_value) {
+    // Validation de plage
+    if (option->value.as_int < constraints->min_value || 
+        option->value.as_int > constraints->max_value) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_RANGE,
-                          "La valeur doit être comprise entre %d et %d", 
+                          "Value must be between %d and %d", 
                           constraints->min_value, constraints->max_value);
     }
     
-    // Valider pair/impair si nécessaire
+    // Validation pair/impair
     if (!constraints->allow_odd && (option->value.as_int % 2 != 0)) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "La valeur doit être un nombre pair");
+                          "Value must be an even number");
     }
     
     return CARGS_SUCCESS;
 }
 ```
 
-Utilisez le validateur avec des données personnalisées :
+**Utilisation du validateur avec des données personnalisées** :
 
 ```c
 // Définir les contraintes
@@ -144,53 +147,24 @@ static number_constraints_t constraints = {
     .allow_odd = false
 };
 
-OPTION_INT('n', "number", HELP("Un nombre avec contraintes"), 
-          VALIDATOR(custom_number_validator, &constraints))
+OPTION_INT('n', "number", HELP("A number with constraints"), 
+          VALIDATOR(number_validator, &constraints))
 ```
 
-### Utilisation de configuration statique
+### Utilisation de "Inline Compound Literals"
 
-Pour des configurations simples, vous pouvez utiliser des variables statiques :
-
-```c
-// Configuration statique pour le validateur de longueur de chaîne
-static size_t USERNAME_MIN_LENGTH = 3;
-static size_t USERNAME_MAX_LENGTH = 20;
-
-int username_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
-{
-    UNUSED(data);
-    const char *username = option->value.as_string;
-    
-    if (username == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Le nom d'utilisateur ne peut pas être NULL");
-    }
-    
-    size_t length = strlen(username);
-    if (length < USERNAME_MIN_LENGTH || length > USERNAME_MAX_LENGTH) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "Le nom d'utilisateur doit comporter entre %zu et %zu caractères",
-                          USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH);
-    }
-    
-    return CARGS_SUCCESS;
-}
-```
-
-## Techniques de validation avancées
-
-### Variables inline avec littéraux composés
-
-Vous pouvez transmettre des données sans variable séparée en utilisant des littéraux composés :
+Pour les cas simples, vous pouvez utiliser des "compound literals" C99 pour passer des données en ligne :
 
 ```c
-OPTION_STRING('u', "username", HELP("Nom d'utilisateur"),
+OPTION_STRING('u', "username", HELP("Username"),
              PRE_VALIDATOR(string_length_pre_validator, &((size_t){3})))
 ```
 
 Cela crée une variable anonyme `size_t` avec la valeur 3 et transmet son adresse au validateur.
 
-### Validation consciente du contexte
+## Techniques de validation avancées
+
+### Validation contextuelle
 
 Parfois, les validateurs doivent vérifier les valeurs par rapport à d'autres options :
 
@@ -206,20 +180,22 @@ int greater_than_validator(cargs_t *cargs, cargs_option_t *option, validator_dat
     
     if (option->value.as_int <= other_value.as_int) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "La valeur doit être supérieure à '%s' (%d)",
+                          "Value must be greater than '%s' (%d)",
                           relation->related_option, other_value.as_int);
     }
     
     return CARGS_SUCCESS;
 }
+```
 
-// Utilisation
+**Exemple d'utilisation** :
+```c
 static option_relation_t max_relation = { .related_option = "min" };
 
 CARGS_OPTIONS(
     options,
-    OPTION_INT('n', "min", HELP("Valeur minimale")),
-    OPTION_INT('x', "max", HELP("Valeur maximale"), 
+    OPTION_INT('n', "min", HELP("Minimum value")),
+    OPTION_INT('x', "max", HELP("Maximum value"), 
                VALIDATOR(greater_than_validator, &max_relation))
 )
 ```
@@ -243,77 +219,85 @@ Pour les modèles de validation fréquemment utilisés, créez des macros d'aide
 // Vérification de longueur combinée
 #define STRING_LENGTH(min, max) \
     PRE_VALIDATOR(string_length_range_validator, &((length_range_t){min, max}))
+```
 
-// Utilisation
+**Exemple d'utilisation** :
+```c
 CARGS_OPTIONS(
     options,
-    OPTION_INT('n', "number", HELP("Un nombre pair"), EVEN_NUMBER()),
-    OPTION_STRING('p', "password", HELP("Mot de passe"), MIN_LENGTH(8)),
-    OPTION_STRING('u', "username", HELP("Nom d'utilisateur"), STRING_LENGTH(3, 20))
+    OPTION_INT('n', "number", HELP("An even number"), EVEN_NUMBER()),
+    OPTION_STRING('p', "password", HELP("Password"), MIN_LENGTH(8)),
+    OPTION_STRING('u', "username", HELP("Username"), STRING_LENGTH(3, 20))
 )
 ```
 
-## Rapport d'erreurs
+## Combinaison de plusieurs validateurs
 
-Les validateurs doivent utiliser `CARGS_REPORT_ERROR` pour signaler les échecs de validation :
+Cargs vous permet d'appliquer plusieurs validateurs à une seule option en utilisant les macros de validateur numérotées :
+
+```c
+OPTION_INT('p', "port", HELP("Port number"), 
+          VALIDATOR(is_even_validator, NULL),      // Premier validateur
+          VALIDATOR2(range_validator, &port_range), // Deuxième validateur
+          VALIDATOR3(port_validator, NULL))        // Troisième validateur
+```
+
+Cargs a une limite de 4 validateurs par option, mais vous pouvez modifier la constante `CARGS_MAX_VALIDATORS` pour augmenter cette limite.
+
+Notez que les validateurs intégrés comme `RANGE()`, `LENGTH()`, et `COUNT()` utilisent le premier emplacement de validateur. Vous pouvez les combiner avec des validateurs personnalisés en utilisant le deuxième et les emplacements suivants :
+
+```c
+OPTION_INT('p', "port", HELP("Port number"),
+          RANGE(1, 65535),                     // Utilise le premier emplacement de validateur
+          VALIDATOR2(is_even_validator, NULL)) // Utilise le deuxième emplacement de validateur
+```
+
+## Signalement d'erreurs
+
+Les validateurs doivent utiliser `CARGS_REPORT_ERROR` pour fournir des messages d'erreur clairs :
 
 ```c
 CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
 ```
 
-Codes d'erreur courants :
+**Codes d'erreur courants** :
 
 | Code d'erreur | Description | Utilisation typique |
 |------------|-------------|-------------|
 | `CARGS_ERROR_INVALID_VALUE` | La valeur ne répond pas aux exigences | Échecs de validation généraux |
 | `CARGS_ERROR_INVALID_RANGE` | Valeur hors de la plage autorisée | Validation de plage |
 | `CARGS_ERROR_INVALID_FORMAT` | La valeur a un format incorrect | Validation de format |
-| `CARGS_ERROR_MEMORY` | Échec de l'allocation mémoire | Pendant le traitement de la validation |
+| `CARGS_ERROR_MEMORY` | L'allocation de mémoire a échoué | Pendant le traitement de validation |
 
 ## Bonnes pratiques
 
 ### 1. Responsabilité unique
 
-Chaque validateur doit se concentrer sur une préoccupation de validation :
+Chaque validateur devrait se concentrer sur une préoccupation de validation :
 
-=== "Bon : Validateurs ciblés"
-    ```c
-    int is_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
-    int in_range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
-    
-    // Utiliser les deux validateurs ensemble
-    OPTION_INT('n', "number", "Nombre", 
-              VALIDATOR(is_even_validator, NULL),
-              VALIDATOR(in_range_validator, &range))
-    ```
+```c
+// Bien : Deux validateurs ciblés
+int is_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+int in_range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
 
-=== "Mauvais : Validateur monolithique"
-    ```c
-    int complex_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
-    {
-        // Fait trop de choses dans une seule fonction
-        // - Vérifie si la valeur est paire
-        // - Valide la plage
-        // - Vérifie les nombres premiers
-        // - Vérifie les règles métier spéciales
-        // ...
-    }
-    ```
+// Les utiliser ensemble
+OPTION_INT('n', "number", HELP("Number"), 
+          VALIDATOR(is_even_validator, NULL),
+          VALIDATOR2(in_range_validator, &range))
+```
 
 ### 2. Messages d'erreur descriptifs
 
 Fournissez des messages d'erreur clairs et exploitables :
 
-=== "Bon : Messages utiles"
-    ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                      "Le nom d'utilisateur doit comporter 3 à 20 caractères et contenir uniquement des lettres, des chiffres et des underscores");
-    ```
+```c
+// Bien : Message clair et spécifique
+CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                  "Username must be 3-20 characters with only letters, numbers, and underscores");
 
-=== "Mauvais : Messages peu clairs"
-    ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Entrée invalide");
-    ```
+// Mal : Message vague
+CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid input");
+```
 
 ### 3. Sécurité des paramètres
 
@@ -322,9 +306,9 @@ Validez toujours les paramètres et gérez les cas limites :
 ```c
 int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    // Vérifier si la valeur est NULL
+    // Vérifiez si la valeur est NULL avant de l'utiliser
     if (option->value.as_string == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "La chaîne ne peut pas être NULL");
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "String cannot be NULL");
     }
     
     // Reste de la logique de validation...
@@ -332,17 +316,17 @@ int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_da
 }
 ```
 
-### 4. Considérations de mémoire
+### 4. Efficacité mémoire
 
-Évitez les allocations excessives dans les validateurs :
+Évitez les allocations de tas inutiles dans les validateurs :
 
 ```c
 int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    // Utiliser des tampons basés sur la pile pour les opérations temporaires
+    // Utilisez des tampons basés sur la pile pour les opérations temporaires
     char buffer[256];
     
-    // Traiter la valeur sans allocations inutiles sur le tas
+    // Traitez la valeur sans allocations de tas
     
     return CARGS_SUCCESS;
 }
@@ -350,7 +334,7 @@ int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t
 
 ### 5. Composants réutilisables
 
-Concevez des validateurs pour être réutilisables sur plusieurs options :
+Concevez des validateurs pour être réutilisables entre les options :
 
 ```c
 // Validateur générique pour vérifier si un nombre est divisible par n
@@ -360,23 +344,23 @@ int divisible_by_validator(cargs_t *cargs, cargs_option_t *option, validator_dat
     
     if (option->value.as_int % divisor != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "La valeur doit être divisible par %d", divisor);
+                          "Value must be divisible by %d", divisor);
     }
     
     return CARGS_SUCCESS;
 }
 
-// Réutilisable sur différentes options
-OPTION_INT('n', "number", "Nombre divisible par 2", 
+// Réutilisation avec différentes configurations
+OPTION_INT('n', "number", HELP("Number divisible by 2"), 
           VALIDATOR(divisible_by_validator, &((int){2})));
 
-OPTION_INT('m', "multiple", "Multiple de 5", 
+OPTION_INT('m', "multiple", HELP("Multiple of 5"), 
           VALIDATOR(divisible_by_validator, &((int){5})));
 ```
 
 ## Exemple complet
 
-Voici un exemple complet démontrant diverses techniques de validateurs personnalisés :
+Voici un exemple complet démontrant diverses techniques de validateur personnalisé :
 
 ```c
 #include "cargs.h"
@@ -393,21 +377,21 @@ int email_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t dat
     const char* email = option->value.as_string;
     if (!email) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "L'adresse email ne peut pas être NULL");
+                          "Email address cannot be NULL");
     }
     
     // Vérifier le caractère @
     const char* at = strchr(email, '@');
     if (!at) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "L'adresse email doit contenir un caractère '@'");
+                          "Email address must contain an '@' character");
     }
     
     // Vérifier le domaine
     const char* dot = strchr(at, '.');
     if (!dot) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "Le domaine de l'email doit contenir un caractère '.'");
+                          "Email domain must contain a '.' character");
     }
     
     return CARGS_SUCCESS;
@@ -421,13 +405,13 @@ int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data
     int number = option->value.as_int;
     if (number % 2 != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "La valeur doit être un nombre pair");
+                          "Value must be an even number");
     }
     
     return CARGS_SUCCESS;
 }
 
-// Pré-validateur personnalisé pour les exigences de casse de chaîne
+// Pré-validateur personnalisé pour les exigences de casse des chaînes
 int case_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
 {
     typedef enum { LOWERCASE, UPPERCASE, MIXED } case_requirement_t;
@@ -445,21 +429,21 @@ int case_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
         case LOWERCASE:
             if (has_upper) {
                 CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                                 "La valeur doit être en minuscules uniquement");
+                                 "Value must be lowercase only");
             }
             break;
             
         case UPPERCASE:
             if (has_lower) {
                 CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                                 "La valeur doit être en majuscules uniquement");
+                                 "Value must be uppercase only");
             }
             break;
             
         case MIXED:
             if (!has_upper || !has_lower) {
                 CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                                 "La valeur doit contenir à la fois des lettres majuscules et minuscules");
+                                 "Value must contain both uppercase and lowercase letters");
             }
             break;
     }
@@ -480,35 +464,35 @@ CARGS_OPTIONS(
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
     
     // Validateur de plage intégré
-    OPTION_INT('p', "port", "Numéro de port", 
+    OPTION_INT('p', "port", HELP("Port number"), 
                 DEFAULT(8080), RANGE(1, 65535)),
     
     // Validateur de choix intégré
-    OPTION_STRING('l', "log-level", "Niveau de journalisation", 
+    OPTION_STRING('l', "log-level", HELP("Log level"), 
                 DEFAULT("info"), 
                 CHOICES_STRING("debug", "info", "warning", "error")),
     
     // Validateur d'email personnalisé
-    OPTION_STRING('e', "email", "Adresse email",
+    OPTION_STRING('e', "email", HELP("Email address"),
                 EMAIL_VALIDATOR()),
     
     // Validateur de nombre pair personnalisé
-    OPTION_INT('n', "number", "Un nombre pair",
+    OPTION_INT('n', "number", HELP("An even number"),
                 EVEN_NUMBER(),
                 DEFAULT(42)),
     
     // Chaîne avec validation de casse
-    OPTION_STRING('u', "username", "Nom d'utilisateur (minuscules)",
+    OPTION_STRING('u', "username", HELP("Username (lowercase)"),
                 LOWERCASE_ONLY()),
                 
     // Chaîne avec plusieurs validateurs
-    OPTION_STRING('p', "password", "Mot de passe (casse mixte)",
+    OPTION_STRING('p', "password", HELP("Password (mixed case)"),
                 MIXED_CASE())
 )
 
 int main(int argc, char **argv) {
     cargs_t cargs = cargs_init(options, "validators_example", "1.0.0");
-    cargs.description = "Exemple de validateurs personnalisés";
+    cargs.description = "Example of custom validators";
     
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {
@@ -521,21 +505,21 @@ int main(int argc, char **argv) {
     int number = cargs_get(cargs, "number").as_int;
     
     const char* email = cargs_is_set(cargs, "email") ? 
-                        cargs_get(cargs, "email").as_string : "non défini";
+                        cargs_get(cargs, "email").as_string : "not set";
     
     const char* username = cargs_is_set(cargs, "username") ?
-                          cargs_get(cargs, "username").as_string : "non défini";
+                          cargs_get(cargs, "username").as_string : "not set";
     
     const char* password = cargs_is_set(cargs, "password") ?
-                          cargs_get(cargs, "password").as_string : "non défini";
+                          cargs_get(cargs, "password").as_string : "not set";
     
-    printf("Valeurs validées :\n");
-    printf("  Port : %d (plage : 1-65535)\n", port);
-    printf("  Niveau de journalisation : %s (choix : debug, info, warning, error)\n", log_level);
-    printf("  Nombre pair : %d (doit être pair)\n", number);
-    printf("  Email : %s (doit être un format d'email valide)\n", email);
-    printf("  Nom d'utilisateur : %s (doit être en minuscules)\n", username);
-    printf("  Mot de passe : %s (doit contenir une casse mixte)\n", password);
+    printf("Validated values:\n");
+    printf("  Port: %d (range: 1-65535)\n", port);
+    printf("  Log level: %s (choices: debug, info, warning, error)\n", log_level);
+    printf("  Even number: %d (must be even)\n", number);
+    printf("  Email: %s (must be valid email format)\n", email);
+    printf("  Username: %s (must be lowercase)\n", username);
+    printf("  Password: %s (must contain mixed case)\n", password);
     
     cargs_free(&cargs);
     return 0;
@@ -544,5 +528,5 @@ int main(int argc, char **argv) {
 
 ## Documentation connexe
 
-- [Guide de validation](../guide/validation.md) - Concepts de validation de base
-- [Guide des expressions régulières](regex.md) - Validation avec des motifs regex
+- [Guide de validation](../guide/validation.md) - Concepts de base de la validation
+- [Guide des expressions régulières](regex.md) - Validation avec des motifs d'expressions régulières

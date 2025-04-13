@@ -199,6 +199,22 @@ typedef int (*cargs_pre_validator_t)(cargs_t *, const char *, validator_data_t);
 typedef int (*cargs_action_t)(cargs_t *, void *);
 
 /**
+ * validator_data_t - Data structure for validator functions
+ */
+#ifndef CARGS_MAX_VALIDATORS
+    #define CARGS_MAX_VALIDATORS 4
+#endif
+
+/**
+ * validator_data_t - Data structure for validator functions
+ */
+typedef struct validator_entry_s
+{
+    cargs_validator_t func;
+    validator_data_t  data;
+} validator_entry_t;
+
+/**
  * cargs_option_s - Defines a command-line option
  */
 struct cargs_option_s
@@ -228,8 +244,8 @@ struct cargs_option_s
     /* Callbacks metadata */
     cargs_handler_t       handler;
     cargs_free_handler_t  free_handler;
-    cargs_validator_t     validator;
-    validator_data_t      validator_data;
+    validator_entry_t     validators[CARGS_MAX_VALIDATORS];
+    size_t                validator_count;
     cargs_pre_validator_t pre_validator;
     validator_data_t      pre_validator_data;
 

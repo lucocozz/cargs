@@ -1,7 +1,46 @@
 // tests/integration/test_validators.c
 #include <criterion/criterion.h>
+#include <ctype.h>
 #include "cargs.h"
 #include "cargs/regex.h"
+
+// Test function for even numbers
+int test_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+{
+    (void)data;
+    int number = option->value.as_int;
+    if (number % 2 != 0) {
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Value must be an even number");
+    }
+    return CARGS_SUCCESS;
+}
+
+// Test function for positive numbers
+int test_positive_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+{
+    (void)data;
+    int number = option->value.as_int;
+    if (number <= 0) {
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Value must be a positive number");
+    }
+    return CARGS_SUCCESS;
+}
+
+// Test function for alphanumeric validation
+int test_alphanumeric_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+{
+    (void)data;
+    const char *str = option->value.as_string;
+    if (!str) return CARGS_SUCCESS;
+    
+    for (const char* p = str; *p; p++) {
+        if (!isalnum(*p)) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                              "String must contain only alphanumeric characters");
+        }
+    }
+    return CARGS_SUCCESS;
+}
 
 // Define test options with validators
 CARGS_OPTIONS(
@@ -20,7 +59,17 @@ CARGS_OPTIONS(
                 LENGTH(3, 16)),
     // Add COUNT validator test option
     OPTION_ARRAY_STRING('t', "tags", HELP("Tags"), 
-                COUNT(2, 5))
+                COUNT(2, 5)),
+                
+    // Multiple validators: test both even and positive
+    OPTION_INT('n', "even-positive", HELP("Even positive number"),
+                VALIDATOR(test_even_validator, NULL),
+                VALIDATOR2(test_positive_validator, NULL)),
+                
+    // Multiple validators: length and alphanumeric
+    OPTION_STRING('a', "alphanum", HELP("Alphanumeric username"),
+                LENGTH(3, 8),
+                VALIDATOR2(test_alphanumeric_validator, NULL))
 )
 
 // Test for range validation
@@ -198,6 +247,107 @@ Test(validators_integration, count_validation_failure_too_many)
     int status = cargs_parse(&cargs, argc, argv);
     
     cr_assert_neq(status, CARGS_SUCCESS, "Too many tags should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+// Tests for multiple validators
+Test(validators_integration, multiple_validators_all_pass)
+{
+    // Valid even positive number
+    char *argv[] = {"test", "-n", "42"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_eq(status, CARGS_SUCCESS, "Valid even positive number should pass all validators");
+    cr_assert_eq(cargs_get(cargs, "even-positive").as_int, 42);
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, multiple_validators_first_fails)
+{
+    // Invalid: not even (but still positive)
+    char *argv[] = {"test", "-n", "43"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Non-even positive number should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, multiple_validators_second_fails)
+{
+    // Invalid: not positive (but still even)
+    char *argv[] = {"test", "-n", "-2"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Negative even number should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, string_multiple_validators_all_pass)
+{
+    // Valid alphanumeric username with valid length
+    char *argv[] = {"test", "-a", "user123"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_eq(status, CARGS_SUCCESS, "Valid alphanumeric username should pass all validators");
+    cr_assert_str_eq(cargs_get(cargs, "alphanum").as_string, "user123");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, string_multiple_validators_first_fails)
+{
+    // Invalid: too short
+    char *argv[] = {"test", "-a", "ab"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Too short username should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, string_multiple_validators_second_fails)
+{
+    // Invalid: not alphanumeric but correct length
+    char *argv[] = {"test", "-a", "user@12"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Non-alphanumeric username should fail validation");
+    
+    cargs_free(&cargs);
+}
+
+Test(validators_integration, string_multiple_validators_both_fail)
+{
+    // Invalid: too long and not alphanumeric
+    char *argv[] = {"test", "-a", "user@12345678"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
+    int status = cargs_parse(&cargs, argc, argv);
+    
+    cr_assert_neq(status, CARGS_SUCCESS, "Username that violates both validators should fail");
     
     cargs_free(&cargs);
 }

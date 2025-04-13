@@ -58,6 +58,19 @@ static int validate_conflicts(cargs_t *cargs, cargs_option_t *options, cargs_opt
     return (CARGS_SUCCESS);
 }
 
+static int call_validators(cargs_t *cargs, cargs_option_t *option)
+{
+    for (size_t i = 0; i < option->validator_count; ++i) {
+        validator_entry_t *validator = &option->validators[i];
+        if (validator->func == NULL)
+            continue;
+        int status = validator->func(cargs, option, validator->data);
+        if (status != CARGS_SUCCESS)
+            return (status);
+    }
+    return (CARGS_SUCCESS);
+}
+
 static int validate_options_set(cargs_t *cargs, cargs_option_t *options)
 {
     bool        current_group_is_exclusive = false;
@@ -91,11 +104,9 @@ static int validate_options_set(cargs_t *cargs, cargs_option_t *options)
                 }
             }
 
-            if (option->validator != NULL) {
-                status = option->validator(cargs, option, option->validator_data);
-                if (status != CARGS_SUCCESS)
-                    return (status);
-            }
+            status = call_validators(cargs, option);
+            if (status != CARGS_SUCCESS)
+                return (status);
 
             status = validate_choices(cargs, option);
             if (status != CARGS_SUCCESS)

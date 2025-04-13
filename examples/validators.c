@@ -52,6 +52,61 @@ int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data
     return CARGS_SUCCESS;
 }
 
+// Custom validator for positive numbers
+int positive_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+{
+    (void)data; // Unused parameter
+    
+    int number = option->value.as_int;
+    if (number <= 0) {
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                          "Value must be a positive number");
+    }
+    
+    return CARGS_SUCCESS;
+}
+
+// Custom validator for alphanumeric strings
+int alphanumeric_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+{
+    (void)data; // Unused parameter
+    
+    const char* str = option->value.as_string;
+    if (!str) {
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                          "String cannot be NULL");
+    }
+    
+    for (const char* p = str; *p; p++) {
+        if (!isalnum(*p)) {
+            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                              "String must contain only alphanumeric characters");
+        }
+    }
+    
+    return CARGS_SUCCESS;
+}
+
+// Custom validator for domain format in email
+int domain_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+{
+    const char* domain = (const char*)data.custom;
+    const char* email = option->value.as_string;
+    
+    if (!email) return CARGS_SUCCESS; // Already checked in email_validator
+    
+    const char* at = strchr(email, '@');
+    if (!at) return CARGS_SUCCESS; // Already checked in email_validator
+    
+    // Check if email ends with the specified domain
+    if (domain && !strstr(at + 1, domain)) {
+        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                          "Email must use the domain '%s'", domain);
+    }
+    
+    return CARGS_SUCCESS;
+}
+
 CARGS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
@@ -66,27 +121,31 @@ CARGS_OPTIONS(
                 DEFAULT("info"), 
                 CHOICES_STRING("debug", "info", "warning", "error")),
     
-    // Built-in length validator
-    OPTION_STRING('u', "username", HELP("Username (3-16 chars)"),
-                DEFAULT("user"), LENGTH(3, 16)),
+    // Built-in length validator combined with alphanumeric validator
+    OPTION_STRING('u', "username", HELP("Username (3-16 alphanumeric chars)"),
+                DEFAULT("user"), 
+                LENGTH(3, 16),
+                VALIDATOR2(alphanumeric_validator, NULL)),
                 
     // Built-in count validator (for arrays and maps)
     OPTION_ARRAY_STRING('t', "tags", HELP("Tags (1-5 allowed)"),
                 COUNT(1, 5)),
     
-    // Custom email validator
-    OPTION_STRING('e', "email", HELP("Email address"),
-                VALIDATOR(email_validator, NULL)),
+    // Multiple custom validators: email + specific domain
+    OPTION_STRING('e', "email", HELP("Email address (company domain)"),
+                VALIDATOR(email_validator, NULL),
+                VALIDATOR2(domain_validator, "example.com")),
     
-    // Custom even number validator
-    OPTION_INT('n', "number", HELP("An even number"),
+    // Multiple custom validators: even AND positive number
+    OPTION_INT('n', "number", HELP("A positive even number"),
                 VALIDATOR(even_validator, NULL),
+                VALIDATOR2(positive_validator, NULL),
                 DEFAULT(42))
 )
 
 int main(int argc, char **argv) {
     cargs_t cargs = cargs_init(options, "validators_example", "1.0.0");
-    cargs.description = "Example of validators";
+    cargs.description = "Example of validators and multi-validators";
     
     int status = cargs_parse(&cargs, argc, argv);
     if (status != CARGS_SUCCESS) {
@@ -102,16 +161,16 @@ int main(int argc, char **argv) {
                         cargs_get(cargs, "email").as_string : "not set";
     
     printf("Validated values:\n");
-    printf("  Port: %d (range: 1-65535)\n", port);
-    printf("  Log level: %s (choices: debug, info, warning, error)\n", log_level);
-    printf("  Username: %s (length: 3-16)\n", username);
-    printf("  Even number: %d (must be even)\n", number);
-    printf("  Email: %s (must be valid email format)\n", email);
+    printf("  Port: %d (validator: range 1-65535)\n", port);
+    printf("  Log level: %s (validator: choices)\n", log_level);
+    printf("  Username: %s (validators: length 3-16 + alphanumeric)\n", username);
+    printf("  Number: %d (validators: even + positive)\n", number);
+    printf("  Email: %s (validators: email format + domain)\n", email);
     
     if (cargs_is_set(cargs, "tags")) {
         size_t count = cargs_count(cargs, "tags");
         cargs_value_t *tags = cargs_get(cargs, "tags").as_array;
-        printf("  Tags (%zu items, count: 1-5):\n", count);
+        printf("  Tags (%zu items, validator: count 1-5):\n", count);
         for (size_t i = 0; i < count; i++) {
             printf("    - %s\n", tags[i].as_string);
         }

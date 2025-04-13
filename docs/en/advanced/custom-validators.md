@@ -1,54 +1,60 @@
 # Custom Validators
 
-Custom validators extend cargs' capabilities by allowing you to implement specialized validation logic for command-line options.
+This guide explains how to create and use custom validators with cargs to implement specialized validation logic for command-line options.
 
-!!! abstract "Overview"
-    This guide covers advanced validation techniques with custom validators:
-    
-    - **Validators** and **Pre-validators** - Two types of custom validation functions
-    - **Data-driven validation** - Passing configuration to validators
-    - **Helper macros** - Creating reusable validation components
-    - **Best practices** - Guidelines for effective validator implementation
-    
-    For basic validation concepts, see the [Validation guide](../guide/validation.md).
+## Overview
 
-## Validator Types
+Validation is essential for ensuring that command-line inputs meet your application's requirements. While cargs provides built-in validators like `RANGE()` and `REGEX()`, custom validators allow you to implement application-specific validation logic.
 
-cargs supports two types of custom validation functions:
+In this guide, you'll learn about:
 
-### 1. Validators
+- The two types of validators: **validators** and **pre-validators**
+- How to create and use custom validators
+- Techniques for passing configuration data to validators
+- Best practices for validator implementation
 
-Validators check the **processed** value after the handler has converted it to its final type:
+## Understanding Validator Types
 
+Cargs supports two distinct types of custom validation functions, each with a specific purpose:
+
+### Validators
+
+**Purpose**: Check the **processed** value after type conversion
+
+**When to use**: When validating based on the final data type (int, float, string, etc.)
+
+**Function signature**:
 ```c
 int validator_function(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
 ```
 
-Use validators when you need to validate based on the processed value's type (int, float, etc.).
+### Pre-validators
 
-### 2. Pre-validators
+**Purpose**: Check the **raw string** before it's processed
 
-Pre-validators check the **raw string** before it's processed by the handler:
+**When to use**: When you need to:
+- Validate string format before parsing attempts
+- Perform complex string validation
+- Prevent type conversion errors
 
+**Function signature**:
 ```c
 int pre_validator_function(cargs_t *cargs, const char *value, validator_data_t data);
 ```
 
-Use pre-validators when you need to:
-- Examine raw string format before parsing
-- Perform complex string validation
-- Validate before attempting conversion
+## Creating Basic Validators
 
-## Creating Custom Validators
+Let's start with simple examples of both validator types.
 
-### Basic Validator
+### Example: Even Number Validator
 
-Let's create a simple validator that ensures an integer is even:
+This validator ensures that integer options have even values:
 
 ```c
 int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    UNUSED(data);  // Not using custom data in this example
+    // Not using custom data in this example
+    UNUSED(data);
     
     if (option->value.as_int % 2 != 0) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
@@ -58,16 +64,16 @@ int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data
 }
 ```
 
-To use this validator:
+**Using the validator**:
 
 ```c
 OPTION_INT('n', "number", HELP("An even number"), 
           VALIDATOR(even_validator, NULL))
 ```
 
-### Basic Pre-validator
+### Example: String Length Pre-validator
 
-Here's a pre-validator that checks string length before processing:
+This pre-validator checks if a string meets a minimum length requirement:
 
 ```c
 int string_length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
@@ -83,23 +89,23 @@ int string_length_pre_validator(cargs_t *cargs, const char *value, validator_dat
 }
 ```
 
-To use this pre-validator:
+**Using the pre-validator**:
 
 ```c
 // Define the validation constraint
 size_t min_length = 8;
 
 OPTION_STRING('p', "password", HELP("Password"),
-             PRE_VALIDATOR(length_pre_validator, &min_length))
+             PRE_VALIDATOR(string_length_pre_validator, &min_length))
 ```
 
 ## Passing Data to Validators
 
-The `validator_data_t` parameter allows you to pass custom data to your validators for more flexible validation.
+The `validator_data_t` parameter allows you to pass configuration data to your validators, making them more flexible and reusable.
 
 ### Using Custom Data Structures
 
-Create a structure to hold validation parameters:
+For complex validation rules, you can create a structure to hold multiple parameters:
 
 ```c
 typedef struct {
@@ -107,24 +113,21 @@ typedef struct {
     int max_value;
     bool allow_odd;
 } number_constraints_t;
-```
 
-Create a validator that uses this structure:
-
-```c
-int custom_number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
     // Get constraints from validator data
     number_constraints_t *constraints = (number_constraints_t *)data.custom;
     
-    // Validate range
-    if (option->value.as_int < constraints->min_value || option->value.as_int > constraints->max_value) {
+    // Range validation
+    if (option->value.as_int < constraints->min_value || 
+        option->value.as_int > constraints->max_value) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_RANGE,
                           "Value must be between %d and %d", 
                           constraints->min_value, constraints->max_value);
     }
     
-    // Validate odd/even if required
+    // Even/odd validation
     if (!constraints->allow_odd && (option->value.as_int % 2 != 0)) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
                           "Value must be an even number");
@@ -134,7 +137,7 @@ int custom_number_validator(cargs_t *cargs, cargs_option_t *option, validator_da
 }
 ```
 
-Use the validator with custom data:
+**Using the validator with custom data**:
 
 ```c
 // Define constraints
@@ -144,51 +147,22 @@ static number_constraints_t constraints = {
     .allow_odd = false
 };
 
-OPTION_INT('n', "number", "A number with constraints", 
-          VALIDATOR(custom_number_validator, &constraints))
+OPTION_INT('n', "number", HELP("A number with constraints"), 
+          VALIDATOR(number_validator, &constraints))
 ```
 
-### Using Static Configuration
+### Using Inline Compound Literals
 
-For simple configurations, you can use static variables:
-
-```c
-// Static configuration for string length validator
-static size_t USERNAME_MIN_LENGTH = 3;
-static size_t USERNAME_MAX_LENGTH = 20;
-
-int username_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
-{
-    UNUSED(data);
-    const char *username = option->value.as_string;
-    
-    if (username == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Username cannot be NULL");
-    }
-    
-    size_t length = strlen(username);
-    if (length < USERNAME_MIN_LENGTH || length > USERNAME_MAX_LENGTH) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                          "Username must be between %zu and %zu characters",
-                          USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH);
-    }
-    
-    return CARGS_SUCCESS;
-}
-```
-
-## Advanced Validation Techniques
-
-### Inline Variables with Compound Literals
-
-You can pass data without a separate variable using compound literals:
+For simple cases, you can use C99 compound literals to pass data inline:
 
 ```c
-OPTION_STRING('u', "username", "Username",
+OPTION_STRING('u', "username", HELP("Username"),
              PRE_VALIDATOR(string_length_pre_validator, &((size_t){3})))
 ```
 
 This creates an anonymous `size_t` variable with value 3 and passes its address to the validator.
+
+## Advanced Validation Techniques
 
 ### Context-Aware Validation
 
@@ -212,8 +186,10 @@ int greater_than_validator(cargs_t *cargs, cargs_option_t *option, validator_dat
     
     return CARGS_SUCCESS;
 }
+```
 
-// Usage
+**Usage example**:
+```c
 static option_relation_t max_relation = { .related_option = "min" };
 
 CARGS_OPTIONS(
@@ -243,8 +219,10 @@ For frequently used validation patterns, create helper macros:
 // Combined length check
 #define STRING_LENGTH(min, max) \
     PRE_VALIDATOR(string_length_range_validator, &((length_range_t){min, max}))
+```
 
-// Usage
+**Usage example**:
+```c
 CARGS_OPTIONS(
     options,
     OPTION_INT('n', "number", HELP("An even number"), EVEN_NUMBER()),
@@ -253,15 +231,36 @@ CARGS_OPTIONS(
 )
 ```
 
+## Combining Multiple Validators
+
+Cargs allows you to apply multiple validators to a single option by using the numbered validator macros:
+
+```c
+OPTION_INT('p', "port", HELP("Port number"), 
+          VALIDATOR(is_even_validator, NULL),      // First validator
+          VALIDATOR2(range_validator, &port_range), // Second validator
+          VALIDATOR3(port_validator, NULL))        // Third validator
+```
+
+Cargs has a limit of 4 validators per option, but you can modify the constant `CARGS_MAX_VALIDATORS` to increase this limit.
+
+Note that built-in validators like `RANGE()`, `LENGTH()`, and `COUNT()` use the first validator slot. You can combine them with custom validators by using the second and subsequent slots:
+
+```c
+OPTION_INT('p', "port", HELP("Port number"),
+          RANGE(1, 65535),                     // Uses first validator slot
+          VALIDATOR2(is_even_validator, NULL)) // Uses second validator slot
+```
+
 ## Error Reporting
 
-Validators should use `CARGS_REPORT_ERROR` to report validation failures:
+Validators should use `CARGS_REPORT_ERROR` to provide clear error messages:
 
 ```c
 CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
 ```
 
-Common error codes:
+**Common error codes**:
 
 | Error Code | Description | Typical Use |
 |------------|-------------|-------------|
@@ -276,44 +275,29 @@ Common error codes:
 
 Each validator should focus on one validation concern:
 
-=== "Good: Focused Validators"
-    ```c
-    int is_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
-    int in_range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+```c
+// Good: Two focused validators
+int is_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+int in_range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
 
-    // Use both validators together
-    OPTION_INT('n', "number", "Number", 
-              VALIDATOR(is_even_validator, NULL),
-              VALIDATOR(in_range_validator, &range))
-    ```
-
-=== "Bad: Monolithic Validator"
-    ```c
-    int complex_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
-    {
-        // Does too many things in one function
-        // - Checks if value is even
-        // - Validates range
-        // - Checks prime numbers
-        // - Verifies special business rules
-        // ...
-    }
-    ```
+// Use them together
+OPTION_INT('n', "number", HELP("Number"), 
+          VALIDATOR(is_even_validator, NULL),
+          VALIDATOR2(in_range_validator, &range))
+```
 
 ### 2. Descriptive Error Messages
 
 Provide clear, actionable error messages:
 
-=== "Good: Helpful Messages"
-    ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
-                      "Username must be 3-20 characters and contain only letters, numbers, and underscores");
-    ```
+```c
+// Good: Clear and specific message
+CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                  "Username must be 3-20 characters with only letters, numbers, and underscores");
 
-=== "Bad: Unclear Messages"
-    ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid input");
-    ```
+// Bad: Vague message
+CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid input");
+```
 
 ### 3. Parameter Safety
 
@@ -322,7 +306,7 @@ Always validate parameters and handle edge cases:
 ```c
 int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
 {
-    // Check if value is NULL
+    // Check if value is NULL before using it
     if (option->value.as_string == NULL) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "String cannot be NULL");
     }
@@ -332,9 +316,9 @@ int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_da
 }
 ```
 
-### 4. Memory Considerations
+### 4. Memory Efficiency
 
-Avoid excessive allocations in validators:
+Avoid unnecessary heap allocations in validators:
 
 ```c
 int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
@@ -342,7 +326,7 @@ int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t
     // Use stack-based buffers for temporary operations
     char buffer[256];
     
-    // Process value without unnecessary heap allocations
+    // Process value without heap allocations
     
     return CARGS_SUCCESS;
 }
@@ -350,7 +334,7 @@ int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t
 
 ### 5. Reusable Components
 
-Design validators to be reusable across multiple options:
+Design validators to be reusable across options:
 
 ```c
 // Generic validator for checking if a number is divisible by n
@@ -366,17 +350,17 @@ int divisible_by_validator(cargs_t *cargs, cargs_option_t *option, validator_dat
     return CARGS_SUCCESS;
 }
 
-// Reusable across different options
-OPTION_INT('n', "number", "Number divisible by 2", 
+// Reuse with different configurations
+OPTION_INT('n', "number", HELP("Number divisible by 2"), 
           VALIDATOR(divisible_by_validator, &((int){2})));
 
-OPTION_INT('m', "multiple", "Multiple of 5", 
+OPTION_INT('m', "multiple", HELP("Multiple of 5"), 
           VALIDATOR(divisible_by_validator, &((int){5})));
 ```
 
 ## Complete Example
 
-Here's a comprehensive example demonstrating various custom validator techniques:
+Here's a complete example demonstrating various custom validator techniques:
 
 ```c
 #include "cargs.h"
