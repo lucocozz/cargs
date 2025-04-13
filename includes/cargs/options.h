@@ -46,12 +46,14 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
  * Support macro for character to string conversion
  */
 #define CHAR_TO_STRING(c) ((char[]){c, '\0'})
+
 // clang-format off
+
 /*
  * Optional option fields macros
  */
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
-#define DEFAULT(val)            .value = (cargs_value_t){ .raw = (uintptr_t)(val) }, \
+#define DEFAULT(val)            .value = (cargs_value_t){ .raw = (uintptr_t)(val) },         \
                                 .default_value = (cargs_value_t){ .raw = (uintptr_t)(val) }, \
                                 .is_set = true, \
                                 .have_default = true
@@ -69,25 +71,32 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
 /*
  * Validator macros
  */
-#define VALIDATOR(fn, data) \
-    .validator = (cargs_validator_t)(fn), \
-    .validator_data = (validator_data_t){ .custom = (void*)(data) }
+#define VALIDATOR_AT(index, fn, _data) \
+    .validator_count = ((index) + 1), \
+    .validators[index].func = (cargs_validator_t)(fn), \
+    .validators[index].data = (validator_data_t){ .custom = (_data) }
+
+#define VALIDATOR(fn, data)  VALIDATOR_AT(0, fn, data)
+#define VALIDATOR2(fn, data) VALIDATOR_AT(1, fn, data)
+#define VALIDATOR3(fn, data) VALIDATOR_AT(2, fn, data)
+#define VALIDATOR4(fn, data) VALIDATOR_AT(3, fn, data)
+
+#define RANGE(min, max) \
+    .validators[0].func = (cargs_validator_t)range_validator, \
+    .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
+    .validator_count = 1
+#define LENGTH(min, max) \
+    .validators[0].func = (cargs_validator_t)length_validator, \
+    .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
+    .validator_count = 1
+#define COUNT(min, max) \
+    .validators[0].func = (cargs_validator_t)count_validator, \
+    .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
+    .validator_count = 1
 
 #define PRE_VALIDATOR(fn, data) \
     .pre_validator = (cargs_pre_validator_t)(fn), \
-    .pre_validator_data = (validator_data_t){ .custom = (void*)(data) }
-
-#define RANGE(min, max) \
-    .validator = (cargs_validator_t)range_validator, \
-    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
-
-#define LENGTH(min, max) \
-    .validator = (cargs_validator_t)length_validator, \
-    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
-
-#define COUNT(min, max) \
-    .validator = (cargs_validator_t)count_validator, \
-    .validator_data = (validator_data_t){ .range = (range_t){ min, max } }
+    .pre_validator_data = (validator_data_t){ .custom = (data) }
 
 #define REGEX(re) \
     .pre_validator = (cargs_pre_validator_t)regex_validator, \
@@ -125,9 +134,9 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data);
         .free_handler = default_free, ##__VA_ARGS__                                           \
     }
 
-#define POSITIONAL_BASE(_name, _value_type, ...)                                        \
+#define POSITIONAL_BASE(_name, _value_type, ...)                                               \
     (cargs_option_t) {                                                                         \
-        .type = TYPE_POSITIONAL, .name = _name, .value_type = _value_type,      \
+        .type = TYPE_POSITIONAL, .name = _name, .value_type = _value_type,                     \
         .free_handler = default_free, .flags = FLAG_REQUIRED, ##__VA_ARGS__                    \
     }
 
