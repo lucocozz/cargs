@@ -1,13 +1,21 @@
-# Installation
+# Guide d'Installation
 
-Cette page explique comment installer la bibliothèque cargs dans différents environnements.
+Ce guide explique comment installer la bibliothèque cargs dans différents environnements.
+
+## Référence Rapide
+
+| Méthode | Commande | Idéal Pour |
+|--------|---------|----------|
+| **Gestionnaires de Paquets** | `conan install libcargs/1.0.0@` | Utilisation en production |
+| **Depuis les Sources** | `meson setup .build && meson compile -C .build` | Développement |
+| **Avec Just** | `just build` | Flux de développement |
 
 ## Prérequis
 
-cargs n'a qu'une seule dépendance externe :
+cargs n'a qu'une seule dépendance optionnelle :
 
 !!! info "Dépendance PCRE2"
-    **PCRE2** : Requis pour la prise en charge de la validation par expressions régulières (la prise en charge des regex est facultative).
+    **PCRE2** : Requis uniquement pour la validation par expressions régulières.
     
     === "Ubuntu/Debian"
         ```bash
@@ -24,146 +32,160 @@ cargs n'a qu'une seule dépendance externe :
         brew install pcre2
         ```
 
-## Installation depuis les sources
+## Méthodes d'Installation
 
-### Avec Meson
+### Gestionnaires de Paquets (Recommandé)
 
-=== "Cloner et construire"
-    ```bash
-    # Cloner le dépôt
-    git clone https://github.com/lucocozz/cargs.git
-    cd cargs
+#### Conan
 
-    # Construire
-    meson setup .build
-    meson compile -C .build
-    ```
+```bash
+# Installation depuis Conan Center
+conan install libcargs/1.0.0@
 
-=== "Installation"
-    ```bash
-    # Installation (nécessite des permissions)
-    meson install -C .build
-    ```
+# Avec des options spécifiques
+conan install libcargs/1.0.0@ -o libcargs:disable_regex=true
+```
 
-### Avec Just (recommandé pour le développement)
+Dans votre fichier `conanfile.txt` :
+```
+[requires]
+libcargs/1.0.0
+
+[options]
+libcargs:disable_regex=False
+```
+
+#### vcpkg
+
+```bash
+# Installation depuis le registre vcpkg
+vcpkg install libcargs
+
+# Sans support des regex
+vcpkg install libcargs[core]
+```
+
+Dans votre fichier `vcpkg.json` :
+```json
+{
+  "dependencies": [
+    {
+      "name": "libcargs",
+      "features": ["regex"]
+    }
+  ]
+}
+```
+
+### Compilation Depuis les Sources
+
+#### Utilisation de Meson
+
+```bash
+# Cloner le dépôt
+git clone https://github.com/lucocozz/cargs.git
+cd cargs
+
+# Compiler
+meson setup .build
+meson compile -C .build
+
+# Installer (nécessite des permissions)
+meson install -C .build
+```
+
+#### Utilisation de Just (Flux de Développement)
 
 !!! tip "Just"
-    [Just](https://github.com/casey/just) est un outil de ligne de commande pratique pour exécuter des commandes spécifiques à un projet.
+    [Just](https://github.com/casey/just) est un exécuteur de commandes qui simplifie les tâches courantes.
 
-=== "Installation et construction"
-    ```bash
-    # Cloner le dépôt
-    git clone https://github.com/lucocozz/cargs.git
-    cd cargs
+```bash
+# Cloner le dépôt
+git clone https://github.com/lucocozz/cargs.git
+cd cargs
 
-    # Construire les bibliothèques statiques et partagées
-    just build
-    ```
+# Compiler les bibliothèques statiques et partagées
+just build
 
-=== "Résultat"
-    Les bibliothèques sont maintenant disponibles :
-    
-    - `libcargs.so` (bibliothèque partagée)
-    - `libcargs.a` (bibliothèque statique)
+# Installer
+just install
+```
 
-=== "Installation"
-    ```bash
-    just install
-    ```
+### Utilisation comme Bibliothèque Statique
 
-## Construction sans PCRE2 (Désactivation du support des regex)
+Si vous préférez ne pas installer au niveau système :
 
-Si vous n'avez pas besoin de la validation par expressions régulières, vous pouvez construire cargs sans la dépendance PCRE2 :
+1. Compilez le projet en utilisant n'importe quelle méthode ci-dessus
+2. Copiez `libcargs.a` dans votre projet
+3. Copiez le répertoire `includes/` dans votre projet
+4. Liez avec la bibliothèque statique :
 
-=== "Avec Meson"
+```bash
+gcc votre_programme.c -o votre_programme -L/chemin/vers/libcargs.a -lcargs
+```
+
+### Comme Dépendance Meson
+
+```meson
+# Dans votre meson.build
+cargs_dep = dependency('cargs', version: '>=1.0.0', required: false)
+
+# Repli sur un sous-projet si non trouvé au niveau système
+if not cargs_dep.found()
+  cargs_proj = subproject('cargs')
+  cargs_dep = cargs_proj.get_variable('cargs_dep')
+endif
+```
+
+## Options de Configuration
+
+### Désactiver le Support des Regex
+
+Si vous n'avez pas besoin de validation par regex, vous pouvez compiler sans la dépendance PCRE2 :
+
+=== "Meson"
     ```bash
     meson setup -Ddisable_regex=true .build
-    meson compile -C .build
     ```
 
-=== "Avec Just"
+=== "Just"
     ```bash
     just disable_regex=true build
     ```
 
-=== "Avec le script d'installation"
+=== "Conan"
     ```bash
-    ./install.sh --disable-regex
+    conan install . -o libcargs:disable_regex=true
     ```
 
-Lorsque le support des regex est désactivé :
-- Aucune dépendance PCRE2 n'est requise
-- Le validateur `REGEX()` sera un stub qui générera une erreur s'il est utilisé
-- Tous les modèles regex prédéfinis dans `cargs/regex.h` seront définis mais non fonctionnels
-- La macro `CARGS_NO_REGEX` sera définie, que votre code peut vérifier avec `#ifdef`
-
-## Optimisation des performances
-
-cargs propose un mode release pour optimiser les performances dans les environnements de production.
-
-### Mode développement vs mode release
-
-Par défaut, cargs effectue une validation complète de la structure de vos options lors de l'initialisation pour détecter les erreurs de configuration au plus tôt. Cette fonctionnalité est précieuse pendant le développement mais ajoute une certaine surcharge.
-
-Pour les déploiements en production, vous pouvez activer le mode release pour ignorer ces validations et améliorer les performances :
-
-=== "Compilation manuelle"
+=== "vcpkg"
     ```bash
-    # Ajouter le flag -DCARGS_RELEASE à votre compilation
+    vcpkg install libcargs --features=""
+    ```
+
+Quand le support des regex est désactivé :
+- Aucune dépendance PCRE2 n'est requise
+- Le validateur `REGEX()` devient une fonction sans effet
+- Tous les motifs prédéfinis dans `cargs/regex.h` sont définis mais ne fonctionneront pas
+- La macro `CARGS_NO_REGEX` est définie pour la compilation conditionnelle
+
+### Optimisation des Performances
+
+Pour les déploiements en production, activez le mode release pour ignorer la validation lors de l'initialisation :
+
+=== "Compilation Manuelle"
+    ```bash
     gcc votre_programme.c -o votre_programme -DCARGS_RELEASE -lcargs
     ```
 
-=== "Dans un projet Meson"
+=== "Meson"
     ```meson
-    # Dans votre fichier meson.build
-    if get_option('cargs_release')
-      add_project_arguments('-DCARGS_RELEASE', language: 'c')
-    endif
+    add_project_arguments('-DCARGS_RELEASE', language: 'c')
     ```
 
-!!! tip "Quand utiliser le mode release"
-    - **Développement** : Gardez la validation activée pour détecter rapidement les erreurs de configuration des options
-    - **Production** : Activez le mode release pour des performances optimales dans les applications déployées
-    - **Tests** : Gardez la validation activée pour vous assurer que la structure de vos options reste valide
+## Vérification de l'Installation
 
-## Utilisation comme bibliothèque statique
-
-Si vous préférez ne pas installer la bibliothèque au niveau du système, vous pouvez :
-
-1. Construire le projet comme indiqué ci-dessus
-2. Copier `libcargs.a` dans votre projet
-3. Copier le répertoire `includes/` dans votre projet
-4. Lier avec la bibliothèque statique :
-
-```bash
-gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
-```
-
-## Comme dépendance dans un projet Meson
-
-```meson
-cargs_dep = dependency('cargs', fallback: ['cargs', 'cargs_dep'])
-```
-
-## Méthodes d'installation alternatives
-
-| Méthode | Commande | Avantages | Inconvénients |
-|---------|----------|-----------|---------------|
-| **Construction directe** | `meson compile -C .build` | Simple, nécessite seulement meson/ninja | Pas d'intégration système |
-| **Installation système** | `meson install -C .build` | Disponible pour tous les projets | Nécessite des droits root |
-| **Just** | `just build` | Scripts pratiques, simple | Nécessite just |
-| **Bibliothèque locale** | Copier les fichiers | Isolation du projet | Duplication de code |
-
-## Packaging
-
-!!! note "Paquets officiels"
-    Des paquets officiels pour diverses distributions sont prévus pour les versions futures.
-
-## Vérification de l'installation
-
-Après l'installation, vous pouvez vérifier que tout fonctionne correctement :
-
-=== "Vérifier les fichiers"
+=== "Vérifier les Fichiers"
     ```bash
     # Vérifier la bibliothèque partagée
     ls -la /usr/local/lib/libcargs.so*
@@ -172,7 +194,7 @@ Après l'installation, vous pouvez vérifier que tout fonctionne correctement :
     ls -la /usr/local/include/cargs*
     ```
 
-=== "Compiler un exemple"
+=== "Test de Compilation"
     ```bash
     # Compiler un programme exemple
     gcc -o test_cargs test.c -lcargs

@@ -31,7 +31,11 @@ if disable_regex
   pcre2_dep = dependency('', required: false)
 else
   pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
+  if not pcre2_dep.found()
+    pcre2_dep = dependency('pcre2-8', required: true, version: '>=10.00')
+  endif
 endif
+
 
 # Create both static and shared libraries from sources
 cargs_lib = both_libraries(
