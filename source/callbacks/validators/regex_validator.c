@@ -4,8 +4,8 @@
     #include <pcre2.h>
 #endif
 #include "cargs/errors.h"
-#include "cargs/types.h"
 #include "cargs/internal/utils.h"
+#include "cargs/types.h"
 
 /**
  * regex_validator - Validate a string value against a regular expression

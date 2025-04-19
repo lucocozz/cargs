@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
 
 jobs:
   code-quality:
@@ -50,8 +50,10 @@ jobs:
         include:
           - os: ubuntu-latest
             build_type: debugoptimized
+            disable_regex: false
           - os: macos-latest
             build_type: debugoptimized
+            disable_regex: false
           - os: ubuntu-latest
             build_type: debug
             sanitizer: address
@@ -84,17 +86,15 @@ jobs:
 
       - name: Configure Meson
         run: |
-          meson_opts="--buildtype=${{ matrix.build_type }} -Dtests=true -Dexamples=false -Dbenchmarks=false -Ddisable_regex=${{ matrix.disable_regex }}"
+          meson_opts="--buildtype=${{ matrix.build_type }} -Dexamples=false -Dbenchmarks=false -Ddisable_regex=${{ matrix.disable_regex }}"
           if [ "${{ matrix.sanitizer }}" != "" ]; then
             meson_opts="$meson_opts -Db_sanitize=${{ matrix.sanitizer }}"
           fi
-          meson setup .build $meson_opts
+          meson setup .build $meson_opts -Dtests=${{ matrix.os != 'fedora' }}
         shell: bash
 
-      - name: Configure and build
-        run: |
-          meson setup -Dtests=${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }} -Dexamples=true -Dbuildtype=${{ matrix.build_type }} .build
-          meson compile -C .build
+      - name: Build
+        run: meson compile -C .build
         env:
           CC: ${{ matrix.compiler }}
 

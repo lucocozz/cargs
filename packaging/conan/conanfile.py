@@ -6,7 +6,7 @@ import os
 
 class LibcargsConan(ConanFile):
     name = "libcargs"
-    version = "1.0.0"
+    version = "1.0.1"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
     topics = ("conan", "cargs", "libcargs", "command-line", "arguments", "parser", "cli", "argparse")
     url = "https://github.com/lucocozz/cargs"
