@@ -5,6 +5,7 @@
 #endif
 #include "cargs/errors.h"
 #include "cargs/types.h"
+#include "cargs/internal/utils.h"
 
 /**
  * regex_validator - Validate a string value against a regular expression
@@ -26,7 +27,6 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
         "Regex validation is not supported in this build (compiled with CARGS_NO_REGEX)");
     return CARGS_ERROR_INVALID_VALUE;
 #else
-
     const char *pattern = data.regex.pattern;
     if (!pattern) {
         CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");

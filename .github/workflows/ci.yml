@@ -46,11 +46,16 @@ jobs:
         os: [ubuntu-latest, macos-latest, fedora]
         compiler: [gcc, clang]
         build_type: [release]
+        disable_regex: [false, true]
         include:
           - os: ubuntu-latest
             build_type: debugoptimized
           - os: macos-latest
             build_type: debugoptimized
+          - os: ubuntu-latest
+            build_type: debug
+            sanitizer: address
+            disable_regex: false
         exclude:
           - os: fedora
             compiler: clang
@@ -76,6 +81,15 @@ jobs:
         if: matrix.os == 'fedora'
         run: |
           dnf install -y meson ninja-build gcc clang pcre2-devel
+
+      - name: Configure Meson
+        run: |
+          meson_opts="--buildtype=${{ matrix.build_type }} -Dtests=true -Dexamples=false -Dbenchmarks=false -Ddisable_regex=${{ matrix.disable_regex }}"
+          if [ "${{ matrix.sanitizer }}" != "" ]; then
+            meson_opts="$meson_opts -Db_sanitize=${{ matrix.sanitizer }}"
+          fi
+          meson setup .build $meson_opts
+        shell: bash
 
       - name: Configure and build
         run: |
