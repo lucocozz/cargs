@@ -1,13 +1,21 @@
-# Installation
+# Installation Guide
 
-This page explains how to install the cargs library in different environments.
+This guide explains how to install the cargs library in different environments.
+
+## Quick Reference
+
+| Method | Command | Best For |
+|--------|---------|----------|
+| **Package Managers** | `conan install libcargs/1.0.0@` | Production use |
+| **From Source** | `meson setup .build && meson compile -C .build` | Development |
+| **With Just** | `just build` | Development workflow |
 
 ## Prerequisites
 
-cargs has only one external dependency:
+cargs has only one optional dependency:
 
 !!! info "PCRE2 Dependency"
-    **PCRE2**: Required for regex validation support (regex support is optional).
+    **PCRE2**: Required only for regex validation support.
     
     === "Ubuntu/Debian"
         ```bash
@@ -24,113 +32,90 @@ cargs has only one external dependency:
         brew install pcre2
         ```
 
-## Installation from source
+## Installation Methods
 
-### With Meson
+### Package Managers (Recommended)
 
-=== "Clone and build"
-    ```bash
-    # Clone the repository
-    git clone https://github.com/lucocozz/cargs.git
-    cd cargs
+#### Conan
 
-    # Build
-    meson setup .build
-    meson compile -C .build
-    ```
+```bash
+# Install from Conan Center
+conan install libcargs/1.0.0@
 
-=== "Installation"
-    ```bash
-    # Installation (requires permissions)
-    meson install -C .build
-    ```
+# With specific options
+conan install libcargs/1.0.0@ -o libcargs:disable_regex=true
+```
 
-### With Just (recommended for development)
+In your project's `conanfile.txt`:
+```
+[requires]
+libcargs/1.0.0
+
+[options]
+libcargs:disable_regex=False
+```
+
+#### vcpkg
+
+```bash
+# Install from vcpkg registry
+vcpkg install libcargs
+
+# Without regex support
+vcpkg install libcargs[core]
+```
+
+In your project's `vcpkg.json`:
+```json
+{
+  "dependencies": [
+    {
+      "name": "libcargs",
+      "features": ["regex"]
+    }
+  ]
+}
+```
+
+### Building From Source
+
+#### Using Meson
+
+```bash
+# Clone the repository
+git clone https://github.com/lucocozz/cargs.git
+cd cargs
+
+# Build
+meson setup .build
+meson compile -C .build
+
+# Install (requires permissions)
+meson install -C .build
+```
+
+#### Using Just (Development Workflow)
 
 !!! tip "Just"
-    [Just](https://github.com/casey/just) is a handy command-line tool for running project-specific commands.
+    [Just](https://github.com/casey/just) is a command runner that simplifies common tasks.
 
-=== "Installation and build"
-    ```bash
-    # Clone the repository
-    git clone https://github.com/lucocozz/cargs.git
-    cd cargs
+```bash
+# Clone the repository
+git clone https://github.com/lucocozz/cargs.git
+cd cargs
 
-    # Build static and shared libraries
-    just build
-    ```
+# Build static and shared libraries
+just build
 
-=== "Result"
-    The libraries are now available:
-    
-    - `libcargs.so` (shared library)
-    - `libcargs.a` (static library)
+# Install
+just install
+```
 
-=== "Installation"
-    ```bash
-    just install
-    ```
+### Using as a Static Library
 
-## Building Without PCRE2 (Disabling Regex Support)
+If you prefer not to install system-wide:
 
-If you don't need regular expression validation, you can build cargs without the PCRE2 dependency:
-
-=== "With Meson"
-    ```bash
-    meson setup -Ddisable_regex=true .build
-    meson compile -C .build
-    ```
-
-=== "With Just"
-    ```bash
-    just disable_regex=true build
-    ```
-
-=== "With Installation Script"
-    ```bash
-    ./install.sh --disable-regex
-    ```
-
-When regex support is disabled:
-- No PCRE2 dependency is required
-- The `REGEX()` validator will be a stub that raises an error if used
-- All predefined regex patterns in `cargs/regex.h` will be defined but non-functional
-- The `CARGS_NO_REGEX` macro will be defined, which your code can check with `#ifdef`
-
-## Performance Optimization
-
-cargs provides a release mode to optimize performance in production environments.
-
-### Development vs. Release Mode
-
-By default, cargs performs comprehensive validation of your option structures during initialization to catch configuration errors early. This is valuable during development but adds some overhead.
-
-For production deployments, you can enable release mode to skip these validations and improve performance:
-
-=== "Manual Compilation"
-    ```bash
-    # Add -DCARGS_RELEASE flag to your compilation
-    gcc your_program.c -o your_program -DCARGS_RELEASE -lcargs
-    ```
-
-=== "In a Meson project"
-    ```meson
-    # In your meson.build
-    if get_option('cargs_release')
-      add_project_arguments('-DCARGS_RELEASE', language: 'c')
-    endif
-    ```
-
-!!! tip "When to use Release Mode"
-    - **Development**: Keep validation enabled to catch option configuration errors early
-    - **Production**: Enable release mode for optimal performance in deployed applications
-    - **Testing**: Keep validation enabled to ensure your option structure remains valid
-
-## Using as a static library
-
-If you prefer not to install the library at the system level, you can:
-
-1. Build the project as shown above
+1. Build the project using any method above
 2. Copy `libcargs.a` to your project
 3. Copy the `includes/` directory to your project
 4. Link with the static library:
@@ -139,31 +124,68 @@ If you prefer not to install the library at the system level, you can:
 gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
 ```
 
-## As a dependency in a Meson project
+### As a Meson Dependency
 
 ```meson
-cargs_dep = dependency('cargs', fallback: ['cargs', 'cargs_dep'])
+# In your meson.build
+cargs_dep = dependency('cargs', version: '>=1.0.0', required: false)
+
+# Fallback to subproject if not found system-wide
+if not cargs_dep.found()
+  cargs_proj = subproject('cargs')
+  cargs_dep = cargs_proj.get_variable('cargs_dep')
+endif
 ```
 
-## Alternative installation methods
+## Configuration Options
 
-| Method | Command | Advantages | Disadvantages |
-|---------|----------|-----------|---------------|
-| **Direct build** | `meson compile -C .build` | Simple, only requires meson/ninja | No system integration |
-| **System installation** | `meson install -C .build` | Available for all projects | Requires root permissions |
-| **Just** | `just build` | Convenient scripts, simple | Requires just |
-| **Local library** | Copy files | Project isolation | Code duplication |
+### Disabling Regex Support
 
-## Packaging
+If you don't need regex validation, you can build without the PCRE2 dependency:
 
-!!! note "Official packages"
-    Official packages for various distributions are planned for future releases.
+=== "Meson"
+    ```bash
+    meson setup -Ddisable_regex=true .build
+    ```
 
-## Verifying installation
+=== "Just"
+    ```bash
+    just disable_regex=true build
+    ```
 
-After installation, you can verify that everything works correctly:
+=== "Conan"
+    ```bash
+    conan install . -o libcargs:disable_regex=true
+    ```
 
-=== "Check files"
+=== "vcpkg"
+    ```bash
+    vcpkg install libcargs --features=""
+    ```
+
+When regex support is disabled:
+- No PCRE2 dependency is required
+- The `REGEX()` validator becomes a non-functional stub
+- All predefined patterns in `cargs/regex.h` are defined but won't work
+- The `CARGS_NO_REGEX` macro is defined for conditional compilation
+
+### Performance Optimization
+
+For production deployments, enable release mode to skip validation during initialization:
+
+=== "Manual Compilation"
+    ```bash
+    gcc your_program.c -o your_program -DCARGS_RELEASE -lcargs
+    ```
+
+=== "Meson"
+    ```meson
+    add_project_arguments('-DCARGS_RELEASE', language: 'c')
+    ```
+
+## Verifying Installation
+
+=== "Check Files"
     ```bash
     # Check shared library
     ls -la /usr/local/lib/libcargs.so*
@@ -172,7 +194,7 @@ After installation, you can verify that everything works correctly:
     ls -la /usr/local/include/cargs*
     ```
 
-=== "Compile an example"
+=== "Test Compilation"
     ```bash
     # Compile an example program
     gcc -o test_cargs test.c -lcargs

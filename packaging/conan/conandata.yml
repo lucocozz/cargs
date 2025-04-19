@@ -1,0 +1,4 @@
+sources:
+  "1.0.0":
+    url: "https://github.com/lucocozz/cargs/archive/refs/tags/v1.0.0.tar.gz"
+    sha256: "387315fe54f7ce51f4c7176fce4e65e4876a58893a8e516ad1d58209136cde19"
