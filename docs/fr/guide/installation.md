@@ -6,7 +6,7 @@ Ce guide explique comment installer la bibliothèque cargs dans différents envi
 
 | Méthode | Commande | Idéal Pour |
 |--------|---------|----------|
-| **Gestionnaires de Paquets** | `conan install libcargs/1.0.0@` | Utilisation en production |
+| **Gestionnaires de Paquets** | `conan install libcargs/1.0.1@` | Utilisation en production |
 | **Depuis les Sources** | `meson setup .build && meson compile -C .build` | Développement |
 | **Avec Just** | `just build` | Flux de développement |
 
@@ -40,16 +40,16 @@ cargs n'a qu'une seule dépendance optionnelle :
 
 ```bash
 # Installation depuis Conan Center
-conan install libcargs/1.0.0@
+conan install libcargs/1.0.1@
 
 # Avec des options spécifiques
-conan install libcargs/1.0.0@ -o libcargs:disable_regex=true
+conan install libcargs/1.0.1@ -o libcargs:disable_regex=true
 ```
 
 Dans votre fichier `conanfile.txt` :
 ```
 [requires]
-libcargs/1.0.0
+libcargs/1.0.1
 
 [options]
 libcargs:disable_regex=False

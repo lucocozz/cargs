@@ -6,21 +6,17 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
+vcpkg_find_acquire_program(MESON)
+message(STATUS "Using Meson: ${MESON}")
+
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
     regex WITH_REGEX
 )
 
-set(OPTIONS
-    -Dtests=false
-    -Dexamples=false
-    -Dbenchmarks=false
-)
-
-if(NOT WITH_REGEX)
+set(OPTIONS -Dtests=false -Dexamples=false -Dbenchmarks=false)
+if(NOT "regex" IN_LIST FEATURES)
     list(APPEND OPTIONS -Ddisable_regex=true)
-else()
-    list(APPEND OPTIONS -Ddisable_regex=false)
 endif()
 
 vcpkg_configure_meson(
@@ -31,10 +27,5 @@ vcpkg_configure_meson(
 vcpkg_install_meson()
 vcpkg_fixup_pkgconfig()
 
-file(INSTALL "${SOURCE_PATH}/includes/cargs.h" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
-file(INSTALL "${SOURCE_PATH}/includes/cargs/" DESTINATION "${CURRENT_PACKAGES_DIR}/include/cargs")
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/include/cargs/internal")
-
 file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
