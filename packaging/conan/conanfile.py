@@ -6,7 +6,7 @@ import os
 
 class LibcargsConan(ConanFile):
     name = "libcargs"
-    version = "1.0.0"
+    version = "1.0.1"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
     topics = ("conan", "cargs", "libcargs", "command-line", "arguments", "parser", "cli", "argparse")
     url = "https://github.com/lucocozz/cargs"
@@ -69,8 +69,8 @@ class LibcargsConan(ConanFile):
         meson.install()
 
     def package_info(self):
-        self.cpp_info.set_property("cmake_file_name", "cargs")
-        self.cpp_info.set_property("cmake_target_name", "cargs::cargs")
+        self.cpp_info.set_property("cmake_file_name", "libcargs")
+        self.cpp_info.set_property("cmake_target_name", "libcargs::libcargs")
         
         self.cpp_info.libs = ["cargs"]
         

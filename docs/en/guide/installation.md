@@ -6,7 +6,7 @@ This guide explains how to install the cargs library in different environments.
 
 | Method | Command | Best For |
 |--------|---------|----------|
-| **Package Managers** | `conan install libcargs/1.0.0@` | Production use |
+| **Package Managers** | `conan install libcargs/1.0.1@` | Production use |
 | **From Source** | `meson setup .build && meson compile -C .build` | Development |
 | **With Just** | `just build` | Development workflow |
 
@@ -40,16 +40,16 @@ cargs has only one optional dependency:
 
 ```bash
 # Install from Conan Center
-conan install libcargs/1.0.0@
+conan install libcargs/1.0.1@
 
 # With specific options
-conan install libcargs/1.0.0@ -o libcargs:disable_regex=true
+conan install libcargs/1.0.1@ -o libcargs:disable_regex=true
 ```
 
 In your project's `conanfile.txt`:
 ```
 [requires]
-libcargs/1.0.0
+libcargs/1.0.1
 
 [options]
 libcargs:disable_regex=False
@@ -128,7 +128,7 @@ gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
 
 ```meson
 # In your meson.build
-cargs_dep = dependency('cargs', version: '>=1.0.0', required: false)
+cargs_dep = dependency('cargs', version: '>=1.0.1', required: false)
 
 # Fallback to subproject if not found system-wide
 if not cargs_dep.found()
