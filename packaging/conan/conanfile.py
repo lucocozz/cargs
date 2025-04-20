@@ -69,8 +69,8 @@ class LibcargsConan(ConanFile):
         meson.install()
 
     def package_info(self):
-        self.cpp_info.set_property("cmake_file_name", "cargs")
-        self.cpp_info.set_property("cmake_target_name", "cargs::cargs")
+        self.cpp_info.set_property("cmake_file_name", "libcargs")
+        self.cpp_info.set_property("cmake_target_name", "libcargs::libcargs")
         
         self.cpp_info.libs = ["cargs"]
         

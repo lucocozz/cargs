@@ -57,3 +57,5 @@ a.out
 .idea/
 reports/
 .venv/
+packaging/conan/test_package/build/
+packaging/conan/test_package/CMakeUserPresets.json
