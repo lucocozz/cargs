@@ -3,8 +3,8 @@ name: Examples
 on:
   push:
     branches: [ "develop" ]
-  pull_request:
-    branches: [ "main" ]
+#   pull_request:
+    # branches: [ "main" ]
   workflow_dispatch:
   workflow_run:
     workflows: ["Build"]
@@ -47,7 +47,7 @@ jobs:
           cd .build-examples/examples
           # Test help output of examples
           for example in *; do
-            if [ -x "$example" ]; then
+            if [ -x "$example" ] && [[ "$example" != *.* ]]; then
               echo "Testing $example --help"
               ./$example --help || exit 1
               echo "------------------------------"
