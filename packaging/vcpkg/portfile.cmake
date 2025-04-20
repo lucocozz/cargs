@@ -1,8 +1,12 @@
+if(NOT VCPKG_TARGET_IS_LINUX AND NOT VCPKG_TARGET_IS_OSX)
+    message(FATAL_ERROR "libcargs currently only supports Linux and macOS platforms.")
+endif()
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO lucocozz/cargs
     REF v${VERSION}
-    SHA512 981361ffe0f5d9848134f0f515210ff1533d4adc3e974e07ea6ad1eb0e22839318eadf23a13f8ecf6906b696548733a4e5375bc4c4af5790bad02163acbf1f4b
+    SHA512 74bb7eebb1f328d3b27c51c2cec74f87b0a11fd7c801bb3d2d4b56b8ed7448461043f8f01b68f69cee67c2c73217ebb8b641a5e76a632052910ddb13b750045f
     HEAD_REF main
 )
 
