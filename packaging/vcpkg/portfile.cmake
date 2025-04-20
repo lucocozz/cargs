@@ -1,7 +1,3 @@
-if(NOT VCPKG_TARGET_IS_LINUX AND NOT VCPKG_TARGET_IS_OSX)
-    message(FATAL_ERROR "libcargs currently only supports Linux and macOS platforms.")
-endif()
-
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO lucocozz/cargs
@@ -10,26 +6,22 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-vcpkg_find_acquire_program(MESON)
-message(STATUS "Using Meson: ${MESON}")
-
-vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
-    FEATURES
-    regex WITH_REGEX
-)
-
-set(OPTIONS -Dtests=false -Dexamples=false -Dbenchmarks=false)
+set(OPTIONS "")
 if(NOT "regex" IN_LIST FEATURES)
     list(APPEND OPTIONS -Ddisable_regex=true)
 endif()
-
 vcpkg_configure_meson(
     SOURCE_PATH "${SOURCE_PATH}"
-    OPTIONS ${OPTIONS}
+    OPTIONS
+        ${OPTIONS}
+        -Dbenchmarks=false
+        -Dexamples=false
+        -Dtests=false
 )
 
 vcpkg_install_meson()
 vcpkg_fixup_pkgconfig()
 
-file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
+
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
