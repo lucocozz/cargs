@@ -1,0 +1,138 @@
+name: Build
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Quality Analysis"]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.build_type }}${{ matrix.sanitizer && format(' + {0}', matrix.sanitizer) || '' }}${{ matrix.disable_regex && ' without regex' || '' }})
+    # Only run if code quality check passed or was triggered directly
+    if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gcc, clang]
+        build_type: [release]
+        disable_regex: [false, true]
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            build_type: debugoptimized
+            disable_regex: false
+          - os: macos-latest
+            compiler: clang
+            build_type: debugoptimized
+            disable_regex: false
+          - os: ubuntu-latest
+            compiler: gcc
+            build_type: debug
+            sanitizer: address
+            disable_regex: false
+
+    runs-on: ${{ matrix.os }}
+    outputs:
+      build_status: ${{ job.status }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Cache for dependencies
+      - name: Cache apt packages (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ matrix.compiler }}-${{ hashFiles('**/meson.build') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-${{ matrix.compiler }}-
+
+      - name: Cache Homebrew packages (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/meson.build') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+
+      # Cache for Meson build directory
+      - name: Cache Meson build directory
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.disable_regex }}-${{ matrix.sanitizer }}-${{ hashFiles('**/meson.build', '**/meson_options.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.disable_regex }}-${{ matrix.sanitizer }}-
+
+      # Install dependencies
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build libpcre2-dev libcriterion-dev
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          # Ensure brew is quiet and doesn't prompt
+          export HOMEBREW_NO_INSTALL_CLEANUP=1
+          export HOMEBREW_NO_AUTO_UPDATE=1
+          brew install meson ninja pcre2 criterion || brew upgrade meson ninja pcre2 criterion
+
+      # Configure and build
+      - name: Configure Meson
+        run: |
+          meson_opts="--buildtype=${{ matrix.build_type }} -Dexamples=false -Dbenchmarks=false -Ddisable_regex=${{ matrix.disable_regex }}"
+          if [ "${{ matrix.sanitizer }}" != "" ]; then
+            meson_opts="$meson_opts -Db_sanitize=${{ matrix.sanitizer }}"
+          fi
+          
+          # Always include tests for the build that will be used for testing
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ] && [ "${{ matrix.compiler }}" = "gcc" ] && [ "${{ matrix.build_type }}" = "debugoptimized" ] && [ "${{ matrix.disable_regex }}" = "false" ]; then
+            meson_opts="$meson_opts -Dtests=true -Db_coverage=true" # Enable coverage for the test build
+          else
+            meson_opts="$meson_opts -Dtests=false"
+          fi
+          
+          meson setup .build $meson_opts
+        env:
+          CC: ${{ matrix.compiler }}
+          CXX: ${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
+        shell: bash
+
+      - name: Build
+        run: meson compile -C .build
+        env:
+          CC: ${{ matrix.compiler }}
+          CXX: ${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
+
+      # Upload build artifacts
+      - name: Upload test build directory
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' && matrix.build_type == 'debugoptimized' && matrix.disable_regex == false
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-for-test
+          path: .build
+          retention-days: 1
+          
+      - name: Upload library artifacts
+        if: matrix.build_type == 'release' # Only upload release builds as potential release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib-${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}${{ matrix.disable_regex && '-noregex' || '' }}
+          path: |
+            .build/source/libcargs.a
+            .build/source/libcargs.so
+            .build/source/libcargs.dylib
+          if-no-files-found: ignore
+          retention-days: 7 # Keep release artifacts longer

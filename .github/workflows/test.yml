@@ -1,0 +1,87 @@
+name: Test
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
+
+jobs:
+  test:
+    name: Test & Coverage
+    # Only run if build passed or was triggered directly
+    if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    outputs:
+      test_status: ${{ job.status }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-test-${{ hashFiles('**/meson.build') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-test-
+
+      # Install only runtime dependencies and coverage tool
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpcre2-dev libcriterion-dev gcovr
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-for-test
+          path: .build
+
+      # Fix file permissions that might be lost during artifact upload/download
+      - name: Fix file permissions
+        run: |
+          chmod +x $(find .build -type f -name "test_*")
+          chmod +x $(find .build -type f -name "meson*")
+
+      # Run tests
+      - name: Run unit tests
+        run: meson test -C .build --suite unit -v
+        
+      - name: Run integration tests
+        run: meson test -C .build --suite integration -v
+        
+      - name: Run functional tests
+        run: meson test -C .build --suite functional -v
+
+      # Generate coverage report
+      - name: Generate test coverage report
+        run: |
+          # Generate coverage report in multiple formats
+          ninja -C .build coverage
+          ninja -C .build coverage-xml
+          ninja -C .build coverage-text
+
+      # Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: .build/meson-logs/coverage.xml
+          fail_ci_if_error: false
+          verbose: true
+          
+      # Also upload coverage as artifact
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            .build/meson-logs/coverage/
+            .build/meson-logs/coverage.xml
+            .build/meson-logs/coverage.txt
+          retention-days: 7
