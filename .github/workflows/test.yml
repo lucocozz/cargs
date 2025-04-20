@@ -1,0 +1,67 @@
+name: Test
+
+on:
+  push:
+    branches: [ "develop" ]
+#   pull_request:
+    # branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test & Coverage
+    runs-on: ubuntu-latest
+    outputs:
+      test_status: ${{ job.status }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build libpcre2-dev libcriterion-dev gcovr
+
+      - name: Configure
+        run: meson setup -Dtests=true -Dexamples=true .build
+
+      - name: Compile
+        run: meson compile -C .build
+
+      # Run tests
+      - name: Run unit tests
+        run: meson test -C .build --suite unit -v
+        
+      - name: Run integration tests
+        run: meson test -C .build --suite integration -v
+        
+      - name: Run functional tests
+        run: meson test -C .build --suite functional -v
+
+      # Generate coverage report
+      - name: Generate test coverage report
+        run: |
+          # Configure for coverage and generate reports
+          meson configure -Db_coverage=true .build
+          ninja -C .build coverage
+          ninja -C .build coverage-xml
+          ninja -C .build coverage-text
+
+      # Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: .build/meson-logs/coverage.xml
+          fail_ci_if_error: false
+          verbose: true
+          
+      # Upload coverage as artifact
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            .build/meson-logs/coverage/
+            .build/meson-logs/coverage.xml
+            .build/meson-logs/coverage.txt
+          retention-days: 7
