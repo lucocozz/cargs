@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +25,20 @@ typedef struct
     int end;
 } int_range_t;
 
+const char *search_range_separator(const char *value, const char *separators)
+{
+    for (const char *ptr = value; *ptr != '\0'; ptr++) {
+        if (strchr(separators, *ptr) != NULL) {
+
+            if (ptr > value && isdigit(*(ptr - 1)) &&
+                ((isdigit(*(ptr + 1))) || *(ptr + 1) == '-')) {
+                return ptr;
+            }
+        }
+    }
+    return NULL;
+}
+
 /**
  * Parse a string into an integer range
  * Formats supported: "42", "-42", "1-5", "-5-5", "-10--5"
@@ -34,12 +49,12 @@ typedef struct
  */
 static int parse_int_range(int_range_t *range, const char *value)
 {
-    char *minus = strchr(value, '-');
-    if (minus != NULL) {
+    const char *range_separator = search_range_separator(value, "-:");
+    if (range_separator != NULL) {
         // Successfully parsed as a range
         // Normalize range using MIN/MAX
         int start    = strtol(value, NULL, 10);
-        int end      = strtol(minus + 1, NULL, 10);
+        int end      = strtol(range_separator + 1, NULL, 10);
         range->start = MIN(start, end);
         range->end   = MAX(start, end);
         return 0;

@@ -38,7 +38,8 @@ CARGS_OPTIONS(
     OPTION_FLAG('\0', "dry-run", HELP("Run without making changes")),
     
     // Required positional argument
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
+    POSITIONAL_INT("value", HELP("Value to process"), FLAGS(FLAG_OPTIONAL))
 )
 
 int main(int argc, char **argv)
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
     printf("  Dry run (--dry-run only): %s\n", dry_run ? "enabled" : "disabled");
     printf("  Debug (-d only): %s\n", debug ? "enabled" : "disabled");
     printf("  Input: %s\n", input);
+    printf("  Value: %d\n", cargs_get(cargs, "value").as_int);
 
     // Free resources
     cargs_free(&cargs);

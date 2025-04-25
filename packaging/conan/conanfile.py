@@ -31,7 +31,6 @@ class LibcargsConan(ConanFile):
     def configure(self):
         if self.options.shared:
             self.options.rm_safe("fPIC")
-        # Pure C library
         self.settings.rm_safe("compiler.libcxx")
         self.settings.rm_safe("compiler.cppstd")
 
@@ -42,8 +41,11 @@ class LibcargsConan(ConanFile):
         if not self.options.disable_regex:
             self.requires("pcre2/10.42")
 
+    def build_requirements(self):
+        self.tool_requires("meson/[>=1.0.0]")
+        self.tool_requires("ninja/[>=1.10.2 <2]")
+
     def source(self):
-        # Use the version from the metadata, requires a git tag usually
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
 
     def generate(self):
@@ -53,9 +55,8 @@ class LibcargsConan(ConanFile):
         tc.project_options["tests"] = False
         tc.project_options["examples"] = False
         tc.project_options["benchmarks"] = False
-        # Conan uses 'relwithdebinfo', Meson uses 'debugoptimized'
         if self.settings.build_type == "RelWithDebInfo":
-             tc.project_options["buildtype"] = "debugoptimized"
+            tc.project_options["buildtype"] = "release"
         tc.generate()
 
     def build(self):
@@ -71,14 +72,10 @@ class LibcargsConan(ConanFile):
     def package_info(self):
         self.cpp_info.set_property("cmake_file_name", "libcargs")
         self.cpp_info.set_property("cmake_target_name", "libcargs::libcargs")
-        
         self.cpp_info.libs = ["cargs"]
-        
         if self.options.disable_regex:
             self.cpp_info.defines.append("CARGS_NO_REGEX")
-        
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
-        
         self.cpp_info.set_property("cmake_find_mode", "both")
         self.cpp_info.set_property("pkg_config_name", "cargs")
