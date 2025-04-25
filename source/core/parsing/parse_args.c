@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <string.h>
 
 #include "cargs/errors.h"
@@ -36,6 +37,19 @@ int parse_args(cargs_t *cargs, cargs_option_t *options, int argc, char **argv)
 
         char *short_arg = starts_with("-", arg);
         if (short_arg != NULL) {
+            // Checking if this is a negative number or an option
+            if (isdigit(short_arg[0]) || (short_arg[0] == '.' && isdigit(short_arg[1]))) {
+                cargs_option_t *pos_opt = find_positional(options, positional_index);
+
+                if (pos_opt && (pos_opt->value_type & VALUE_TYPE_ANY_NUMERIC)) {
+                    status = handle_positional(cargs, options, arg, positional_index++);
+                    if (status != CARGS_SUCCESS)
+                        return (status);
+                    continue;
+                }
+            }
+
+            // Otherwise, handle as a regular short option
             status = handle_short_option(cargs, options, short_arg, argv, argc, &i);
             if (status != CARGS_SUCCESS)
                 return (status);
