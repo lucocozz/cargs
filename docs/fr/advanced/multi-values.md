@@ -81,6 +81,8 @@ Pour les tableaux d'entiers, cargs prend en charge une syntaxe de plage spécial
 ```bash
 # Les plages s'étendent pour inclure toutes les valeurs dans la plage
 ./program --ids=1-5,10,15-20
+# or
+./program --ids=1:5,10,15:20
 # Équivalent à : --ids=1,2,3,4,5,10,15,16,17,18,19,20
 ```
 

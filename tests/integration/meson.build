@@ -5,6 +5,9 @@ integration_tests = [
   ['validators', 'test_validators.c'],
   ['post_validation', 'test_post_validation.c'],
   ['validation', 'test_validation.c'],
+  ['edge_case', 'test_edge_case.c'],
+  ['positional_edge_case', 'test_positional_edge_case.c'],
+  ['subcommand_edge_case', 'test_subcommand_edge_case.c']
 ]
 
 foreach test : integration_tests

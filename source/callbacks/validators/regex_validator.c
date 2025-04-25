@@ -19,8 +19,8 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
 {
 #ifdef CARGS_NO_REGEX
     // Regex support is disabled
-    UNUSED(value);
-    UNUSED(data);
+    (void)(value);
+    (void)(data);
     CARGS_REPORT_ERROR(
         cargs, CARGS_ERROR_INVALID_VALUE,
         "Regex validation is not supported in this build (compiled with CARGS_NO_REGEX)");

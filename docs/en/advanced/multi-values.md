@@ -81,7 +81,10 @@ For integer arrays, cargs supports a special range syntax:
 ```bash
 # Ranges expand to include all values in the range
 ./program --ids=1-5,10,15-20
+# or
+./program --ids=1:5,10,15:20
 # Equivalent to: --ids=1,2,3,4,5,10,15,16,17,18,19,20
+
 ```
 
 !!! tip "Range Handling"
