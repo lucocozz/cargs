@@ -4,11 +4,11 @@ from conan.tools.files import get, copy
 from conan.tools.layout import basic_layout
 import os
 
-class LibcargsConan(ConanFile):
-    name = "libcargs"
-    version = "1.0.1"
+class LucocozzCargsConan(ConanFile):
+    name = "lucocozz-cargs"
+    version = "1.0.2"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
-    topics = ("conan", "cargs", "libcargs", "command-line", "arguments", "parser", "cli", "argparse")
+    topics = ("conan", "cargs", "lucocozz-cargs", "command-line", "arguments", "parser", "cli", "argparse")
     url = "https://github.com/lucocozz/cargs"
     homepage = "https://github.com/lucocozz/cargs"
     license = "MIT"
@@ -39,7 +39,7 @@ class LibcargsConan(ConanFile):
 
     def requirements(self):
         if not self.options.disable_regex:
-            self.requires("pcre2/10.42")
+            self.requires("pcre2/[>=10.40]")
 
     def build_requirements(self):
         self.tool_requires("meson/[>=1.0.0]")
@@ -51,7 +51,7 @@ class LibcargsConan(ConanFile):
     def generate(self):
         tc = MesonToolchain(self)
         tc.project_options["buildtype"] = str(self.settings.build_type).lower()
-        tc.project_options["disable_regex"] = self.options.disable_regex
+        tc.project_options["disable_regex"] = bool(self.options.disable_regex)
         tc.project_options["tests"] = False
         tc.project_options["examples"] = False
         tc.project_options["benchmarks"] = False
@@ -70,12 +70,19 @@ class LibcargsConan(ConanFile):
         meson.install()
 
     def package_info(self):
-        self.cpp_info.set_property("cmake_file_name", "libcargs")
-        self.cpp_info.set_property("cmake_target_name", "libcargs::libcargs")
+        self.cpp_info.set_property("cmake_file_name", "lucocozz-cargs")
+        self.cpp_info.set_property("cmake_target_name", "lucocozz-cargs::lucocozz-cargs")
         self.cpp_info.libs = ["cargs"]
+        
+        if not self.options.disable_regex:
+            # Make sure PCRE2 is linked correctly
+            self.cpp_info.requires = ["pcre2::pcre2"]
+            
         if self.options.disable_regex:
             self.cpp_info.defines.append("CARGS_NO_REGEX")
+            
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
+            
         self.cpp_info.set_property("cmake_find_mode", "both")
         self.cpp_info.set_property("pkg_config_name", "cargs")
