@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     printf("Test package ran successfully!\n");
     printf("  Verbose: %s\n", verbose ? "yes" : "no");
     printf("  Output: %s\n", output);
-    
+
     cargs_free(&cargs);
     return 0;
 }
